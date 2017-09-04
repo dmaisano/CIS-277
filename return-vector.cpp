@@ -2,50 +2,33 @@
 #include <vector>
 using namespace std;
 
-void getVector(vector<int>&); // & = passed by reference
-void doubleVector(vector<int>&, const vector<int>&); // the newVector is the first parameter, original is the second
-void printVector(const vector<int>&); // const is used as the vector is not intended to change within the function
+vector<int> get_vector();
 
 int main() {
-  vector<int> list;
-  vector<int> doubledList;
+  vector<int> nums;
 
-  getVector(list);
+  nums = get_vector();
 
-  doubleVector(doubledList, list);
-
-  printVector(doubledList);
+  for(unsigned int i = 0; i < nums.size(); i++) {
+    cout << "Element: " << i << "\tValue: " << nums[i] << "\n";
+  }
   
   return 0;
 }
 
-void getVector(vector<int>& vect) {
-  int input = 0;
-  int counter = 0;
-  cout << "To exit enter '-1'\n";
+vector<int> get_vector() {
+  unsigned int size;
+  double input;
+  vector<int> vect;
 
-  while(input != -1) {
-    cout << "Enter a value for element " << counter << ": ";
+  cout << "Enter the size for the vector: ";
+  cin >> size;
+
+  for(unsigned int i = 0; i < size; i++) {
+    cout << "Enter a number for element " << i << ": ";
     cin >> input;
-
-    if(input == -1)
-      break;
-    
-    else {
-      vect.push_back(input);
-      counter++;
-    }
+    vect.push_back(input);
   }
-}
 
-void doubleVector(vector<int>& newVector, const vector<int>& vect) {
-  for(int i = 0; i < vect.size(); i++) {
-    newVector.push_back(vect[i] * 2);
-  }
-}
-
-void printVector(const vector<int>& vect) {
-  for(int i = 0; i < vect.size(); i++) {
-    cout << "Element " << i << "\tValue: " << vect[i] << "\n";
-  }
+  return vect;
 }
