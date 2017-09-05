@@ -2,6 +2,8 @@
 #include <vector>
 using namespace std;
 
+// https://stackoverflow.com/questions/10908012/computing-the-scalar-product-of-two-vectors-in-c
+
 struct VECTOR {
   string name; // vector name
   double x, y; // 2d values of vector
