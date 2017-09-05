@@ -1,16 +1,12 @@
 #include <iostream>
+#include "struct.hpp"
 using namespace std;
-
-struct VECTOR {
-  string name; // vector name
-  double x, y; // 2d values of vector
-};
 
 void menu();
 
 VECTOR get_vector(); // function that creates & returns a vector
 VECTOR calc_sum(VECTOR, VECTOR); // adds the values of two VECTOR types
-VECTOR print_vector(VECTOR); // function to print contents of vector to file
+//VECTOR print_vector(VECTOR); // function to print contents of vector to file
 
 int main() {
   //VECTOR nums = {1, 3}; // vector type declaration
@@ -28,6 +24,8 @@ int main() {
   VECTOR sum = calc_sum(vect1, vect2);
 
   cout << sum.name << " =  ( " << sum.x << ", " << sum.y << " )";
+
+  cout << "\n";
   
   return 0;
 }
@@ -60,6 +58,8 @@ VECTOR calc_sum(VECTOR vector1, VECTOR vector2) {
   return v;
 }
 
+/*
 VECTOR print_vector(VECTOR vector) {
   // code goes here
 }
+*/
