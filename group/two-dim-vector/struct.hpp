@@ -6,7 +6,7 @@ struct VECTOR {
   double x, y; // 2d values of vector
 };
 
-struct Scalar {
+struct SCALAR {
   string name; // scalar name
   double product; // scalar product value
 };

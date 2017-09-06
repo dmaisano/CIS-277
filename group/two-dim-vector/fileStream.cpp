@@ -28,13 +28,20 @@ int main() {
 }
 
 void writeFile(const vector<VECTOR>& vect) {
-  ofstream file; // file object
-  file.open("file.dat", ios::app); // creates file if none exists, appends to end of file if exists
+  ofstream textFile; // text file object
+  ofstream dataFile; // data file object
+  textFile.open("vector.txt", ios::app);
+  dataFile.open("vector.dat", ios::app); // creates file if none exists, appends to end of file if exists
   int size = vect.size();
+
+  for(int i = 0; i < size; i++) {
+    dataFile << vect[i].name << "\t" << vect[i].x << "\t" << vect[i].y << "\n";
+  }
   
   for(int i = 0; i < size; i++) {
-    file << "Name: " << vect[i].name << " - ( " << vect[i].x << ", " << vect[i].y << " )\n";
+    textFile << "Name: " << vect[i].name << " - ( " << vect[i].x << ", " << vect[i].y << " )\n";
   }
 
-  file.close();
+  dataFile.close();
+  textFile.close();
 }

@@ -1,0 +1,1 @@
+// https://stackoverflow.com/questions/10908012/computing-the-scalar-product-of-two-vectors-in-c
