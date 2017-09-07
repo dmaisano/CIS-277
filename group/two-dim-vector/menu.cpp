@@ -11,7 +11,7 @@ int main() {
   cout << "Size: " << vect.size() << "\n\n";
   
   while(userInput != -1) {
-    int menuIndex;
+    int menuIndex = 0;
 
     if(vect.size() > 0) {
 
