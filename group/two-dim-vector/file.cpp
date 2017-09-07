@@ -7,20 +7,20 @@
 #include "struct.hpp"
 using namespace std;
 
-void writeVectorData(const vector<VECTOR>&);
-void getVectorData(vector<VECTOR>&);
-void splitVectorData(vector<VECTOR>&, string);
+void getVector(vector<VECTOR>&);
+void splitVector(vector<VECTOR>&, string);
+void writeVector(const vector<VECTOR>&);
 void printVector(const vector<VECTOR>&);
 
-void writeScalarData(const vector<SCALAR>&);
-void getScalarData(vector<SCALAR>&);
-void splitScalarData(vector<SCALAR>&, string);
+void getScalar(vector<SCALAR>&);
+void splitScalar(vector<SCALAR>&, string);
+void writeScalar(const vector<SCALAR>&);
 void printScalar(const vector<SCALAR>&);
 
 int main() {
   vector<VECTOR> vect;
 
-  getVectorData(vect);
+  getVector(vect);
   printVector(vect);
 
   cout << "\n";
@@ -28,18 +28,18 @@ int main() {
   return 0;
 }
 
-void getVectorData(vector<VECTOR>& vect) {
+void getVector(vector<VECTOR>& vect) {
   string currentLine;
   ifstream dataFile("vector.dat");
 
   while(getline(dataFile, currentLine)) {
-    splitVectorData(vect, currentLine);
+    splitVector(vect, currentLine);
   }
 
   dataFile.close(); // close file when done
 }
 
-void splitVectorData(vector<VECTOR>& vect, string line) {
+void splitVector(vector<VECTOR>& vect, string line) {
   VECTOR v;
   istringstream ss(line);
 
@@ -63,7 +63,7 @@ void splitVectorData(vector<VECTOR>& vect, string line) {
   }
 }
 
-void writeVectorData(const vector<VECTOR>& vect) {
+void writeVector(const vector<VECTOR>& vect) {
   ofstream dataFile("vector.dat", ios::app); // creates file if none exists, appends to end of file if exists
   // int size = vect.size();
 
@@ -80,7 +80,9 @@ void printVector(const vector<VECTOR>& vect) {
   }
 }
 
-void splitScalarData(vector<SCALAR>& vect, string line) {
+// void getScalar(const vector<SCALAR>&);
+
+void splitScalar(vector<SCALAR>& vect, string line) {
   SCALAR s;
   istringstream ss(line);
 
