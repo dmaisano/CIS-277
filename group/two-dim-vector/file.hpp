@@ -65,7 +65,7 @@ void splitVector(vector<VECTOR>& vect, string line) {
 }
 
 void writeVector(const vector<VECTOR>& vect) {
-  ofstream dataFile("vector.dat", ios::out | ios::trunc);
+  ofstream dataFile("vector.dat", ios::out | ios::trunc); // clears the content of the file to prevent duplication
 
   for(int i = 0; i < vect.size(); i++) {
     dataFile << vect[i].name << "," << vect[i].x << "," << vect[i].y;
@@ -85,11 +85,12 @@ void printVector(const vector<VECTOR>& vect) {
     cout << vect[i].name << ": ( " << vect[i].x << ", " << vect[i].y << " )\n";
   }
 
-  cout << endl;
+  cout << "\n";
 }
 
 // void getScalar(const vector<SCALAR>&);
 
+/*
 void splitScalar(vector<SCALAR>& vect, string line) {
   SCALAR s;
   istringstream ss(line);
@@ -111,3 +112,4 @@ void splitScalar(vector<SCALAR>& vect, string line) {
     }
   }
 }
+*/
