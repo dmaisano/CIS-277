@@ -84,9 +84,12 @@ void splitScalarData(vector<SCALAR>& vect, string line) {
   SCALAR s;
   istringstream ss(line);
 
-  for(int i = 0; i < 3; i++) {
+  for(int i = 0; i < 2; i++) {
     string item;
     getline(ss, item, ',');
+
+    if(item == "") // ignores a line if empty
+    continue;
 
     if(i == 0) {
       s.name = item;
