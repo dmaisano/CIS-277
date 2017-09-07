@@ -22,6 +22,7 @@ int main() {
 
   getVector(vect);
   printVector(vect);
+  writeVector(vect);
 
   cout << "\n";
   
@@ -64,20 +65,27 @@ void splitVector(vector<VECTOR>& vect, string line) {
 }
 
 void writeVector(const vector<VECTOR>& vect) {
-  ofstream dataFile("vector.dat", ios::app); // creates file if none exists, appends to end of file if exists
-  // int size = vect.size();
+  ofstream dataFile("vector.dat", ios::out | ios::trunc);
 
   for(int i = 0; i < vect.size(); i++) {
-    dataFile << vect[i].name << "\t" << vect[i].x << "\t" << vect[i].y << "\n";
+    dataFile << vect[i].name << "," << vect[i].x << "," << vect[i].y;
+
+    if(i != (vect.size() - 1)) { // prevents empty lines from being added to file
+      dataFile << "\n";
+    }
   }
 
   dataFile.close(); // close file when done
 }
 
 void printVector(const vector<VECTOR>& vect) {
+  cout << "Vector Name: ( x, y )\n\n"; 
+
   for(int i = 0; i < vect.size(); i++) {
     cout << vect[i].name << ": ( " << vect[i].x << ", " << vect[i].y << " )\n";
   }
+
+  cout << endl;
 }
 
 // void getScalar(const vector<SCALAR>&);
