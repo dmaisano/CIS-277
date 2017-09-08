@@ -1,9 +1,21 @@
 #include <iostream>
 #include <vector>
+#include "struct.hpp"
+#include "file.hpp"
 using namespace std;
 
+void menu();
+
 int main() {
-  vector<int> vect;
+  menu();
+  
+  return 0;
+}
+
+void menu() {
+  vector<VECTOR> vect;
+  getVector(vect);
+  int size = vect.size();
   int menuChoice = -99;
 
   if(vect.size() > 0) {
@@ -25,7 +37,19 @@ int main() {
     cout << "Enter 7 to get the magnitude of a vector.\n";
 
     cin >> menuChoice;
+
+    cout << "\n";
+
+    if(menuChoice == -1) { // exit
+      writeVector(vect);
+      continue;
+    }
+
+    else if(menuChoice == 0 && size > 0) // print vectors to console
+      printVector(vect);
+    
+    else if(menuChoice == 1);
+      //
+
   }
-  
-  return 0;
 }

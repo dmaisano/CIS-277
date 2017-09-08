@@ -1,21 +1,22 @@
 #include <iostream>
-#include <vector> // vector
 #include <fstream> // file streams
 #include <string>
 #include <sstream> // stringstream
-#include <vector>
-#include "struct.hpp"
+#include <vector> // vector<TYPE> var
 using namespace std;
 
 void getVector(vector<VECTOR>&);
 void splitVector(vector<VECTOR>&, string);
+void createVector(vector<VECTOR>&);
 void writeVector(const vector<VECTOR>&);
 void printVector(const vector<VECTOR>&);
 
+/*
 void getScalar(vector<SCALAR>&);
 void splitScalar(vector<SCALAR>&, string);
 void writeScalar(const vector<SCALAR>&);
 void printScalar(const vector<SCALAR>&);
+
 
 int main() {
   vector<VECTOR> vect;
@@ -28,6 +29,7 @@ int main() {
   
   return 0;
 }
+*/
 
 void getVector(vector<VECTOR>& vect) {
   string currentLine;
@@ -38,6 +40,22 @@ void getVector(vector<VECTOR>& vect) {
   }
 
   dataFile.close(); // close file when done
+}
+
+void createVector(vector<VECTOR>& vect) {
+  VECTOR v;
+
+  cout << "Enter the name for the vector: "; // assign the name to the vector
+  cin >> v.name;
+
+  cout << "Enter the first value of the vector: "; // assign first number to the vector
+  cin >> v.x;
+
+  cout << "Enter the second value of the vector: "; // assign second number to the vector;
+  cin >> v.y;
+
+  vect.push_back(v);
+  writeVector(vect); // saves the vector to the file after creation
 }
 
 void splitVector(vector<VECTOR>& vect, string line) {
@@ -82,7 +100,7 @@ void printVector(const vector<VECTOR>& vect) {
   cout << "Vector Name: ( x, y )\n\n"; 
 
   for(int i = 0; i < vect.size(); i++) {
-    cout << vect[i].name << ": ( " << vect[i].x << ", " << vect[i].y << " )\n";
+    cout << i << ". " << vect[i].name << ": ( " << vect[i].x << ", " << vect[i].y << " )\n";
   }
 
   cout << "\n";
