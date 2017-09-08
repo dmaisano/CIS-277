@@ -1,1 +1,90 @@
-// https://stackoverflow.com/questions/10908012/computing-the-scalar-product-of-two-vectors-in-c
+TODO: deleteVector(), main()
+
+// getVectorData() Pseudo:
+
+getVectorData(parameters: container passed by ref)
+START
+-Initialize string to hold the current line of the file being read
+-Open the file containing the vector data
+-LOOP through each line
+-Call splitData() function on each line to get the correct format of data
+-End of LOOP
+-Close the file
+END
+
+
+// deleteVector() Pseudo:
+
+deleteVector(parameters: container passed by ref)
+START
+-Initialize int for userInput
+-LOOP through each vector stored in the container
+-Display each vector in the container with a corresponding number
+-End of LOOP
+-Prompt the user to enter the number of the vector to delete
+-Delete the vector
+-Call menu() function to go back to main menu
+END
+
+
+// splitData() Pseudo:
+
+splitData(parameters: container passed by ref, string line)
+START
+-Initialize a VECTOR type (contains a name, x, & y)
+-Split up the current line of the file into words
+-LOOP through each word
+-If the word/line is empty ignore it
+-Assign the first word to the VECTOR name value
+-Assign the second word to the VECTOR x value
+-Assign the third word to the VECTOR y value
+-Push the VECTOR created to the appropriate container
+-End of LOOP
+END
+// writeVectorData() Pseudo:
+
+writeVectorData(parameters: container passed by ref)
+START
+-Open a file & delete contents of file
+-LOOP through each VECTOR in the container
+-Write each VECTOR within the container separated by a comma
+-At the end of the VECTOR within the current container add a new line to the file
+-End of LOOP
+END
+
+
+// printVector() Pseudo:
+
+printVector(parameters: container passed by ref)
+START
+-LOOP through each VECTOR in the container
+-Print out the VECTOR name, VECTOR x value, & VECTOR y value
+-End of LOOP
+-Call menu() function to go back to main menu
+END
+
+
+// menu() Pseudo:
+
+menu()
+START
+-Initialize a container to hold the VECTOR types
+-Initialize an integer to hold the user’s input
+-Call getVectorData() function to get any existing data if a file already exists
+-LOOP through the menu until user decides to exit program
+-Display all options available
+-Prompt user to select from the options provided
+-Get user input
+-If there are VECTORs in an existing file, show option to print the VECTORs in file
+-If the user enters 0, call printVector() function
+-If the user enters 1, call createVector() function
+-If the user enters 2, call deleteVector() function
+-If the user enters 3, call calcSum() function
+-If the user enters 4, call calcDiff() function
+-If the user enters 5, call scalarMultiple() function
+-If the user enters 6, call multVect() function
+-If the user enters 7, call multVect() function
+-If the user enters -1, exit the program
+-End of LOOP
+END
+
