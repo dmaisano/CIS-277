@@ -12,11 +12,6 @@ void splitVector(vector<VECTOR>&, string);
 void writeVector(const vector<VECTOR>&);
 void printVector(const vector<VECTOR>&);
 
-void getScalar(vector<SCALAR>&);
-void splitScalar(vector<SCALAR>&, string);
-void writeScalar(const vector<SCALAR>&);
-void printScalar(const vector<SCALAR>&);
-
 int main() {
   vector<VECTOR> vect;
 
@@ -87,29 +82,3 @@ void printVector(const vector<VECTOR>& vect) {
 
   cout << "\n";
 }
-
-// void getScalar(const vector<SCALAR>&);
-
-/*
-void splitScalar(vector<SCALAR>& vect, string line) {
-  SCALAR s;
-  istringstream ss(line);
-
-  for(int i = 0; i < 2; i++) {
-    string item;
-    getline(ss, item, ',');
-
-    if(item == "") // ignores a line if empty
-    continue;
-
-    if(i == 0) {
-      s.name = item;
-    }
-
-    else if(i == 1) {
-      istringstream(item) >> s.product;
-      vect.push_back(s);
-    }
-  }
-}
-*/

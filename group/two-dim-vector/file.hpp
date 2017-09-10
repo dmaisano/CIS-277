@@ -5,33 +5,13 @@
 #include <vector> // vector<TYPE> var
 using namespace std;
 
-void getVector(vector<VECTOR>&);
+void getVectors(vector<VECTOR>&);
 void splitVector(vector<VECTOR>&, string);
 void createVector(vector<VECTOR>&);
 void writeVector(const vector<VECTOR>&);
-void printVector(const vector<VECTOR>&);
+void printVector(const vector<VECTOR>&, string);
 
-/*
-void getScalar(vector<SCALAR>&);
-void splitScalar(vector<SCALAR>&, string);
-void writeScalar(const vector<SCALAR>&);
-void printScalar(const vector<SCALAR>&);
-
-
-int main() {
-  vector<VECTOR> vect;
-
-  getVector(vect);
-  printVector(vect);
-  writeVector(vect);
-
-  cout << "\n";
-  
-  return 0;
-}
-*/
-
-void getVector(vector<VECTOR>& vect) {
+void getVectors(vector<VECTOR>& vect) {
   string currentLine;
   ifstream dataFile("vector.dat");
 
@@ -83,12 +63,15 @@ void splitVector(vector<VECTOR>& vect, string line) {
 }
 
 void writeVector(const vector<VECTOR>& vect) {
+  ofstream textFile("vector.txt", ios::out | ios::trunc);
   ofstream dataFile("vector.dat", ios::out | ios::trunc); // clears the content of the file to prevent duplication
 
   for(int i = 0; i < vect.size(); i++) {
     dataFile << vect[i].name << "," << vect[i].x << "," << vect[i].y;
+    //textFile << "Vector Name: " << vect[i].name;
 
     if(i != (vect.size() - 1)) { // prevents empty lines from being added to file
+      //textFile << "\n";
       dataFile << "\n";
     }
   }
@@ -97,37 +80,7 @@ void writeVector(const vector<VECTOR>& vect) {
 }
 
 void printVector(const vector<VECTOR>& vect) {
-  cout << "Vector Name: ( x, y )\n\n"; 
-
   for(int i = 0; i < vect.size(); i++) {
     cout << i << ". " << vect[i].name << ": ( " << vect[i].x << ", " << vect[i].y << " )\n";
   }
-
-  cout << "\n";
 }
-
-// void getScalar(const vector<SCALAR>&);
-
-/*
-void splitScalar(vector<SCALAR>& vect, string line) {
-  SCALAR s;
-  istringstream ss(line);
-
-  for(int i = 0; i < 2; i++) {
-    string item;
-    getline(ss, item, ',');
-
-    if(item == "") // ignores a line if empty
-    continue;
-
-    if(i == 0) {
-      s.name = item;
-    }
-
-    else if(i == 1) {
-      istringstream(item) >> s.product;
-      vect.push_back(s);
-    }
-  }
-}
-*/

@@ -1,32 +1,62 @@
 #include <iostream>
-#include <vector> // vector
-#include <fstream> // file streams
-#include <string>
-#include <sstream> // stringstream
 #include <vector>
 #include "struct.hpp"
+#include "file.hpp"
+#include "operations.hpp"
 using namespace std;
 
 void menu();
 
-VECTOR calc_sum(VECTOR, VECTOR); // adds the values of two VECTOR types
-//VECTOR print_vector(VECTOR); // function to print contents of vector to file
-
 int main() {
-
-  cout << "\n";
+  menu();
+  
   return 0;
 }
 
-VECTOR calc_sum(VECTOR vector1, VECTOR vector2) {
-  VECTOR v;
+void menu() {
+  vector<VECTOR> vect;
+  getVectors(vect);
+  int size = vect.size();
+  int menuChoice = -99;
 
-  cout << "Enter the new name for the sum of the vectors: ";
-  cin >> v.name;
+  if(vect.size() > 0) {
+    cout << "Size: " << vect.size() << "\n\n";
+  }
+  
+  while(menuChoice != -1) {
 
-  v.x = (vector1.x + vector2.x);
+    if(size > 0) {
+      cout << "Enter 0 to display vectors.\n";
+    }
 
-  v.y = (vector2.y + vector2.y);
+    cout << "Enter 1 to create a new vector.\n";
+    
+    if(size > 0) {
+      cout << "Enter 2 to delete a vector.\n";
+      cout << "Enter 3 perform an operation on a vector.\n";
+    }
 
-  return v;
+    cout << "Enter an option: ";
+    cin >> menuChoice;
+
+    cout << "\n";
+
+    if(menuChoice == -1) { // exit
+      writeVector(vect);
+      continue;
+    }
+
+    else if(menuChoice == 0 && size > 0) // print vectors to console
+      printVector(vect);
+    
+    else if(menuChoice == 1 && size > 0);
+      // create vector
+
+    else if(menuChoice == 2 && size > 0);
+      // delete a vector
+    
+    else if(menuChoice == 3 && size > 0);
+      performOperation(vect);
+
+  }
 }

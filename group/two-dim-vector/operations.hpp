@@ -12,15 +12,6 @@ void scalarMult(VECTOR);
 void scalarProduct(VECTOR, VECTOR);
 void magnitude(VECTOR);
 
-int main() {
-  vector<VECTOR> vect;
-  getVectors(vect);
-
-  performOperation(vect);
-  
-  return 0; 
-}
-
 void addVector(VECTOR vector1, VECTOR vector2) {
   VECTOR v;
 
