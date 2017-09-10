@@ -28,7 +28,8 @@ void printVector(const vector<VECTOR>&);
 void menu();
 
 int main() {
-  menu();
+  menu(); // best main function 10/10
+  // so clean, much wow, very amaze
   
   return 0;
 }
