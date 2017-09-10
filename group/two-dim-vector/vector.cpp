@@ -35,15 +35,17 @@ int main() {
 }
 
 void menu() {
-  vector<VECTOR> vect;
-  getVectors(vect);
-  int size = vect.size();
   int menuChoice = -99;
   
   while(menuChoice != -1) {
+    vector<VECTOR> vect;
+    getVectors(vect);
+    int size = vect.size();
+
+    cout << "\nEnter -1 to exit the program.\n";
 
     if(size > 0) {
-      cout << "\nEnter 0 to display vectors.\n";
+      cout << "Enter 0 to display vectors.\n";
     }
 
     cout << "Enter 1 to create a new vector.\n";
@@ -66,7 +68,7 @@ void menu() {
     else if(menuChoice == 0 && size > 0) // print vectors to console
       printVector(vect);
     
-    else if(menuChoice == 1 && size > 0)
+    else if(menuChoice == 1)
       createVector(vect);
 
     else if(menuChoice == 2 && size > 0)

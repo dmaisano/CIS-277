@@ -1,4 +1,5 @@
 .vscode
 *.dat
+*.txt
 #**/test.cpp
 .DS_Store
