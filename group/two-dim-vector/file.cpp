@@ -5,11 +5,27 @@
 #include <vector> // vector<TYPE> var
 using namespace std;
 
+struct VECTOR {
+  string name; // vector name
+  double x, y; // 2d values of vector
+};
+
 void getVectors(vector<VECTOR>&);
+void deleteVector(vector<VECTOR>&);
 void splitVector(vector<VECTOR>&, string);
 void createVector(vector<VECTOR>&);
 void writeVector(const vector<VECTOR>&);
-void printVector(const vector<VECTOR>&, string);
+void printVector(const vector<VECTOR>&);
+
+int main() {
+  vector<VECTOR> vect;
+  getVectors(vect);
+
+  deleteVector(vect);
+  
+  return 0;
+}
+
 
 void getVectors(vector<VECTOR>& vect) {
   string currentLine;
@@ -20,6 +36,19 @@ void getVectors(vector<VECTOR>& vect) {
   }
 
   dataFile.close(); // close file when done
+}
+
+void deleteVector(vector<VECTOR>& vect) {
+  int choice;
+
+  cout << "Select a vector from the list below that you would like to remove.\n";
+  printVector(vect);
+
+  cout << "\nEnter choice: ";
+  cin >> choice;
+
+  vect.erase(vect.begin()+choice);
+  writeVector(vect);
 }
 
 void createVector(vector<VECTOR>& vect) {
@@ -63,15 +92,15 @@ void splitVector(vector<VECTOR>& vect, string line) {
 }
 
 void writeVector(const vector<VECTOR>& vect) {
-  ofstream textFile("vector.txt", ios::out | ios::trunc);
-  ofstream dataFile("vector.dat", ios::out | ios::trunc); // clears the content of the file to prevent duplication
+  ofstream textFile("vector.txt", ios::out | ios::trunc); // clears the content of the file to prevent duplication
+  ofstream dataFile("vector.dat", ios::out | ios::trunc);
 
   for(int i = 0; i < vect.size(); i++) {
     dataFile << vect[i].name << "," << vect[i].x << "," << vect[i].y;
-    //textFile << "Vector Name: " << vect[i].name;
+    textFile << "Vector Name: " << vect[i].name << " ( " << vect[i].x << ", " << vect[i].y << " )";
 
     if(i != (vect.size() - 1)) { // prevents empty lines from being added to file
-      //textFile << "\n";
+      textFile << "\n";
       dataFile << "\n";
     }
   }

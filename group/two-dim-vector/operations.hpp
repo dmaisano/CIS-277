@@ -57,7 +57,7 @@ void magnitude(VECTOR vector1) {
 
   magnitude = (vector1.x * vector1.x) + (vector1.y * vector1.y);
 
-  cout << "\nThe magnitude of vector " << vector1.name << " is: " << magnitude;
+  cout << "\nThe magnitude of vector " << vector1.name << " is: " << magnitude << "\n";
 }
 
 void performOperation(vector<VECTOR> vect) {

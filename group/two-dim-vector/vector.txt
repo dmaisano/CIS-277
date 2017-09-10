@@ -1,0 +1,6 @@
+Vector Name: vect1 ( 10, 5 )
+Vector Name: vect2 ( 7, 11 )
+Vector Name: vect3 ( 100.2, 25 )
+Vector Name: vect4 ( 47, 89.6 )
+Vector Name: vect5 ( 38, 74.5 )
+Vector Name: vect6 ( 25, 50 )
