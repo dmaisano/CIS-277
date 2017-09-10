@@ -21,3 +21,8 @@ int main() {
   
   return 0;
 }
+
+// the syntax on how to delete a vector
+
+// vectorName.erase( vectorName.begin() + elementNumber );
+
