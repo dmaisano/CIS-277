@@ -117,7 +117,7 @@ void scalarProduct(VECTOR vector1, VECTOR vector2) {
   v.x = (vector1.x * vector2.x);
   v.y = (vector1.y * vector2.y);
 
-  cout << "\nMultiplication of vectors " << vector1.name << " and " << vector2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
+  cout << "\Scalar product of vectors " << vector1.name << " and " << vector2.name << " is: " << v.x + v.y << "\n";
 }
 
 void magnitude(VECTOR vector1) {
