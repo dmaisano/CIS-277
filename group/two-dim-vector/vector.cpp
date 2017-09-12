@@ -5,10 +5,12 @@
 #include <vector> // vector<TYPE> var
 using namespace std;
 
-struct VECTOR {
+struct VECTOR { // declaration of the VECTOR structure type
   string name; // vector name
   double x, y; // 2d values of vector
 };
+
+// function prototypes
 
 void performOperation(vector<VECTOR>);
 VECTOR selectSecondVector(const vector<VECTOR>, VECTOR, string); // select second vector that will be performed in the operation
@@ -35,22 +37,22 @@ int main() {
 }
 
 void menu() {
-  int menuChoice = -99;
+  int menuChoice = -99; // user option variable declaration
   
-  while(menuChoice != -1) {
+  while(menuChoice != -1) { // loops until user enters -1
     vector<VECTOR> vect;
     getVectors(vect);
     int size = vect.size();
 
     cout << "\nEnter -1 to exit the program.\n";
 
-    if(size > 0) {
+    if(size > 0) { // if there is at least one vector saved, prompt option
       cout << "Enter 0 to display vectors.\n";
     }
 
     cout << "Enter 1 to create a new vector.\n";
     
-    if(size > 0) {
+    if(size > 0) { // if there is at least one vector saved, prompt option(s)
       cout << "Enter 2 to delete a vector.\n";
       cout << "Enter 3 perform an operation on a vector.\n";
     }
@@ -80,7 +82,7 @@ void menu() {
   }
 }
 
-void addVector(VECTOR vector1, VECTOR vector2) {
+void addVector(VECTOR vector1, VECTOR vector2) { // adds two vectors
   VECTOR v;
 
   v.x = (vector1.x + vector2.x);
@@ -89,7 +91,7 @@ void addVector(VECTOR vector1, VECTOR vector2) {
   cout << "\nSum of vectors " << vector1.name << " and " << vector2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
 }
 
-void subVector(VECTOR vector1, VECTOR vector2) {
+void subVector(VECTOR vector1, VECTOR vector2) { // subtracts two vectors
   VECTOR v;
 
   v.x = (vector1.x - vector2.x);
@@ -98,7 +100,7 @@ void subVector(VECTOR vector1, VECTOR vector2) {
   cout << "\nSubtraction of vectors " << vector1.name << " and " << vector2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
 }
 
-void scalarMult(VECTOR vector1) {
+void scalarMult(VECTOR vector1) { // multiply vector by a scalar value
   VECTOR v;
   double choice;
 
@@ -111,7 +113,7 @@ void scalarMult(VECTOR vector1) {
   cout << "\nScalar multiplication of vector " << vector1.name << " times " << choice << " is: ( " << v.x  << ", " << v.y << " )\n";
 }
 
-void scalarProduct(VECTOR vector1, VECTOR vector2) {
+void scalarProduct(VECTOR vector1, VECTOR vector2) { // multiply two vectors, retunrs a 'double' value
   VECTOR v;
   
   v.x = (vector1.x * vector2.x);
@@ -120,7 +122,7 @@ void scalarProduct(VECTOR vector1, VECTOR vector2) {
   cout << "Scalar product of vectors " << vector1.name << " and " << vector2.name << " is: " << v.x + v.y << "\n";
 }
 
-void magnitude(VECTOR vector1) {
+void magnitude(VECTOR vector1) { // get the length of the vector
   double magnitude;
 
   magnitude = (vector1.x * vector1.x) + (vector1.y * vector1.y);
@@ -129,7 +131,7 @@ void magnitude(VECTOR vector1) {
 }
 
 
-void performOperation(vector<VECTOR> vect) {
+void performOperation(vector<VECTOR> vect) { // perform an operation on an existing vector in the container
   VECTOR vector1, vector2;
   int choice[2];
   
@@ -181,7 +183,7 @@ void performOperation(vector<VECTOR> vect) {
 }
 
 
-VECTOR selectSecondVector(const vector<VECTOR> vect, VECTOR vector1, string operation) {
+VECTOR selectSecondVector(const vector<VECTOR> vect, VECTOR vector1, string operation) { // select a second existing vector from the container for the necessary operations
   VECTOR vector2;
   int choice;
 
@@ -192,11 +194,11 @@ VECTOR selectSecondVector(const vector<VECTOR> vect, VECTOR vector1, string oper
   cin >> choice;
   vector2 = vect[choice];
 
-  return vector2;
+  return vector2; // returns the selected VECTOR type
 }
 
 
-void getVectors(vector<VECTOR>& vect) {
+void getVectors(vector<VECTOR>& vect) { // get the vectors from the data file
   string currentLine;
   ifstream dataFile("vector.dat");
 
@@ -220,7 +222,7 @@ void deleteVector(vector<VECTOR>& vect) {
   writeVector(vect);
 }
 
-void createVector(vector<VECTOR>& vect) {
+void createVector(vector<VECTOR>& vect) { // function to create a 2d vector
   VECTOR v;
 
   cout << "Enter the name for the vector: "; // assign the name to the vector
@@ -232,11 +234,11 @@ void createVector(vector<VECTOR>& vect) {
   cout << "Enter the second value of the vector: "; // assign second number to the vector;
   cin >> v.y;
 
-  vect.push_back(v);
+  vect.push_back(v); // append the created vector to the container
   writeVector(vect); // saves the vector to the file after creation
 }
 
-void splitVector(vector<VECTOR>& vect, string line) {
+void splitVector(vector<VECTOR>& vect, string line) { // split the current line "string" in the file
   VECTOR v;
   istringstream ss(line);
 
@@ -260,7 +262,7 @@ void splitVector(vector<VECTOR>& vect, string line) {
   }
 }
 
-void writeVector(const vector<VECTOR>& vect) {
+void writeVector(const vector<VECTOR>& vect) { // save the container of vectors to the text & data file
   ofstream textFile("vector.txt", ios::out | ios::trunc); // clears the content of the file to prevent duplication
   ofstream dataFile("vector.dat", ios::out | ios::trunc);
 
@@ -274,10 +276,11 @@ void writeVector(const vector<VECTOR>& vect) {
     }
   }
 
+  textFile.close();
   dataFile.close(); // close file when done
 }
 
-void printVector(const vector<VECTOR>& vect) {
+void printVector(const vector<VECTOR>& vect) { // display vectors to user
   for(int i = 0; i < vect.size(); i++) {
     cout << i << ". " << vect[i].name << ": ( " << vect[i].x << ", " << vect[i].y << " )\n";
   }
