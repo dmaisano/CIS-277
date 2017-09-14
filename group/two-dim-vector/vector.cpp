@@ -2,6 +2,7 @@
 #include <fstream> // file streams
 #include <string>
 #include <sstream> // stringstream
+#include <typeinfo>
 #include <vector> // vector<TYPE> var
 using namespace std;
 
@@ -24,6 +25,9 @@ void splitVector(vector<VECTOR>&, string);
 void createVector(vector<VECTOR>&);
 void writeVector(const vector<VECTOR>&);
 void printVector(const vector<VECTOR>&);
+
+void validate(int&);
+void validate(double&);
 
 void menu();
 
@@ -57,6 +61,29 @@ void menu() {
 
     cout << "\nEnter an option: ";
     cin >> menuChoice;
+    validate(menuChoice);
+
+    while(cin.fail() || menuChoice < -1 || (menuChoice > 3 && size < 0) ) {
+      cin.clear();
+      cin.ignore(10000,'\n');
+      cout << "Invalid Input! Try Again.\n";
+      cout << "\nEnter -1 to exit the program.\n";
+      
+      if(size > 0) {
+        cout << "Enter 0 to display vectors.\n";
+      }
+  
+      cout << "Enter 1 to create a new vector.\n";
+      
+      if(size > 0) {
+        cout << "Enter 2 to delete a vector.\n";
+        cout << "Enter 3 perform an operation on a vector.\n";
+      }
+  
+      cout << "\nEnter an option: ";
+      cin >> menuChoice;
+    }
+      
 
     cout << "\n";
 
@@ -139,7 +166,19 @@ void performOperation(vector<VECTOR> vect) {
   cout << "\nEnter choice: ";
   cin >> choice[0];
 
-  vector1 = vect[choice[0]];
+  while(cin.fail() || choice[0] < 0 || choice[0] > vect.size()) { // input validation for selecting the second vector
+    cin.clear();
+		cin.ignore(10000,'\n');
+    cout << "Invalid Input! Try again.\n\n";
+
+    cout << "Select a vector from the list below to perform an operation on.\n";
+    printVector(vect);
+  
+    cout << "\nEnter choice: ";
+    cin >> choice[0];
+  }
+
+  vector1 = vect[choice[0]]; // creates the first VECTOR based on the user's input
 
   cout << "\nSelect the operation you would like to perform on vector '" << vector1.name << "'\n";
   cout << "Enter 1 to add another vector to '" << vector1.name << "'\n";
@@ -151,13 +190,27 @@ void performOperation(vector<VECTOR> vect) {
   cout << "\nEnter choice: ";
   cin >> choice[1];
 
+  while(cin.fail() || choice[1] < 1 || choice[1] > 5) {
+    cin.clear();
+		cin.ignore(10000,'\n');
+    cout << "Invalid Input! Try again.\n\n";
+
+    cout << "\nSelect the operation you would like to perform on vector '" << vector1.name << "'\n";
+    cout << "Enter 1 to add another vector to '" << vector1.name << "'\n";
+    cout << "Enter 2 to subtract vector '" << vector1.name << "' by another vector\n";
+    cout << "Enter 3 to multiply vector '" << vector1.name << "' by a scalar.\n";
+    cout << "Enter 4 to multiply vector '" << vector1.name << "' by another vector\n";
+    cout << "Enter 5 to get the magnitude of vector '" << vector1.name << "'\n";
+  }
+
+
   if(choice[1] == 1) {
-    vector2 = selectSecondVector(vect, vector1, "add");
+    vector2 = selectSecondVector(vect, vector1, "add"); // selects a second vector
     addVector(vector1,vector2);
   }
 
   else if(choice[1] == 2) {
-    vector2 = selectSecondVector(vect, vector1, "subtract");
+    vector2 = selectSecondVector(vect, vector1, "subtract"); // selects a second vector
     subVector(vector1,vector2);
   }
 
@@ -166,7 +219,7 @@ void performOperation(vector<VECTOR> vect) {
   }
   
   else if(choice[1] == 4) {
-    vector2 = selectSecondVector(vect, vector1, "multiply");
+    vector2 = selectSecondVector(vect, vector1, "multiply"); // selects a second vector
     scalarProduct(vector1,vector2);
   }
 
@@ -175,7 +228,7 @@ void performOperation(vector<VECTOR> vect) {
   }
 
   else {
-    cout << "Invalid choice.\n";
+    cout << "Invalid Input! Try again.\n";
     performOperation(vect);
   }
 }
@@ -190,6 +243,19 @@ VECTOR selectSecondVector(const vector<VECTOR> vect, VECTOR vector1, string oper
 
   cout << "\nEnter choice: ";
   cin >> choice;
+
+  while(cin.fail() || choice < 0 || choice > vect.size()) {
+    cin.clear();
+		cin.ignore(10000,'\n');
+    cout << "Invalid Input! Try again.\n\n";
+
+    cout << "Select a vector from the list below that you would like to remove.\n";
+    printVector(vect);
+  
+    cout << "\nEnter choice: ";
+    cin >> choice;
+  }
+
   vector2 = vect[choice];
 
   return vector2;
@@ -216,6 +282,18 @@ void deleteVector(vector<VECTOR>& vect) {
   cout << "\nEnter choice: ";
   cin >> choice;
 
+  while(cin.fail() || choice < 0 || choice > vect.size()) {
+    cin.clear();
+		cin.ignore(10000,'\n');
+    cout << "Invalid Input! Try again.\n\n";
+
+    cout << "Select a vector from the list below that you would like to remove.\n";
+    printVector(vect);
+  
+    cout << "\nEnter choice: ";
+    cin >> choice;
+  }
+
   vect.erase(vect.begin()+choice);
   writeVector(vect);
 }
@@ -228,6 +306,7 @@ void createVector(vector<VECTOR>& vect) {
 
   cout << "Enter the first value of the vector: "; // assign first number to the vector
   cin >> v.x;
+  validate(v.x);
 
   cout << "Enter the second value of the vector: "; // assign second number to the vector;
   cin >> v.y;
@@ -282,3 +361,24 @@ void printVector(const vector<VECTOR>& vect) {
     cout << i << ". " << vect[i].name << ": ( " << vect[i].x << ", " << vect[i].y << " )\n";
   }
 }
+
+void validate(int& input) {
+  int choice = input;
+
+  while(typeid(choice) == typeid(int)) { // runs while input is not of type int
+    cout << "Invalid Input! Try again.\n\n";
+
+    cout << "\nEnter choice: ";
+    cin >> choice;
+  }
+}
+
+void validate(double& input) {
+  while(typeid(input) == typeid(double)) { // runs while input is not of type double
+    cout << "Invalid Input! Try again.\n\n";
+
+    cout << "\nEnter choice: ";
+    cin >> input;
+  }
+}
+
