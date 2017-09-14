@@ -85,7 +85,7 @@ void menu() {
     cout << "\nEnter an option: ";
     cin >> menuChoice;
 
-    while(cin.fail() || menuChoice < -1 || (menuChoice > 3 && size < 0) ) {
+    while(cin.fail() || menuChoice < -1 || menuChoice > 3) {
       cin.clear();
       cin.ignore(10000,'\n');
       cout << "Invalid Input! Try Again.\n";
