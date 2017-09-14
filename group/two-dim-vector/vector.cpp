@@ -1,11 +1,12 @@
 #include <iostream>
 #include <fstream> // file streams
+#include <cmath> // abs, sqrt, pow
 #include <string>
 #include <sstream> // stringstream
-#include <typeinfo>
 #include <vector> // vector<TYPE> var
 using namespace std;
 
+// template for the abstract data type 'VECTOR'
 struct VECTOR {
   string name; // vector name
   double x, y; // 2d values of vector
@@ -26,18 +27,26 @@ void createVector(vector<VECTOR>&);
 void writeVector(const vector<VECTOR>&);
 void printVector(const vector<VECTOR>&);
 
-void validate(int&);
-void validate(double&);
+double validateDouble(string);
 
 void menu();
 
 int main() {
-  menu(); // best main function 10/10
-  // so clean, much wow, very amaze
+  menu();
   
   return 0;
 }
 
+
+/*********************************************************
+Menu Function: provides user with menu to create, display,
+delete, or perform operations on vector(s)
+Parameters: none
+Called by: main function
+Calls: get vector, write vector, print vector,
+create vector, delete vector, perform operations
+Returns: none
+**********************************************************/
 void menu() {
   int menuChoice = -99;
   
@@ -61,7 +70,6 @@ void menu() {
 
     cout << "\nEnter an option: ";
     cin >> menuChoice;
-    validate(menuChoice);
 
     while(cin.fail() || menuChoice < -1 || (menuChoice > 3 && size < 0) ) {
       cin.clear();
@@ -84,7 +92,6 @@ void menu() {
       cin >> menuChoice;
     }
       
-
     cout << "\n";
 
     if(menuChoice == -1) { // exit
@@ -107,6 +114,14 @@ void menu() {
   }
 }
 
+
+/*************************************************
+Add Vector Function: Calculates sum of two vectors
+Called by: performOperation() function
+Calls: none
+Parameters: structure vector 1, structure vector 2
+Returns: none
+*************************************************/
 void addVector(VECTOR vector1, VECTOR vector2) {
   VECTOR v;
 
@@ -116,6 +131,14 @@ void addVector(VECTOR vector1, VECTOR vector2) {
   cout << "\nSum of vectors " << vector1.name << " and " << vector2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
 }
 
+
+/*****************************************************************
+Subtract Vector Function: Subtracts one vector from another vector
+Parameters: structure vector 1, structure vector 2
+Called by: performOperation() function
+Calls: none
+Returns: none
+*****************************************************************/
 void subVector(VECTOR vector1, VECTOR vector2) {
   VECTOR v;
 
@@ -125,6 +148,14 @@ void subVector(VECTOR vector1, VECTOR vector2) {
   cout << "\nSubtraction of vectors " << vector1.name << " and " << vector2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
 }
 
+
+/****************************************************************************
+Scalar Multiple Function: Multiplies the two values of the vector by a scalar
+Parameters: structure vector 1
+Called by: performOperation() function
+Calls: none
+Returns: none
+****************************************************************************/
 void scalarMult(VECTOR vector1) {
   VECTOR v;
   double choice;
@@ -138,6 +169,14 @@ void scalarMult(VECTOR vector1) {
   cout << "\nScalar multiplication of vector " << vector1.name << " times " << choice << " is: ( " << v.x  << ", " << v.y << " )\n";
 }
 
+
+/****************************************************************
+Scalar Product Function: Calculates scalar product of two vectors
+Parameters: structure vector 1, structure vector 2
+Called by: performOperation() function
+Calls: none
+Returns: none
+****************************************************************/
 void scalarProduct(VECTOR vector1, VECTOR vector2) {
   VECTOR v;
   
@@ -147,15 +186,31 @@ void scalarProduct(VECTOR vector1, VECTOR vector2) {
   cout << "Scalar product of vectors " << vector1.name << " and " << vector2.name << " is: " << v.x + v.y << "\n";
 }
 
+
+/***********************************************************
+ Magnitude Function: Calculates magnitude/length of a vector
+ Parameters: structure vector 1
+ Called by: performOperation function
+ Calls: none
+ Returns: none
+ **********************************************************/
 void magnitude(VECTOR vector1) {
   double magnitude;
 
-  magnitude = (vector1.x * vector1.x) + (vector1.y * vector1.y);
+  magnitude = abs( sqrt( pow(vector1.x, 2) + pow(vector1.y, 2) ) );
 
   cout << "\nThe magnitude of vector " << vector1.name << " is: " << magnitude << "\n";
 }
 
 
+/******************************************************************************************************************
+ Perform Operation Function: Sub-Menu function that allows user to choose desired operation to perform on vector(s)
+ Parameters: vector data type
+ Called by: menu() function
+ Calls: print vector function, select second vector function, add vector function, subtract vector function, 
+ scalar multiple function, scalar product function, magnitude function, perform operation function
+ Returns: none
+ *****************************************************************************************************************/
 void performOperation(vector<VECTOR> vect) {
   VECTOR vector1, vector2;
   int choice[2];
@@ -234,6 +289,13 @@ void performOperation(vector<VECTOR> vect) {
 }
 
 
+/*************************************************************************
+Select Second Vector Function: selects second vector to perform operations
+Parameters: constant vector data type, structure vector 1, string
+Called by: perform operation function
+Calls: print vector function
+Returns: vector
+*************************************************************************/
 VECTOR selectSecondVector(const vector<VECTOR> vect, VECTOR vector1, string operation) {
   VECTOR vector2;
   int choice;
@@ -298,6 +360,14 @@ void deleteVector(vector<VECTOR>& vect) {
   writeVector(vect);
 }
 
+
+/*********************************************************************
+Create Vector Function: Creates a VECTOR data type based on user input
+Parameters: vector data type
+Called by: menu function
+Calls: writeVector() function, validateDouble() function
+Returns: none
+**********************************************************************/
 void createVector(vector<VECTOR>& vect) {
   VECTOR v;
 
@@ -305,16 +375,23 @@ void createVector(vector<VECTOR>& vect) {
   cin >> v.name;
 
   cout << "Enter the first value of the vector: "; // assign first number to the vector
-  cin >> v.x;
-  validate(v.x);
+  v.x = validateDouble("Enter the first value of the vector: ");
 
   cout << "Enter the second value of the vector: "; // assign second number to the vector;
-  cin >> v.y;
+  v.y = validateDouble("Enter the second value of the vector: ");
 
   vect.push_back(v);
   writeVector(vect); // saves the vector to the file after creation
 }
 
+
+/**************************************************************************************
+Split Vector Function: Splits the current line of the data file into readable string(s)
+Parameters: vector data type, string
+Called by: getVectors() function
+Calls: none
+Returns: none
+**************************************************************************************/
 void splitVector(vector<VECTOR>& vect, string line) {
   VECTOR v;
   istringstream ss(line);
@@ -339,6 +416,14 @@ void splitVector(vector<VECTOR>& vect, string line) {
   }
 }
 
+
+/***********************************************************************
+Write Vector Function: Writes the existing vector data to file(s)
+Parameters: constant VECTOR data type
+Called by: createVector() function, deleteVector() function, menu() function
+Calls: none
+Returns: none
+***********************************************************************/
 void writeVector(const vector<VECTOR>& vect) {
   ofstream textFile("vector.txt", ios::out | ios::trunc); // clears the content of the file to prevent duplication
   ofstream dataFile("vector.dat", ios::out | ios::trunc);
@@ -356,29 +441,43 @@ void writeVector(const vector<VECTOR>& vect) {
   dataFile.close(); // close file when done
 }
 
+
+/****************************************************************
+Print File Function: Prints vector data to console
+Parameters: constant vector data type
+Called by: deleteVector() function, selectSecondVector() function,
+perform operation function, menu function
+Calls: none
+Returns: none
+****************************************************************/
 void printVector(const vector<VECTOR>& vect) {
   for(int i = 0; i < vect.size(); i++) {
     cout << i << ". " << vect[i].name << ": ( " << vect[i].x << ", " << vect[i].y << " )\n";
   }
 }
 
-void validate(int& input) {
-  int choice = input;
 
-  while(typeid(choice) == typeid(int)) { // runs while input is not of type int
-    cout << "Invalid Input! Try again.\n\n";
+/***************************************************************************************
+Vadlidate Double Function: Input validation for user input that must be of type 'double'
+This includes error checking so the user can't type a invalid number
+Parameters: string that contains the phrase to display to the user
+Called by: createVector()
+Calls: none
+Returns: Valid number from user
+***************************************************************************************/
+double validateDouble(string phrase) {
+  double input;
+  cin >> input;
 
-    cout << "\nEnter choice: ";
-    cin >> choice;
-  }
-}
+  while(cin.fail()) {
+    cin.clear();
+    cin.ignore(10000,'\n');
+    cout << "Invalid Input! Try Again.\n";
 
-void validate(double& input) {
-  while(typeid(input) == typeid(double)) { // runs while input is not of type double
-    cout << "Invalid Input! Try again.\n\n";
-
-    cout << "\nEnter choice: ";
+    cout << phrase;
+    cout << "\nEnter an option: ";
     cin >> input;
   }
-}
 
+  return input;
+}
