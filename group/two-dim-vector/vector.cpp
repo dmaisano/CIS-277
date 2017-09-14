@@ -1,3 +1,17 @@
+//===================================
+//== Domenico Maisano ===============
+//== Samuel Athanasenas =============
+//== Joseph Goffredo ================
+//== Hannah Benjamin ================
+//== CIS-277-601HY ==================
+//== Fall 2017 ======================
+//===================================
+/*
+ 
+ ADT Vector Program
+ 
+*/
+
 #include <iostream>
 #include <fstream> // file streams
 #include <cmath> // abs, sqrt, pow
