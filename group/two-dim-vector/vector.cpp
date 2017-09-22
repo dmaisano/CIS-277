@@ -325,7 +325,7 @@ VECTOR selectSecondVector(const vector<VECTOR> vect, VECTOR vector1, string oper
 		cin.ignore(10000,'\n');
     cout << "Invalid Input! Try again.\n\n";
 
-    cout << "Select a vector from the list below that you would like to remove.\n";
+    cout << "Select from the list below the second vector to " << operation << " to vector " << vector1.name << ".\n";
     printVector(vect);
   
     cout << "\nEnter choice: ";
