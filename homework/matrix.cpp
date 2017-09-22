@@ -53,9 +53,9 @@ void menu() {
   int menuChoice = -99;
   
   while(menuChoice != -1) {
-    vector<MATRIX> vect;
-    getVectors(vect);
-    int size = vect.size();
+    vector<MATRIX> matrix;
+    getMatrix(matrix);
+    int size = matrix.size();
 
     cout << "\nEnter -1 to exit the program.\n";
 
@@ -97,21 +97,21 @@ void menu() {
     cout << "\n";
 
     if(menuChoice == -1) { // exit
-      writeVector(vect);
+      writeVector(matrix);
       continue;
     }
 
     else if(menuChoice == 0 && size > 0) // print vectors to console
-      printVector(vect);
+      printVector(matrix);
     
     else if(menuChoice == 1)
-      createVector(vect);
+      createMatrix(matrix);
 
     else if(menuChoice == 2 && size > 0)
-      deleteVector(vect);
+      deleteVector(matrix);
     
     else if(menuChoice == 3 && size > 0)
-      performOperation(vect);
+      performOperation(matrix);
 
   }
 }
@@ -127,10 +127,10 @@ Returns: none
 void addVector(MATRIX matrix1, MATRIX matrix2) {
   MATRIX m;
 
-  v.x = (vector1.x + vector2.x);
-  v.y = (vector1.y + vector2.y);
+  //v.x = (matrix1.x + matrix2.x);
+  //v.y = (matrix1.y + matrix2.y);
 
-  cout << "\nSum of vectors " << vector1.name << " and " << vector2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
+  //cout << "\nSum of vectors " << matrix1.name << " and " << matrix2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
 }
 
 
@@ -141,13 +141,13 @@ Called by: performOperation() function
 Calls: none
 Returns: none
 *****************************************************************/
-void subVector(MATRIX vector1, MATRIX vector2) {
+void subVector(MATRIX matrix1, MATRIX matrix2) {
   MATRIX v;
 
-  v.x = (vector1.x - vector2.x);
-  v.y = (vector1.y - vector2.y);
+  //v.x = (matrix1.x - matrix2.x);
+  //v.y = (matrix1.y - matrix2.y);
 
-  cout << "\nSubtraction of vectors " << vector1.name << " and " << vector2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
+  //cout << "\nSubtraction of vectors " << matrix1.name << " and " << matrix2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
 }
 
 
@@ -158,17 +158,17 @@ Called by: performOperation() function
 Calls: none
 Returns: none
 ****************************************************************************/
-void scalarMult(MATRIX vector1) {
+void scalarMult(MATRIX matrix1) {
   MATRIX v;
   double choice;
 
-  cout << "\nEnter a scalar value to multiply to vector " << vector1.name << ": ";
+  cout << "\nEnter a scalar value to multiply to vector " << matrix1.name << ": ";
   cin >> choice;
   
-  v.x = (vector1.x * choice);
-  v.y = (vector1.y * choice);
+  v.x = (matrix1.x * choice);
+  v.y = (matrix1.y * choice);
 
-  cout << "\nScalar multiplication of vector " << vector1.name << " times " << choice << " is: ( " << v.x  << ", " << v.y << " )\n";
+  cout << "\nScalar multiplication of vector " << matrix1.name << " times " << choice << " is: ( " << v.x  << ", " << v.y << " )\n";
 }
 
 
@@ -179,13 +179,13 @@ Called by: performOperation() function
 Calls: none
 Returns: none
 ****************************************************************/
-void scalarProduct(MATRIX vector1, MATRIX vector2) {
+void scalarProduct(MATRIX matrix1, MATRIX matrix2) {
   MATRIX v;
   
-  v.x = (vector1.x * vector2.x);
-  v.y = (vector1.y * vector2.y);
+  v.x = (matrix1.x * matrix2.x);
+  v.y = (matrix1.y * matrix2.y);
 
-  cout << "Scalar product of vectors " << vector1.name << " and " << vector2.name << " is: " << v.x + v.y << "\n";
+  cout << "Scalar product of vectors " << matrix1.name << " and " << matrix2.name << " is: " << v.x + v.y << "\n";
 }
 
 
@@ -196,13 +196,15 @@ void scalarProduct(MATRIX vector1, MATRIX vector2) {
  Calls: none
  Returns: none
  **********************************************************/
+/*
 void magnitude(MATRIX m) {
   double magnitude;
 
-  magnitude = abs( sqrt( pow(m.x, 2) + pow(vector1.y, 2) ) );
+  magnitude = abs( sqrt( pow(m.x, 2) + pow(matrix1.y, 2) ) );
 
-  cout << "\nThe magnitude of vector " << vector1.name << " is: " << magnitude << "\n";
+  cout << "\nThe magnitude of vector " << matrix1.name << " is: " << magnitude << "\n";
 }
+*/
 
 
 /******************************************************************************************************************
@@ -213,36 +215,36 @@ void magnitude(MATRIX m) {
  scalar multiple function, scalar product function, magnitude function, perform operation function
  Returns: none
  *****************************************************************************************************************/
-void performOperation(vector<MATRIX> vect) {
-  MATRIX m1, m2;
+void performOperation(vector<MATRIX> matrix) {
+  MATRIX matrix1, matrix2;
   int choice[2];
   
   cout << "Select a vector from the list below to perform an operation on.\n";
-  printVector(vect);
+  printVector(matrix);
 
   cout << "\nEnter choice: ";
   cin >> choice[0];
 
-  while(cin.fail() || choice[0] < 0 || choice[0] > vect.size()) { // input validation for selecting the second vector
+  while(cin.fail() || choice[0] < 0 || choice[0] > matrix.size()) { // input validation for selecting the second vector
     cin.clear();
 		cin.ignore(10000,'\n');
     cout << "Invalid Input! Try again.\n\n";
 
     cout << "Select a vector from the list below to perform an operation on.\n";
-    printVector(vect);
+    printVector(matrix);
   
     cout << "\nEnter choice: ";
     cin >> choice[0];
   }
 
-  vector1 = vect[choice[0]]; // creates the first MATRIX based on the user's input
+  matrix1 = matrix[choice[0]]; // creates the first MATRIX based on the user's input
 
-  cout << "\nSelect the operation you would like to perform on vector '" << vector1.name << "'\n";
-  cout << "Enter 1 to add another vector to '" << vector1.name << "'\n";
-  cout << "Enter 2 to subtract vector '" << vector1.name << "' by another vector\n";
-  cout << "Enter 3 to multiply vector '" << vector1.name << "' by a scalar.\n";
-  cout << "Enter 4 to multiply vector '" << vector1.name << "' by another vector\n";
-  cout << "Enter 5 to get the magnitude of vector '" << vector1.name << "'\n";
+  cout << "\nSelect the operation you would like to perform on vector '" << matrix1.name << "'\n";
+  cout << "Enter 1 to add another vector to '" << matrix1.name << "'\n";
+  cout << "Enter 2 to subtract vector '" << matrix1.name << "' by another vector\n";
+  cout << "Enter 3 to multiply vector '" << matrix1.name << "' by a scalar.\n";
+  cout << "Enter 4 to multiply vector '" << matrix1.name << "' by another vector\n";
+  cout << "Enter 5 to get the magnitude of vector '" << matrix1.name << "'\n";
 
   cout << "\nEnter choice: ";
   cin >> choice[1];
@@ -252,41 +254,41 @@ void performOperation(vector<MATRIX> vect) {
 		cin.ignore(10000,'\n');
     cout << "Invalid Input! Try again.\n\n";
 
-    cout << "\nSelect the operation you would like to perform on vector '" << vector1.name << "'\n";
-    cout << "Enter 1 to add another vector to '" << vector1.name << "'\n";
-    cout << "Enter 2 to subtract vector '" << vector1.name << "' by another vector\n";
-    cout << "Enter 3 to multiply vector '" << vector1.name << "' by a scalar.\n";
-    cout << "Enter 4 to multiply vector '" << vector1.name << "' by another vector\n";
-    cout << "Enter 5 to get the magnitude of vector '" << vector1.name << "'\n";
+    cout << "\nSelect the operation you would like to perform on vector '" << matrix1.name << "'\n";
+    cout << "Enter 1 to add another vector to '" << matrix1.name << "'\n";
+    cout << "Enter 2 to subtract vector '" << matrix1.name << "' by another vector\n";
+    cout << "Enter 3 to multiply vector '" << matrix1.name << "' by a scalar.\n";
+    cout << "Enter 4 to multiply vector '" << matrix1.name << "' by another vector\n";
+    cout << "Enter 5 to get the magnitude of vector '" << matrix1.name << "'\n";
   }
 
 
   if(choice[1] == 1) {
-    vector2 = selectSecondVector(vect, vector1, "add"); // selects a second vector
-    addVector(vector1,vector2);
+    matrix2 = selectSecondVector(matrix, matrix1, "add"); // selects a second vector
+    addVector(matrix1,matrix2);
   }
 
   else if(choice[1] == 2) {
-    vector2 = selectSecondVector(vect, vector1, "subtract"); // selects a second vector
-    subVector(vector1,vector2);
+    matrix2 = selectSecondVector(matrix, matrix1, "subtract"); // selects a second vector
+    subVector(matrix1,matrix2);
   }
 
   else if(choice[1] == 3) {
-    scalarMult(vector1);
+    scalarMult(matrix1);
   }
   
   else if(choice[1] == 4) {
-    vector2 = selectSecondVector(vect, vector1, "multiply"); // selects a second vector
-    scalarProduct(vector1,vector2);
+    matrix2 = selectSecondVector(matrix, matrix1, "multiply"); // selects a second vector
+    scalarProduct(matrix1,matrix2);
   }
 
   else if(choice[1] == 5) {
-    magnitude(vector1);
+    magnitude(matrix1);
   }
 
   else {
     cout << "Invalid Input! Try again.\n";
-    performOperation(vect);
+    performOperation(matrix);
   }
 }
 
@@ -298,31 +300,31 @@ Called by: perform operation function
 Calls: print vector function
 Returns: vector
 *************************************************************************/
-MATRIX selectSecondVector(const vector<MATRIX> vect, MATRIX m1, string operation) {
-  MATRIX m2;
+MATRIX selectSecondVector(const vector<MATRIX> matrix, MATRIX matrix1, string operation) {
+  MATRIX matrix2;
   int choice;
 
-  cout << "\nSelect from the list below the second vector to " << operation << " to vector " << m1.name << ".\n";
-  printVector(vect);
+  cout << "\nSelect from the list below the second vector to " << operation << " to vector " << matrix1.name << ".\n";
+  printVector(matrix);
 
   cout << "\nEnter choice: ";
   cin >> choice;
 
-  while(cin.fail() || choice < 0 || choice > vect.size()) {
+  while(cin.fail() || choice < 0 || choice > matrix.size()) {
     cin.clear();
 		cin.ignore(10000,'\n');
     cout << "Invalid Input! Try again.\n\n";
 
-    cout << "Select from the list below the second vector to " << operation << " to vector " << m1.name << ".\n";
-    printVector(vect);
+    cout << "Select from the list below the second vector to " << operation << " to vector " << matrix1.name << ".\n";
+    printVector(matrix);
   
     cout << "\nEnter choice: ";
     cin >> choice;
   }
 
-  m2 = vect[choice];
+  matrix2 = matrix[choice];
 
-  return m2;
+  return matrix2;
 }
 
 
@@ -337,29 +339,29 @@ void getMatrix(vector<MATRIX>& matrix) {
   dataFile.close(); // close file when done
 }
 
-void deleteVector(vector<MATRIX>& vect) {
+void deleteVector(vector<MATRIX>& matrix) {
   int choice;
 
   cout << "Select a vector from the list below that you would like to remove.\n";
-  printVector(vect);
+  printVector(matrix);
 
   cout << "\nEnter choice: ";
   cin >> choice;
 
-  while(cin.fail() || choice < 0 || choice > vect.size()) {
+  while(cin.fail() || choice < 0 || choice > matrix.size()) {
     cin.clear();
 		cin.ignore(10000,'\n');
     cout << "Invalid Input! Try again.\n\n";
 
     cout << "Select a vector from the list below that you would like to remove.\n";
-    printVector(vect);
+    printVector(matrix);
   
     cout << "\nEnter choice: ";
     cin >> choice;
   }
 
-  vect.erase(vect.begin()+choice);
-  writeVector(vect);
+  matrix.erase(matrix.begin()+choice);
+  writeVector(matrix);
 }
 
 
@@ -400,7 +402,7 @@ Called by: getVectors() function
 Calls: none
 Returns: none
 **************************************************************************************/
-void splitVector(vector<MATRIX>& vect, string line) {
+void splitVector(vector<MATRIX>& matrix, string line) {
   MATRIX v;
   istringstream ss(line);
 
@@ -419,7 +421,7 @@ void splitVector(vector<MATRIX>& vect, string line) {
       
     else if(i == 2) {
       istringstream(item) >> v.y;
-      vect.push_back(v);
+      matrix.push_back(v);
     }
   }
 }
@@ -432,15 +434,15 @@ Called by: createVector() function, deleteVector() function, menu() function
 Calls: none
 Returns: none
 ***********************************************************************/
-void writeVector(const vector<MATRIX>& vect) {
+void writeVector(const vector<MATRIX>& matrix) {
   ofstream textFile("vector.txt", ios::out | ios::trunc); // clears the content of the file to prevent duplication
   ofstream dataFile("vector.dat", ios::out | ios::trunc);
 
-  for(int i = 0; i < vect.size(); i++) {
-    dataFile << vect[i].name << "," << vect[i].x << "," << vect[i].y;
-    textFile << "Vector Name: " << vect[i].name << " ( " << vect[i].x << ", " << vect[i].y << " )";
+  for(int i = 0; i < matrix.size(); i++) {
+    dataFile << matrix[i].name << "," << matrix[i].x << "," << matrix[i].y;
+    textFile << "Vector Name: " << matrix[i].name << " ( " << matrix[i].x << ", " << matrix[i].y << " )";
 
-    if(i != (vect.size() - 1)) { // prevents empty lines from being added to file
+    if(i != (matrix.size() - 1)) { // prevents empty lines from being added to file
       textFile << "\n";
       dataFile << "\n";
     }
@@ -458,9 +460,9 @@ perform operation function, menu function
 Calls: none
 Returns: none
 ****************************************************************/
-void printVector(const vector<MATRIX>& vect) {
-  for(int i = 0; i < vect.size(); i++) {
-    cout << i << ". " << vect[i].name << ": ( " << vect[i].x << ", " << vect[i].y << " )\n";
+void printVector(const vector<MATRIX>& matrix) {
+  for(int i = 0; i < matrix.size(); i++) {
+    cout << i << ". " << matrix[i].name << ": ( " << matrix[i].x << ", " << matrix[i].y << " )\n";
   }
 }
 
