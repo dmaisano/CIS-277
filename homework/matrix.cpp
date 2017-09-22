@@ -2,14 +2,13 @@
 #include <fstream> // file streams
 #include <cmath> // abs, sqrt, pow
 #include <string>
-#include <sstream> // stringstream
 #include <vector> // vector<TYPE> var
 using namespace std;
 
 // template for the abstract data type 'MATRIX'
 struct MATRIX {
   string name;
-  double a11, a12, a21, a22; 
+  double arr[2][2];
   // 2x2 matrix
   // [a b]
   // [c d]
@@ -31,7 +30,6 @@ void writeMatrix(const vector<MATRIX>&);
 void printMatrix(const vector<MATRIX>&);
 
 double validateDouble(string);
-
 
 int main() {
   menu();
@@ -97,7 +95,7 @@ void menu() {
     cout << "\n";
 
     if(menuChoice == -1) { // exit
-      writeVector(matrix);
+      writeMatrix(matrix);
       continue;
     }
 
@@ -127,7 +125,7 @@ Returns: none
 void addVector(MATRIX matrix1, MATRIX matrix2) {
   MATRIX m;
 
-  //v.x = (matrix1.x + matrix2.x);
+  //matrix1.arr[0][0] = (matrix1.x + matrix2.x);
   //v.y = (matrix1.y + matrix2.y);
 
   //cout << "\nSum of vectors " << matrix1.name << " and " << matrix2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
@@ -342,8 +340,8 @@ void getMatrix(vector<MATRIX>& matrix) {
 void deleteVector(vector<MATRIX>& matrix) {
   int choice;
 
-  cout << "Select a vector from the list below that you would like to remove.\n";
-  printVector(matrix);
+  cout << "Select a matrix from the list below that you would like to remove.\n";
+  printMatrix(matrix);
 
   cout << "\nEnter choice: ";
   cin >> choice;
@@ -353,15 +351,15 @@ void deleteVector(vector<MATRIX>& matrix) {
 		cin.ignore(10000,'\n');
     cout << "Invalid Input! Try again.\n\n";
 
-    cout << "Select a vector from the list below that you would like to remove.\n";
-    printVector(matrix);
+    cout << "Select a matrix from the list below that you would like to remove.\n";
+    printMatrix(matrix);
   
     cout << "\nEnter choice: ";
     cin >> choice;
   }
 
   matrix.erase(matrix.begin()+choice);
-  writeVector(matrix);
+  writeMatrix(matrix);
 }
 
 
@@ -378,20 +376,20 @@ void createMatrix(vector<MATRIX>& matrix) {
   cout << "Enter the name for the matrix: "; // assign the name to the vector
   cin >> m.name;
 
-  cout << "Enter the top-left value of the vector: "; // assign first number to the vector
-  m.a11 = validateDouble("Enter the top-left value of the vector: ");
+  cout << "Enter the value for row 1 col 1: "; // assign first number to the vector
+  m.arr[0][0] = validateDouble("Enter the value for row 1 col 1: ");
 
-  cout << "Enter the top-right value of the vector: "; // assign first number to the vector
-  m.a12 = validateDouble("Enter the top-right value of the vector: ");
+  cout << "Enter the value for row 1 col 2: "; // assign first number to the vector
+  m.arr[0][1] = validateDouble("Enter the value for row 1 col 2: ");
 
-  cout << "Enter the bottom-left value of the vector: "; // assign first number to the vector
-  m.a21 = validateDouble("Enter the bottom-left value of the vector: ");
+  cout << "Enter the value for row 2 col 1: "; // assign first number to the vector
+  m.arr[1][0] = validateDouble("Enter the value for row 2 col 1: ");
 
-  cout << "Enter the bottom-right value of the vector: "; // assign first number to the vector
-  m.a22 = validateDouble("Enter the bottom-right value of the vector: ");
+  cout << "Enter the value for row 2 col 2: "; // assign first number to the vector
+  m.arr[1][1] = validateDouble("Enter the value for row 2 col 2: ");
 
   matrix.push_back(m);
-  writeVector(matrix); // saves the vector to the file after creation
+  writeMatrix(matrix); // saves the vector to the file after creation
 }
 
 
@@ -434,16 +432,13 @@ Called by: createVector() function, deleteVector() function, menu() function
 Calls: none
 Returns: none
 ***********************************************************************/
-void writeVector(const vector<MATRIX>& matrix) {
-  ofstream textFile("vector.txt", ios::out | ios::trunc); // clears the content of the file to prevent duplication
-  ofstream dataFile("vector.dat", ios::out | ios::trunc);
+void writeMatrix(const vector<MATRIX>& matrix) { 
+  ofstream dataFile("vector.dat", ios::out | ios::trunc); // clears the content of the file to prevent duplication
 
   for(int i = 0; i < matrix.size(); i++) {
-    dataFile << matrix[i].name << "," << matrix[i].x << "," << matrix[i].y;
-    textFile << "Vector Name: " << matrix[i].name << " ( " << matrix[i].x << ", " << matrix[i].y << " )";
+    dataFile << matrix[i].name << "," << matrix[i].arr[0][0] << "," << matrix[i].arr[0][1] << "," << matrix[i].arr[1][0] << "," << matrix[i].arr[1][1];
 
-    if(i != (matrix.size() - 1)) { // prevents empty lines from being added to file
-      textFile << "\n";
+    if(i != (matrix.size() - 1)) { // adds newline at end of the current line
       dataFile << "\n";
     }
   }
@@ -462,7 +457,7 @@ Returns: none
 ****************************************************************/
 void printVector(const vector<MATRIX>& matrix) {
   for(int i = 0; i < matrix.size(); i++) {
-    cout << i << ". " << matrix[i].name << ": ( " << matrix[i].x << ", " << matrix[i].y << " )\n";
+    cout << i << ". " << matrix[i].name << ":\n[ " << matrix[i].arr[0][0] << "  " << matrix[i].arr[0][1] << " ]\n[ " << matrix[i].arr[1][0] << "  " << matrix[i].arr[1][1] << " ]\n";
   }
 }
 

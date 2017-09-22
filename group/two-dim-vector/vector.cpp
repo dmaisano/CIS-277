@@ -235,7 +235,7 @@ void performOperation(vector<VECTOR> vect) {
   cout << "\nEnter choice: ";
   cin >> choice[0];
 
-  while(cin.fail() || choice[0] < 0 || choice[0] > vect.size()) { // input validation for selecting the second vector
+  while(cin.fail() || choice[0] < 0 || choice[0] > (vect.size() -1)) { // input validation for selecting the second vector
     cin.clear();
 		cin.ignore(10000,'\n');
     cout << "Invalid Input! Try again.\n\n";
@@ -358,7 +358,7 @@ void deleteVector(vector<VECTOR>& vect) {
   cout << "\nEnter choice: ";
   cin >> choice;
 
-  while(cin.fail() || choice < 0 || choice > vect.size()) {
+  while(cin.fail() || choice < 0 || (choice > vect.size() -1) ) {
     cin.clear();
 		cin.ignore(10000,'\n');
     cout << "Invalid Input! Try again.\n\n";
