@@ -26,4 +26,11 @@ void createMatrix(vector<MATRIX>& matrix) {
   MATRIX m;
 
   cout << "Enter the name for the matrix: "; 
+  cin >> m.name;
+
+  for(int i = 0; i < 2; i++) {
+    for(int j = 0; j < 2; j++) {
+      cout << "Enter the value for row " << i << " column "
+    }
+  }
 }
