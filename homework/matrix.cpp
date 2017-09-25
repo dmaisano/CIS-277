@@ -1,6 +1,4 @@
 #include <iostream>
-#include <fstream> // file streams
-#include <cmath> // abs, sqrt, pow
 #include <string>
 #include <vector> // vector<TYPE> var
 using namespace std;
@@ -14,38 +12,44 @@ struct MATRIX {
   // [c d]
 };
 
+// Operations Functions
 void performOperation(vector<MATRIX>&);
 void selectMatrices(const vector<MATRIX>&, MATRIX*, int);
 void addMatrices(MATRIX, MATRIX); // adds the values of two VECTOR types
 void subMatrices(MATRIX, MATRIX);
-void scalarMult(MATRIX);
 void scalarProduct(MATRIX, MATRIX);
-void inverseMatrix(MATRIX);
+void scalarMult(MATRIX);
+void inverseMatrix(MATRIX, vector<MATRIX>&);
 
-void menu();
+// General Menu Functions
+void menu(vector<MATRIX>& matrices);
+void printMatrix(const MATRIX);
 void printMatrices(const vector<MATRIX>&);
 void createMatrix(vector<MATRIX>&);
 void deleteMatrix(vector<MATRIX>&);
-void menuOption(void (*)(), int&, int); // void (*)() == pointer to void function, ex. menu()
-void menuOption(void (*)(const vector<MATRIX>&, MATRIX*, int), int&, int);// overloaded to allow selectMatrices() to be passed as arg
-void menuOption(void (*)(vector<MATRIX>& matrices), int&, int); // overloaded to allow performOperation() to be passed as arg
-void validateMatrix(MATRIX&, int, int);
 
-void addMatrices(vector<MATRIX>&);
+// Input Validation Functions
+bool validateMenu(int&, int); // used for recursive input validation for a menu/sub-menu
+void validateMatrix(MATRIX&, int, int = 1);
+void validateScalar(void (*)(MATRIX, MATRIX), double&);
+
 
 int main() {
+  vector<MATRIX> matrices;
 
-  menu(); // fantastic use of a menu *claps*
+  menu(matrices); // fantastic use of a menu *claps*
 
   return 0;
 }
 
 
-void menu() {
-  vector<MATRIX> matrices;
-  int menuChoice = -999;
+void menu(vector<MATRIX>& matrices) {
+  int userInput = -999;
+  bool menuReturn;
+  // 0 = error raised
+  // 1 = no error
 
-  while(menuChoice != -1) {
+  while(userInput != -1) {
     int size = matrices.size();
 
     cout << "\nEnter -1 to exit the program.\n";
@@ -62,24 +66,27 @@ void menu() {
     }
 
     cout << "\nEnter an option: ";
-    menuOption(&menu, menuChoice, 4); // menu() must be passed as a reference!
-      
+    menuReturn = validateMenu(userInput, 4); // menu() must be passed as a reference!
+    if(menuReturn == false) {
+      menu(matrices);
+    }
+
     cout << "\n";
 
-    if(menuChoice == -1) { // exit
+    if(userInput == -1) { // exit
       continue;
     }
 
-    else if(menuChoice == 0 && size > 0) // print vectors to console
+    else if(userInput == 0 && size > 0) // print vectors to console
       printMatrices(matrices);
     
-    else if(menuChoice == 1) // create a new 2x2 matrix
+    else if(userInput == 1) // create a new 2x2 matrix
       createMatrix(matrices);
 
-    else if(menuChoice == 2 && size > 0) // delete a 2x2 matrix
+    else if(userInput == 2 && size > 0) // delete a 2x2 matrix
       deleteMatrix(matrices);
     
-    else if(menuChoice == 3 && size > 0) // perform on an operation on a matrix
+    else if(userInput == 3 && size > 0) // perform on an operation on a matrix
       performOperation(matrices);
   }
 }
@@ -124,27 +131,26 @@ void deleteMatrix(vector<MATRIX>& matrices) {
 
 void printMatrices(const vector<MATRIX>& matrices) {
   for(int i = 0; i < matrices.size(); i++) {
-    cout << i << ". " << matrices[i].name << ": ";
+    cout << i << ". " << matrices[i].name << ":\n";
 
     for(int j = 0; j < 2; j++) {
       if(j == 0)
-        cout << "\t[ " << matrices[i].data[j][0] << " " << matrices[i].data[j][1] << " ]\n";
+        cout << "[ " << matrices[i].data[j][0] << " " << matrices[i].data[j][1] << " ]\n";
 
       else
-        cout << "\t\t[ " << matrices[i].data[j][0] << " " << matrices[i].data[j][1] << " ]\n\n";
+        cout << "[ " << matrices[i].data[j][0] << " " << matrices[i].data[j][1] << " ]\n\n";
     }
   }
 }
 
 
-void menuOption(void (*func)(), int& choice, int size) {
-  cin >> choice;
+void printMatrix(const MATRIX matrix) {
+  for(int j = 0; j < 2; j++) {
+    if(j == 0)
+      cout << "\n[ " << matrix.data[j][0] << " " << matrix.data[j][1] << " ]\n";
 
-  while(cin.fail() || choice < -1 || choice >= size) {
-    cin.clear();
-    cin.ignore(10000,'\n');
-    cout << "Invalid Input! Try Again.\n";
-    (*func)(); // recursively calls the parent function as per input validation
+    else
+      cout << "[ " << matrix.data[j][0] << " " << matrix.data[j][1] << " ]\n\n";
   }
 }
 
@@ -162,6 +168,7 @@ void validateMatrix(MATRIX& m, int x, int y) {
   }
 }
 
+
 /*************************************************
 Add Vector Function: Calculates sum of two vectors
 Called by: performOperation() function
@@ -172,10 +179,14 @@ Returns: none
 void addMatrices(MATRIX matrix1, MATRIX matrix2) {
   MATRIX m;
 
-  //v.x = (vector1.x + vector2.x);
-  //v.y = (vector1.y + vector2.y);
+  for(int i = 0; i < 2; i++) {
+    for(int j = 0; j < 2; j++) {
+      m.data[i][j] = matrix1.data[i][j] + matrix2.data[i][j];
+    }
+  }
 
-  //cout << "\nSum of vectors " << vector1.name << " and " << vector2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
+  cout << "\nSum of matrices " << matrix1.name << " and " << matrix2.name << " is: ";
+  printMatrix(m);
 }
 
 
@@ -186,39 +197,43 @@ Called by: performOperation() function
 Calls: none
 Returns: none
 *****************************************************************/
-/*
-void subVector(VECTOR vector1, VECTOR vector2) {
-  VECTOR v;
+void subMatrices(MATRIX matrix1, MATRIX matrix2) {
+  MATRIX m;
+  
+  for(int i = 0; i < 2; i++) {
+    for(int j = 0; j < 2; j++) {
+      m.data[i][j] = matrix1.data[i][j] - matrix2.data[i][j];
+    }
+  }
 
-  v.x = (vector1.x - vector2.x);
-  v.y = (vector1.y - vector2.y);
-
-  cout << "\nSubtraction of vectors " << vector1.name << " and " << vector2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
+  cout << "\nSubtraction of matrices " << matrix1.name << " and " << matrix2.name << " is: ";
+  printMatrix(m);
 }
-*/
 
 
 /****************************************************************************
-Scalar Multiple Function: Multiplies the two values of the vector by a scalar
+Scalar Multiple Function: Multiplies the Matrix by a scalar value
 Parameters: structure vector 1
 Called by: performOperation() function
 Calls: none
 Returns: none
 ****************************************************************************/
-/*
-void scalarMult(VECTOR vector1) {
-  VECTOR v;
-  double choice;
+void scalarMult(MATRIX matrix1) {
+  MATRIX m;
+  double scalar;
 
-  cout << "\nEnter a scalar value to multiply to vector " << vector1.name << ": ";
-  cin >> choice;
+  cout << "Enter a Scalar value to multiple to matrix '" << m.name << "': ";
   
-  v.x = (vector1.x * choice);
-  v.y = (vector1.y * choice);
+  
+  for(int i = 0; i < 2; i++) {
+    for(int j = 0; j < 2; j++) {
+      m.data[i][j] = scalar * matrix1.data[i][j];
+    }
+  }
 
-  cout << "\nScalar multiplication of vector " << vector1.name << " times " << choice << " is: ( " << v.x  << ", " << v.y << " )\n";
+  cout << "\nScalar multiple of matrix '" << matrix1.name << "' and scalar '" << scalar<< "' is: ";
+  printMatrix(m);
 }
-*/
 
 
 /****************************************************************
@@ -228,92 +243,172 @@ Called by: performOperation() function
 Calls: none
 Returns: none
 ****************************************************************/
-/*
-void scalarProduct(VECTOR vector1, VECTOR vector2) {
-  VECTOR v;
+void scalarProduct(MATRIX matrix1, MATRIX matrix2) {
+  MATRIX m;
   
-  v.x = (vector1.x * vector2.x);
-  v.y = (vector1.y * vector2.y);
+  for(int i = 0; i < 2; i++) {
+    for(int j = 0; j < 2; j++) {
+      m.data[i][j] = matrix1.data[i][j] * matrix2.data[i][j];
+    }
+  }
 
-  cout << "Scalar product of vectors " << vector1.name << " and " << vector2.name << " is: " << v.x + v.y << "\n";
+  cout << "\nProduct of matrices " << matrix1.name << " and " << matrix2.name << " is: ";
+  printMatrix(m);
 }
-*/
 
 
 /***********************************************************
- Magnitude Function: Calculates magnitude/length of a vector
- Parameters: structure vector 1
+ Inverse Function: Calculates the inverse of a Matrix
+ Parameters: structure matrix 1
  Called by: performOperation function
  Calls: none
  Returns: none
  **********************************************************/
-/*
-void magnitude(VECTOR vector1) {
-  double magnitude;
+void inverseMatrix(MATRIX matrix1, vector<MATRIX>& matrices) {
+  MATRIX inverse, swappedMatrix;
+  double determinant;
+  double a, b, c, d;
 
-  magnitude = abs( sqrt( pow(vector1.x, 2) + pow(vector1.y, 2) ) );
+  a = matrix1.data[0][0];
+  b = matrix1.data[0][1];
+  c = matrix1.data[1][0];
+  d = matrix1.data[1][1];
 
-  cout << "\nThe magnitude of vector " << vector1.name << " is: " << magnitude << "\n";
+  swappedMatrix.data[0][0] = d;
+  swappedMatrix.data[0][1] = b * -1;
+  swappedMatrix.data[1][0] = c * -1;
+  swappedMatrix.data[1][1] = a;
+
+  if((a*d) - (b*c) == 0) { // avoid divide by zero error
+    cout << "Invalid matrix! 'ad - bc' equals zero.\nCannot divide by Zero! Select another matrix!\n";
+    menu(matrices); // goes back to menu for user to select other options
+  }
+  
+  else {
+    determinant = 1 / (a*d) - (b*c);
+  
+    for(int i = 0; i < 2; i++) {
+      for(int j = 0; j < 2; j++) {
+        inverse.data[i][j] = determinant * swappedMatrix.data[i][j];
+      }
+    }
+
+    cout << "\nThe inverse of matrix '" << matrix1.name << "' is: ";
+    printMatrix(inverse);
+  }
 }
-*/
 
 
 void performOperation(vector<MATRIX>& matrices) {
   MATRIX m[2];
-  int menuChoice;
+  bool menuReturn;
+  int userInput;
 
   selectMatrices(matrices, m, -999); // selects the first matrix to perform the operation
 
-  cout << "\nSelect the operation you would like to perform on vector '" << m[0].name << "'\n";
-  cout << "Enter 1 to add another matrix to '" << m[0].name << "'\n";
-  cout << "Enter 2 to subtract matrix '" << m[0].name << "' by another matrix\n";
-  cout << "Enter 3 to multiply matrix '" << m[0].name << "' by a scalar.\n";
-  cout << "Enter 4 to multiply matrix '" << m[0].name << "' by another matrix\n";
+  cout << "\nSelect the operation you would like to perform on Matrix '" << m[0].name << "'\n";
+  if(matrices.size() > 0) {
+    cout << "Enter 1 to add another matrix to '" << m[0].name << "'\n";
+    cout << "Enter 2 to subtract another matrix to matrix '" << m[0].name << "' by another matrix\n";
+    cout << "Enter 3 to multiply matrix '" << m[0].name << "' by another matrix\n";
+    cout << "Enter 4 to multiply matrix '" << m[0].name << "' by a scalar.\n";
+  }
   cout << "Enter 5 to get the inverse of matrix '" << m[0].name << "'\n";
+  cout << "\nEnter an option: ";
 
-  menuOption(&performOperation, menuChoice, 6); // gets and validates the input
+  menuReturn = validateMenu(userInput, 6); // gets and validates the input
+  if(menuReturn == false) {
+    performOperation(matrices);
+  }
 
-  selectMatrices(matrices, m, menuChoice); // 
+  selectMatrices(matrices, m, userInput); // 
 }
 
 
 void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) {
-  int menuChoice;
+  int userInput;
   int size = matrices.size();
   string matrixName = m[0].name;
+  bool menuReturn;
+  vector<MATRIX> temp = matrices;
 
   if(operation == -999) {
     cout << "Select a matrix from the list below to perform an operation on.\n";
     printMatrices(matrices);
-    menuOption(&selectMatrices, menuChoice, size);
-    m[0] = matrices[menuChoice];
+    cout << "Enter an option: ";
+    menuReturn = validateMenu(userInput, size);
+    if(menuReturn == false) {
+      performOperation(temp);
+    }
+    m[0] = matrices[userInput];
   }
 
   else if(operation == 1) {
-    cout << "Select a matrix from the list to add to '" << matrixName << "': ";
+    cout << "Select a matrix from the list to add to '" << matrixName << "'\n";
     printMatrices(matrices);
-    menuOption(&selectMatrices, menuChoice, size);
-    m[1] = matrices[menuChoice];
+    cout << "Enter an option: ";
+    menuReturn = validateMenu(userInput, size);
+    if(menuReturn == false) {
+      performOperation(temp);
+    }
+    m[1] = matrices[userInput];
+    addMatrices(m[0], m[1]);
   }
 
   else if(operation == 2) {
-    cout << "Select a matrix from the list to subtract from matrix '" << matrixName << "': ";
+    cout << "Select a matrix from the list to subtract from matrix '" << matrixName << "'\n";
     printMatrices(matrices);
-    menuOption(&selectMatrices, menuChoice, size);
-    m[1] = matrices[menuChoice];
+    cout << "Enter an option: ";
+    menuReturn = validateMenu(userInput, size);
+    if(menuReturn == false) {
+      performOperation(temp);
+    }
+    m[1] = matrices[userInput];
+    subMatrices(m[0], m[1]);
+  }
+
+  else if(operation == 3) {
+    cout << "Select a matrix from the list to multiply to matrix '" << matrixName << "''\n";
+    printMatrices(matrices);
+    cout << "Enter an option: ";
+    menuReturn = validateMenu(userInput, size);
+    if(menuReturn == false) {
+      performOperation(temp);
+    }
+    m[1] = matrices[userInput];
+    scalarProduct(m[0], m[1]);
   }
 
   else if(operation == 4) {
-    cout << "Select a matrix from the list to multiply to matrix '" << matrixName << "': ";
+    cout << "Select a matrix from the list to multiply by a scalar''\n";
     printMatrices(matrices);
-    menuOption(&selectMatrices, menuChoice, size);
-    m[1] = matrices[menuChoice];
+    cout << "Enter an option: ";
+    menuReturn = validateMenu(userInput, size);
+    if(menuReturn == false) {
+      performOperation(temp);
+    }
+    m[1] = matrices[userInput];
+    scalarMult(m[0]);
   }
 
   else if(operation == 5) {
-    printMatrices(matrices);
-    menuOption(&selectMatrices, menuChoice, size);
-    // inverseMatrix()
-    //m[1] = matrices[menuChoice];
+    inverseMatrix(m[0], temp);
+  }
+}
+
+
+bool validateMenu(int& choice, int size) {
+  cin >> choice;
+
+  if(cin.fail() || choice < -1 || choice >= size) {
+    cin.clear();
+    cin.ignore(10000,'\n');
+    cout << "Invalid Input! Try Again.\n";
+    return false;
+    // (*func)(); // recursively calls the parent function as per input validation
+  }
+
+  else {
+    return true;
   }
 }
