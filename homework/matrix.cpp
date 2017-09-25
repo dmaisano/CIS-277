@@ -14,6 +14,14 @@ struct MATRIX {
   // [c d]
 };
 
+void performOperation(vector<MATRIX>&);
+void selectMatrices(const vector<MATRIX>&, MATRIX*, int);
+void addMatrices(MATRIX, MATRIX); // adds the values of two VECTOR types
+void subMatrices(MATRIX, MATRIX);
+void scalarMult(MATRIX);
+void scalarProduct(MATRIX, MATRIX);
+void inverseMatrix(MATRIX);
+
 void menu();
 void printMatrices(const vector<MATRIX>&);
 void createMatrix(vector<MATRIX>&);
@@ -22,79 +30,12 @@ void menuOption(void (*)(), int&, int); // void (*)() == pointer to void functio
 void menuOption(void (*)(const vector<MATRIX>&, MATRIX*, int), int&, int);// overloaded to allow selectMatrices() to be passed as arg
 void menuOption(void (*)(vector<MATRIX>& matrices), int&, int); // overloaded to allow performOperation() to be passed as arg
 void validateMatrix(MATRIX&, int, int);
-void performOperation(vector<MATRIX>&);
-void selectMatrices(const vector<MATRIX>&, MATRIX*, int);
 
 void addMatrices(vector<MATRIX>&);
 
 int main() {
 
-  menu();
-
-  /*
-  vector<MATRIX> matrices;
-  int menuChoice = -999;
-
-  while(menuChoice != -1) {
-    int size = matrices.size();
-
-    cout << "\nEnter -1 to exit the program.\n";
-
-    if(size > 0) {
-      cout << "Enter 0 to display matrices.\n";
-    }
-
-    cout << "Enter 1 to create a new '2x2' matrix.\n";
-    
-    if(size > 0) {
-      cout << "Enter 2 to delete a matrix.\n";
-      cout << "Enter 3 perform an operation on a matrix.\n";
-    }
-
-    cout << "\nEnter an option: ";
-    cin >> menuChoice;
-
-    while(cin.fail() || menuChoice < -1 || menuChoice > 3) {
-      cin.clear();
-      cin.ignore(10000,'\n');
-      cout << "Invalid Input! Try Again.\n";
-      cout << "\nEnter -1 to exit the program.\n";
-      
-      if(size > 0) {
-        cout << "Enter 0 to display matrices.\n";
-      }
-  
-      cout << "Enter 1 to create a new '2x2' matrix.\n";
-      
-      if(size > 0) {
-        cout << "Enter 2 to delete a matrix.\n";
-        cout << "Enter 3 perform an operation on a matrix.\n";
-        cout << "Enter 4 perform an operation on a matrix.\n";
-      }
-  
-      cout << "\nEnter an option: ";
-      cin >> menuChoice;
-    }
-      
-    cout << "\n";
-
-    if(menuChoice == -1) { // exit
-      continue;
-    }
-
-    else if(menuChoice == 0 && size > 0) // print vectors to console
-      printMatrices(matrices);
-    
-    else if(menuChoice == 1)
-      createMatrix(matrices);
-
-    else if(menuChoice == 2 && size > 0)
-      deleteMatrix(matrices);
-    
-    //else if(menuChoice == 3 && size > 0)
-      //performOperation(matrices);
-  }
-  */
+  menu(); // fantastic use of a menu *claps*
 
   return 0;
 }
@@ -138,8 +79,8 @@ void menu() {
     else if(menuChoice == 2 && size > 0) // delete a 2x2 matrix
       deleteMatrix(matrices);
     
-    //else if(menuChoice == 3 && size > 0) // perform on an operation on a matrix
-      //performOperation(matrices);
+    else if(menuChoice == 3 && size > 0) // perform on an operation on a matrix
+      performOperation(matrices);
   }
 }
 
@@ -221,6 +162,101 @@ void validateMatrix(MATRIX& m, int x, int y) {
   }
 }
 
+/*************************************************
+Add Vector Function: Calculates sum of two vectors
+Called by: performOperation() function
+Calls: none
+Parameters: structure vector 1, structure vector 2
+Returns: none
+*************************************************/
+void addMatrices(MATRIX matrix1, MATRIX matrix2) {
+  MATRIX m;
+
+  //v.x = (vector1.x + vector2.x);
+  //v.y = (vector1.y + vector2.y);
+
+  //cout << "\nSum of vectors " << vector1.name << " and " << vector2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
+}
+
+
+/*****************************************************************
+Subtract Vector Function: Subtracts one vector from another vector
+Parameters: structure vector 1, structure vector 2
+Called by: performOperation() function
+Calls: none
+Returns: none
+*****************************************************************/
+/*
+void subVector(VECTOR vector1, VECTOR vector2) {
+  VECTOR v;
+
+  v.x = (vector1.x - vector2.x);
+  v.y = (vector1.y - vector2.y);
+
+  cout << "\nSubtraction of vectors " << vector1.name << " and " << vector2.name << " is: ( " << v.x  << ", " << v.y << " )\n";
+}
+*/
+
+
+/****************************************************************************
+Scalar Multiple Function: Multiplies the two values of the vector by a scalar
+Parameters: structure vector 1
+Called by: performOperation() function
+Calls: none
+Returns: none
+****************************************************************************/
+/*
+void scalarMult(VECTOR vector1) {
+  VECTOR v;
+  double choice;
+
+  cout << "\nEnter a scalar value to multiply to vector " << vector1.name << ": ";
+  cin >> choice;
+  
+  v.x = (vector1.x * choice);
+  v.y = (vector1.y * choice);
+
+  cout << "\nScalar multiplication of vector " << vector1.name << " times " << choice << " is: ( " << v.x  << ", " << v.y << " )\n";
+}
+*/
+
+
+/****************************************************************
+Scalar Product Function: Calculates scalar product of two vectors
+Parameters: structure vector 1, structure vector 2
+Called by: performOperation() function
+Calls: none
+Returns: none
+****************************************************************/
+/*
+void scalarProduct(VECTOR vector1, VECTOR vector2) {
+  VECTOR v;
+  
+  v.x = (vector1.x * vector2.x);
+  v.y = (vector1.y * vector2.y);
+
+  cout << "Scalar product of vectors " << vector1.name << " and " << vector2.name << " is: " << v.x + v.y << "\n";
+}
+*/
+
+
+/***********************************************************
+ Magnitude Function: Calculates magnitude/length of a vector
+ Parameters: structure vector 1
+ Called by: performOperation function
+ Calls: none
+ Returns: none
+ **********************************************************/
+/*
+void magnitude(VECTOR vector1) {
+  double magnitude;
+
+  magnitude = abs( sqrt( pow(vector1.x, 2) + pow(vector1.y, 2) ) );
+
+  cout << "\nThe magnitude of vector " << vector1.name << " is: " << magnitude << "\n";
+}
+*/
+
 
 void performOperation(vector<MATRIX>& matrices) {
   MATRIX m[2];
@@ -237,7 +273,7 @@ void performOperation(vector<MATRIX>& matrices) {
 
   menuOption(&performOperation, menuChoice, 6); // gets and validates the input
 
-  selectMatrices(matrices, m, menuChoice);
+  selectMatrices(matrices, m, menuChoice); // 
 }
 
 
@@ -250,23 +286,34 @@ void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) 
     cout << "Select a matrix from the list below to perform an operation on.\n";
     printMatrices(matrices);
     menuOption(&selectMatrices, menuChoice, size);
+    m[0] = matrices[menuChoice];
   }
 
   else if(operation == 1) {
     cout << "Select a matrix from the list to add to '" << matrixName << "': ";
     printMatrices(matrices);
     menuOption(&selectMatrices, menuChoice, size);
+    m[1] = matrices[menuChoice];
   }
 
   else if(operation == 2) {
     cout << "Select a matrix from the list to subtract from matrix '" << matrixName << "': ";
     printMatrices(matrices);
     menuOption(&selectMatrices, menuChoice, size);
+    m[1] = matrices[menuChoice];
   }
 
-  else if(operation == 3) {
+  else if(operation == 4) {
     cout << "Select a matrix from the list to multiply to matrix '" << matrixName << "': ";
     printMatrices(matrices);
     menuOption(&selectMatrices, menuChoice, size);
+    m[1] = matrices[menuChoice];
+  }
+
+  else if(operation == 5) {
+    printMatrices(matrices);
+    menuOption(&selectMatrices, menuChoice, size);
+    // inverseMatrix()
+    //m[1] = matrices[menuChoice];
   }
 }
