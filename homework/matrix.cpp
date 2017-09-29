@@ -1,3 +1,10 @@
+/*
+CIS-277-601HY
+Domenico Maisano
+Prof. Aljamal
+Matrix Project
+*/
+
 #include <iostream>
 #include <string>
 #include <vector> // vector<TYPE> var
@@ -13,13 +20,13 @@ struct MATRIX {
 };
 
 // Operations Functions
-void performOperation(vector<MATRIX>&);
-void selectMatrices(const vector<MATRIX>&, MATRIX*, int);
-void addMatrices(MATRIX, MATRIX); // adds the values of two VECTOR types
-void subMatrices(MATRIX, MATRIX);
-void scalarProduct(MATRIX, MATRIX);
-void scalarMult(MATRIX);
-void inverseMatrix(MATRIX, vector<MATRIX>&);
+void performOperation(vector<MATRIX>&); // performs an operation on a MATRIX
+void selectMatrices(const vector<MATRIX>&, MATRIX*, int); // selects one or more MATRICES to be used for the operation(s)
+void addMatrices(MATRIX, MATRIX); // adds the values of two MATRICES
+void subMatrices(MATRIX, MATRIX); // subtracts the values of two MATRICES
+void scalarProduct(MATRIX, MATRIX); // multiplies the values of a MATRIX by a scalar value 
+void scalarMult(MATRIX); // multiplies the values of two MATRICES
+void inverseMatrix(MATRIX, vector<MATRIX>&); // operatio to get the inverse of a MATRIX
 
 // General Menu Functions
 void menu(vector<MATRIX>& matrices);
@@ -37,7 +44,7 @@ void validateScalar(void (*)(MATRIX, MATRIX), double&);
 int main() {
   vector<MATRIX> matrices;
 
-  menu(matrices); // fantastic use of a menu *claps*
+  menu(matrices);
 
   return 0;
 }
@@ -68,6 +75,7 @@ void menu(vector<MATRIX>& matrices) {
     cout << "\nEnter an option: ";
     menuReturn = validateMenu(userInput, 4); // menu() must be passed as a reference!
     if(menuReturn == false) {
+      cout << "Invalid Input! Try Again.\n";
       menu(matrices);
     }
 
@@ -223,7 +231,15 @@ void scalarMult(MATRIX matrix1) {
   double scalar;
 
   cout << "Enter a Scalar value to multiple to matrix '" << m.name << "': ";
-  
+  cin >> scalar;
+
+  while(cin.fail()) {
+    cin.clear();
+		cin.ignore(10000,'\n');
+    cout << "Invalid Input! Try again.\n\n";
+    cout << "Enter a Scalar value to multiple to matrix '" << m.name << "': ";
+    cin >> scalar;
+  }
   
   for(int i = 0; i < 2; i++) {
     for(int j = 0; j < 2; j++) {
@@ -316,8 +332,9 @@ void performOperation(vector<MATRIX>& matrices) {
   cout << "Enter 5 to get the inverse of matrix '" << m[0].name << "'\n";
   cout << "\nEnter an option: ";
 
-  menuReturn = validateMenu(userInput, 6); // gets and validates the input
-  if(menuReturn == false) {
+  menuReturn = validateMenu(userInput, 6); // gets and validates the input (6 is the max menu size)
+  if(menuReturn == false) { // if false, error was raised, recursively call menu
+    cout << "Invalid Input! Try Again.\n";
     performOperation(matrices);
   }
 
@@ -338,6 +355,7 @@ void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) 
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);
     if(menuReturn == false) {
+      cout << "Invalid Input! Try Again.\n";
       performOperation(temp);
     }
     m[0] = matrices[userInput];
@@ -349,6 +367,7 @@ void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) 
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);
     if(menuReturn == false) {
+      cout << "Invalid Input! Try Again.\n";
       performOperation(temp);
     }
     m[1] = matrices[userInput];
@@ -361,6 +380,7 @@ void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) 
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);
     if(menuReturn == false) {
+      cout << "Invalid Input! Try Again.\n";
       performOperation(temp);
     }
     m[1] = matrices[userInput];
@@ -373,6 +393,7 @@ void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) 
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);
     if(menuReturn == false) {
+      cout << "Invalid Input! Try Again.\n";
       performOperation(temp);
     }
     m[1] = matrices[userInput];
@@ -385,10 +406,11 @@ void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) 
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);
     if(menuReturn == false) {
+      cout << "Invalid Input! Try Again.\n";
       performOperation(temp);
     }
     m[1] = matrices[userInput];
-    scalarMult(m[0]);
+    scalarMult(m[1]);
   }
 
   else if(operation == 5) {
@@ -405,7 +427,6 @@ bool validateMenu(int& choice, int size) {
     cin.ignore(10000,'\n');
     cout << "Invalid Input! Try Again.\n";
     return false;
-    // (*func)(); // recursively calls the parent function as per input validation
   }
 
   else {
