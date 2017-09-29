@@ -26,19 +26,19 @@ void addMatrices(MATRIX, MATRIX); // adds the values of two MATRICES
 void subMatrices(MATRIX, MATRIX); // subtracts the values of two MATRICES
 void scalarProduct(MATRIX, MATRIX); // multiplies the values of a MATRIX by a scalar value 
 void scalarMult(MATRIX); // multiplies the values of two MATRICES
-void inverseMatrix(MATRIX, vector<MATRIX>&); // operatio to get the inverse of a MATRIX
+void inverseMatrix(MATRIX, vector<MATRIX>&); // operation to get the inverse of a MATRIX
 
 // General Menu Functions
-void menu(vector<MATRIX>& matrices);
-void printMatrix(const MATRIX);
-void printMatrices(const vector<MATRIX>&);
-void createMatrix(vector<MATRIX>&);
-void deleteMatrix(vector<MATRIX>&);
+void menu(vector<MATRIX>& matrices); // main menu for user interaction
+void printMatrix(const MATRIX); // prints a single MATRIX
+void printMatrices(const vector<MATRIX>&); // prints all the MATRICESfrom the vector<MATRIX>
+void createMatrix(vector<MATRIX>&); // creates a MATRIX to the vector<MATRIX>
+void deleteMatrix(vector<MATRIX>&); // deletes a MATRIX from the vector<MATRIX>
 
 // Input Validation Functions
 bool validateMenu(int&, int); // used for recursive input validation for a menu/sub-menu
-void validateMatrix(MATRIX&, int, int = 1);
-void validateScalar(void (*)(MATRIX, MATRIX), double&);
+void validateMatrix(MATRIX&, int, int = 1); // validates the input for each MATRIX row & col
+void validateScalar(void (*)(MATRIX, MATRIX), double&); // validates the input for scalarMult()
 
 
 int main() {
@@ -177,13 +177,6 @@ void validateMatrix(MATRIX& m, int x, int y) {
 }
 
 
-/*************************************************
-Add Vector Function: Calculates sum of two vectors
-Called by: performOperation() function
-Calls: none
-Parameters: structure vector 1, structure vector 2
-Returns: none
-*************************************************/
 void addMatrices(MATRIX matrix1, MATRIX matrix2) {
   MATRIX m;
 
@@ -198,13 +191,6 @@ void addMatrices(MATRIX matrix1, MATRIX matrix2) {
 }
 
 
-/*****************************************************************
-Subtract Vector Function: Subtracts one vector from another vector
-Parameters: structure vector 1, structure vector 2
-Called by: performOperation() function
-Calls: none
-Returns: none
-*****************************************************************/
 void subMatrices(MATRIX matrix1, MATRIX matrix2) {
   MATRIX m;
   
@@ -252,13 +238,7 @@ void scalarMult(MATRIX matrix1) {
 }
 
 
-/****************************************************************
-Scalar Product Function: Calculates scalar product of two vectors
-Parameters: structure vector 1, structure vector 2
-Called by: performOperation() function
-Calls: none
-Returns: none
-****************************************************************/
+
 void scalarProduct(MATRIX matrix1, MATRIX matrix2) {
   MATRIX m;
   
@@ -273,13 +253,6 @@ void scalarProduct(MATRIX matrix1, MATRIX matrix2) {
 }
 
 
-/***********************************************************
- Inverse Function: Calculates the inverse of a Matrix
- Parameters: structure matrix 1
- Called by: performOperation function
- Calls: none
- Returns: none
- **********************************************************/
 void inverseMatrix(MATRIX matrix1, vector<MATRIX>& matrices) {
   MATRIX inverse, swappedMatrix;
   double determinant;
