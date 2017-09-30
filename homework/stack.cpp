@@ -1,6 +1,6 @@
 #include <iostream>
 using namespace std;
-#define size 101
+#define size 101 // max size for the stack array
 
 int flow(int, string);
 
@@ -20,13 +20,13 @@ public:
     return name;
   }
 
-	void Push(int num) {
+	void Push(int num) { // appends the num to the top of the Stack
     int flag = flow(top, "over");
 
     if(flag == 1) // exits the function if the Stack overflows
       return;
 
-		arr[++top] = num; // appends the num to the top of the Stack
+		arr[++top] = num; // increments the top before pushing num
   }
   
 	void Pop() {
@@ -99,4 +99,3 @@ int flow(int top, string flow) {
 
   return 0; // returns 0 if Stack does not "(under/over)-flow"
 }
-
