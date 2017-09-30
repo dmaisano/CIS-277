@@ -75,14 +75,13 @@ void menu(vector<MATRIX>& matrices) {
     cout << "\nEnter an option: ";
     menuReturn = validateMenu(userInput, 4); // menu() must be passed as a reference!
     if(menuReturn == false) {
-      cout << "Invalid Input! Try Again.\n";
       menu(matrices);
     }
 
     cout << "\n";
 
     if(userInput == -1) { // exit
-      continue;
+      break;
     }
 
     else if(userInput == 0 && size > 0) // print vectors to console
@@ -307,7 +306,6 @@ void performOperation(vector<MATRIX>& matrices) {
 
   menuReturn = validateMenu(userInput, 6); // gets and validates the input (6 is the max menu size)
   if(menuReturn == false) { // if false, error was raised, recursively call menu
-    cout << "Invalid Input! Try Again.\n";
     performOperation(matrices);
   }
 
@@ -328,7 +326,6 @@ void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) 
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);
     if(menuReturn == false) {
-      cout << "Invalid Input! Try Again.\n";
       performOperation(temp);
     }
     m[0] = matrices[userInput];
@@ -340,7 +337,6 @@ void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) 
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);
     if(menuReturn == false) {
-      cout << "Invalid Input! Try Again.\n";
       performOperation(temp);
     }
     m[1] = matrices[userInput];
@@ -353,7 +349,6 @@ void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) 
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);
     if(menuReturn == false) {
-      cout << "Invalid Input! Try Again.\n";
       performOperation(temp);
     }
     m[1] = matrices[userInput];
@@ -366,7 +361,6 @@ void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) 
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);
     if(menuReturn == false) {
-      cout << "Invalid Input! Try Again.\n";
       performOperation(temp);
     }
     m[1] = matrices[userInput];
@@ -379,7 +373,6 @@ void selectMatrices(const vector<MATRIX>& matrices, MATRIX m[2], int operation) 
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);
     if(menuReturn == false) {
-      cout << "Invalid Input! Try Again.\n";
       performOperation(temp);
     }
     m[1] = matrices[userInput];
