@@ -42,10 +42,30 @@ class Matrix:
         else:
           print("{0}]".format(self.matrix[x][y]), end="\n")
 
+def addMatrices(matrix1, matrix2):
+  temp = Matrix()
+
+  if (matrix1.row != matrix2.row) or (matrix1.col != matrix2.col):
+    pass
+
+  else:
+    for x in range(matrix1.row):
+      for y in range(matrix1.col):
+        temp[x][y] = matrix1[x][y] + matrix2[x][y]
+
+  return temp
+
+
 matrices = []
 
 toast = Matrix()
+eggs = Matrix()
 matrices.append(toast)
+matrices.append(eggs)
+
+temp = addMatrices(toast, eggs)
+
+
 
 for matrix in matrices:
   matrix.printMatrix()
