@@ -1,38 +1,48 @@
 class Matrix:
-  def __init__(self):
-    self.name = self.get_name()
-    self.size = self.get_size()
-    self.row = self.size[0]
-    self.col = self.size[1]
-    self.matrix = [ list(range(self.row)), list(range(self.col)) ] # initializes matrix with default values
-    self.get_values()
-    print() # prints a new line at the end of object construction
+  def __init__(self, row=None, col=None, name=None):
+    self.name = name
+    self.row = row
+    self.col = col
+    self.get_name()
+    self.get_size()
+    self.matrix = [] # initializes matrix with default values
+    #self.get_values()
+    #print() # prints a new line at the end of object construction
 
   # Returns the name for the matrix as per user input
   def get_name(self):
-    name = input("Enter the name for the matrix: ")
+    if (self.name == None):
+      self.name = input("Enter the name for the matrix: ")
 
-    return name
+    else:
+      pass
 
   # Retuns a list of the rows and cols for the matrix
   def get_size(self):
-    size = []
-    size.append(int(input("Enter the number of rows for matrix {0}: ".format(self.name))))
-    size.append(int(input("Enter the number of columns for matrix {0}: ".format(self.name))))
+    
+    if(self.row == None and self.col == None):
+      self.row = int(input("Enter the number of rows for matrix {0}: ".format(self.name)))
+      self.col = int(input("Enter the number of columns for matrix {0}: ".format(self.name)))
 
-    return size
+    # pass because row & col have already been defined
+    else:
+      pass
 
   # Gets values for the matrix as per user input
   def get_values(self):
+    self.matrix = [ list(range(self.row)), list(range(self.col)) ]
+
     for x in range(self.row):
       for y in range(self.col):
         string = "Enter a value for row {0} col {1}: ".format(x, y)
         num = int(input(string))
         self.matrix[x][y] = num
 
+    print()
+
   # Prints the values of the matrix
   def printMatrix(self):
-    print("Matrix " + self.name + ":")
+    print("Matrix {0}:".format(self.name))
 
     for x in range(self.row):
       for y in range(self.col):
@@ -42,30 +52,34 @@ class Matrix:
         else:
           print("{0}]".format(self.matrix[x][y]), end="\n")
 
-def addMatrices(matrix1, matrix2):
-  temp = Matrix()
+  def __add__(self, other):
+    if (self.row == other.row and self.col == other.col):
+      m = Matrix(self.name, self.row, self.col)
 
-  if (matrix1.row != matrix2.row) or (matrix1.col != matrix2.col):
-    pass
+      m.matrix = [ list(range(self.row)), list(range(self.col)) ]
 
-  else:
-    for x in range(matrix1.row):
-      for y in range(matrix1.col):
-        temp[x][y] = matrix1[x][y] + matrix2[x][y]
+      for x in range(self.row):
+        for y in range(self.col):
+          m.matrix[x][y] = self.matrix[x][y] + other.matrix[x][y]
 
-  return temp
+      return m
 
+    else:
+      print("Cannot add the two matrices. Please make sure they are the same size!")
 
 matrices = []
 
-toast = Matrix()
-eggs = Matrix()
+toast = Matrix(2, 2)
+toast.get_values()
+eggs = Matrix(2, 2)
+eggs.get_values()
+
+m = Matrix(2, 2)
+
+m = toast + eggs
+
 matrices.append(toast)
 matrices.append(eggs)
-
-temp = addMatrices(toast, eggs)
-
-
 
 for matrix in matrices:
   matrix.printMatrix()
