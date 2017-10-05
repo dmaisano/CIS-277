@@ -1,11 +1,25 @@
+#import numpy as np
+
+def createMatrix(row, col):
+  matrix = []
+  for col in range(col): matrix += [[0] * row]
+
+  return matrix
+
 class Matrix:
   def __init__(self, row=None, col=None, name=None, data=None):
     self.name = name
     self.row = row
     self.col = col
+
+    if data == None:
+      self.matrix = createMatrix(self.row, self.col)
+    
+    else:
+      self.matrix = data
+
     self.get_name()
     self.get_size()
-    self.matrix = [] or data # initializes matrix with default values
     #self.get_values()
     #print() # prints a new line at the end of object construction
 
@@ -30,12 +44,10 @@ class Matrix:
 
   # Gets values for the matrix as per user input
   def get_values(self):
-    self.matrix = [ list(range(self.row)), list(range(self.col)) ]
-
-    for x in range(self.row):
-      for y in range(self.col):
-        string = "Enter a value for row {0} col {1}: ".format(x, y)
-        self.matrix[x][y] = int(input(string))
+    for y in range(self.col):
+      for x in range(self.row):
+        string = "Enter a value for col {0} row {1}: ".format(y + 1, x + 1)
+        self.matrix[y][x] = int(input(string))
 
     print()
 
@@ -45,19 +57,19 @@ class Matrix:
 
     for x in self.matrix:
       for y in x:
-        if(y == 0):
+        if (y == 0):
           print("[{0}".format(self.matrix[x][y]), end=" ")
         
-        else:
+        elif (y == self.col - 1):
           print("{0}]".format(self.matrix[x][y]), end="\n")
 
   def __add__(self, other):
     if (self.row == other.row and self.col == other.col):
-      values = [ list(range(self.row)), list(range(self.col)) ]
+      values = createMatrix()
 
-      for x in self.matrix:
-        for y in x:
-          values[x][y] = self.matrix[x][y] + other.matrix[x][y]
+      for y in range(self.col):
+        for x in range(self.row):
+          values[y][x] = self.matrix[y][x] + other.matrix[y][x]
 
       return Matrix(self.row, self.col, None, values)
 
@@ -66,11 +78,11 @@ class Matrix:
 
   def __sub__(self, other):
     if (self.row == other.row and self.col == other.col):
-      values = [ list(range(self.row)), list(range(self.col)) ]
+      values = createMatrix()
 
-      for x in range(self.row):
-        for y in range(self.col):
-          values[x][y] = self.matrix[x][y] - other.matrix[x][y]
+      for y in range(self.col):
+        for x in range(self.row):
+          values[y][x] = self.matrix[y][x] - other.matrix[y][x]
 
       return Matrix(self.row, self.col, None, values)
 
@@ -79,9 +91,9 @@ class Matrix:
 
 matrices = []
 
-toast = Matrix(3, 3)
+toast = Matrix(3, 2)
 toast.get_values()
-eggs = Matrix(3, 3)
+eggs = Matrix(3, 2)
 eggs.get_values()
 
 sumMatrices = toast + eggs

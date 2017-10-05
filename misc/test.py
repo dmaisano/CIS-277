@@ -1,47 +1,21 @@
-'''
-def squareNum(num=None):
-  
-  if (num == None):
-    temp = input("Enter a number: ")
+#import numpy as np
 
-  else:
-    temp = num
+def createMatrix(row, col):
+    matrix = []
+    for col in range(col): matrix += [[0] * row]
+    return matrix
 
-    temp *= temp
+def get_values(data):
+  for y in range(col):
+    for x in range(row):
+      string = "Enter a value for row {0} col {1}: ".format(x + 1, y + 1)
+      data[y][x] = int(input(string))
 
-    print("Square of number is '{0}'".format(temp))
+row = int(input("Enter the number of rows for the matrix: "))
+col = int(input("Enter the number of columns for the matrix: "))
 
-squareNum(10)
-'''
+matrix = createMatrix(row, col)
 
-def createMatrix(row=None, col=None):
-  if(row == None and col == None):
-    row = input("Enter the rows for the list: ")
-    col = input("Enter the columns for the list: ")
+get_values(matrix)
 
-  matrix = [ list(range(row)), list(range(col, col*2)) ]
-
-  return matrix
-
-'''
-def getValues(matrix):
-  for x in range(matrix[0]):
-    for y in range(matrix[1]):
-      string = "Enter a value for row {0} col {1}: ".format(x, y)
-      matrix[x][y] = int(input(string))
-'''
-matrix = createMatrix(3, 3)
-
-for x in matrix:
-  for y in x:
-    print(x)
-
-print()
-
-for x in matrix:
-  for y in x:
-    print(y)
-
-#getValues(matrix)
-
-
+print("\n", matrix)
