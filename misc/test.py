@@ -18,4 +18,13 @@ matrix = createMatrix(row, col)
 
 get_values(matrix)
 
-print("\n", matrix)
+for y in range(col):
+  for x in range(row):
+    if (x == 0):
+      print("[{0}".format(matrix[y][x]), end=" ")
+
+    elif (x != row - 1):
+      print("{0}".format(matrix[y][x]), end=" ")
+    
+    else:
+      print("{0}]".format(matrix[y][x]), end="\n")

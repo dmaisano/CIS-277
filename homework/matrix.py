@@ -1,4 +1,4 @@
-#import numpy as np
+# import numpy as np
 
 def createMatrix(row, col):
   matrix = []
@@ -13,10 +13,10 @@ class Matrix:
     self.col = col
 
     if data == None:
-      self.matrix = createMatrix(self.row, self.col)
+      self.data = createMatrix(self.row, self.col)
     
     else:
-      self.matrix = data
+      self.data = data
 
     self.get_name()
     self.get_size()
@@ -47,7 +47,7 @@ class Matrix:
     for y in range(self.col):
       for x in range(self.row):
         string = "Enter a value for col {0} row {1}: ".format(y + 1, x + 1)
-        self.matrix[y][x] = int(input(string))
+        self.data[y][x] = int(input(string))
 
     print()
 
@@ -55,21 +55,24 @@ class Matrix:
   def printMatrix(self):
     print("Matrix {0}:".format(self.name))
 
-    for x in self.matrix:
-      for y in x:
-        if (y == 0):
-          print("[{0}".format(self.matrix[x][y]), end=" ")
+    for y in range(self.col):
+      for x in range(self.row):
+        if (x == 0):
+          print("[{0}".format(self.data[y][x]), end=" ")
+
+        elif (x != self.row - 1):
+          print("{0}".format(self.data[y][x]), end=" ")
         
-        elif (y == self.col - 1):
-          print("{0}]".format(self.matrix[x][y]), end="\n")
+        else:
+          print("{0}]".format(self.data[y][x]), end="\n")
 
   def __add__(self, other):
     if (self.row == other.row and self.col == other.col):
-      values = createMatrix()
+      values = createMatrix(self.row, self.col)
 
       for y in range(self.col):
         for x in range(self.row):
-          values[y][x] = self.matrix[y][x] + other.matrix[y][x]
+          values[y][x] = self.data[y][x] + other.data[y][x]
 
       return Matrix(self.row, self.col, None, values)
 
@@ -78,11 +81,11 @@ class Matrix:
 
   def __sub__(self, other):
     if (self.row == other.row and self.col == other.col):
-      values = createMatrix()
+      values = createMatrix(self.row, self.col)
 
       for y in range(self.col):
         for x in range(self.row):
-          values[y][x] = self.matrix[y][x] - other.matrix[y][x]
+          values[y][x] = self.data[y][x] - other.data[y][x]
 
       return Matrix(self.row, self.col, None, values)
 
@@ -91,9 +94,9 @@ class Matrix:
 
 matrices = []
 
-toast = Matrix(3, 2)
+toast = Matrix(4, 2)
 toast.get_values()
-eggs = Matrix(3, 2)
+eggs = Matrix(4, 2)
 eggs.get_values()
 
 sumMatrices = toast + eggs
@@ -103,6 +106,7 @@ matrices.append(eggs)
 matrices.append(sumMatrices)
 
 for matrix in matrices:
+  # print("\n", matrix.data)
   matrix.printMatrix()
 
 print("\n")
