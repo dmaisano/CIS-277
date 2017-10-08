@@ -3,7 +3,7 @@ using namespace std;
 
 struct node {
   int data;
-  node *next;
+  node *next; // recursively creates a new "STRUCT node" pointer
 };
 
 class list {
@@ -19,7 +19,7 @@ class list {
 void createNode;
 
 int main() {
-  
+  list Foo;
 
   return 0;
 }

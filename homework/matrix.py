@@ -53,7 +53,7 @@ class Matrix:
 
   # Prints the values of the matrix
   def printMatrix(self):
-    print("Matrix {0}:".format(self.name))
+    print("\nMatrix {0}:".format(self.name))
 
     for y in range(self.col):
       for x in range(self.row):
