@@ -1,12 +1,12 @@
 #include <iostream>
 using namespace std;
-#define size 101 // max size for the stack array
+#define size 101 // max size for the stack dataay
 
 int flow(int, string);
 
 class myStack {
 private:
-  int arr[size];  // array used for the implementation of the Stack ADT
+  int data[size];  // dataay used for the implementation of the Stack ADT
   int top; // holds the index of the top of the Stack
   string name; // holds the name of the stack
 
@@ -26,7 +26,7 @@ public:
     if(flag == 1) // exits the function if the Stack overflows
       return;
 
-		arr[++top] = num; // increments the top before pushing num
+		data[++top] = num; // increments the top before pushing num
   }
   
 	void Pop() {
@@ -44,7 +44,7 @@ public:
     if(flag == 1) // exits the function if Stack underflows
     return -1;
 
-		return arr[top];
+		return data[top];
 	}
  
 	int IsEmpty() {
@@ -63,7 +63,7 @@ public:
     cout << "Stack " << name << ":";
     
     for(int i = 0; i <= top; i++) { // prints all the elements up to and including the top of the Stack
-      cout << "\nIndex:  " << i << "\tValue:  " << arr[i];
+      cout << "\nIndex:  " << i << "\tValue:  " << data[i];
     }
 	}
 };
