@@ -13,6 +13,7 @@ private:
   // head = front of linked list
   // tail = rear of linked list
 public:
+  
   List() {
     head = NULL;
     tail = NULL;
