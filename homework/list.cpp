@@ -125,5 +125,7 @@ int main() {
 
   list.print();
 
+  cout << "\n";
+
   return 0;
 }
