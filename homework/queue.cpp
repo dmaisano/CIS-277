@@ -34,7 +34,7 @@ public:
       cout << "Queue is empty! Please add items to queue!";
     }
 
-    cout << "Items in Queue '" << name << "'...\n";
+    cout << "Items in Queue '" << name << "': \n";
 
     // Executes if the rear is larger than the front (this executes in most cases)
     if(rear >= front) {
@@ -44,7 +44,7 @@ public:
     }
 
     // Executes if the array is circular and wraps around
-    // Example: size = 10, front = 7, rear = 3
+    // Example: size = 10, front = 7, rear = 6
     else {
       for(int i = front; i < size; i++) {
         cout << "Item: " << i << "\tValue: " << data[i] << "\n";;
