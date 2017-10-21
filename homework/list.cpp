@@ -3,7 +3,7 @@ using namespace std;
 
 struct node {
   int data;
-  node *next; // recursively creates a new "STRUCT node" pointer
+  node *next; // pointer to the next node in the list
 };
 
 class List {

@@ -2,27 +2,9 @@
 using namespace std;
 
 int main() {
-  int *arr, size;
+  char c = 'c';
 
-  cout << "Enter size of the array: ";
-  cin >> size;
-
-  arr = new int[size];
-
-  for(int i = 1; i <= size; i++) {
-    if(i % 2 == 0) {
-      arr[i] = NULL;
-    }
-
-    else {
-      arr[i] = i;
-    }
-
-    cout << "Item: " << arr[i] << "\n";
-  }
-
-  cout << "\n";
-  
+  cout << c - 'a' << "\n";
   
   return 0;
 }
