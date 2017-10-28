@@ -80,9 +80,8 @@ void menu(vector<MATRIX>& matrices) {
 
     cout << "\n";
 
-    if(userInput == -1) { // exit
+    if(userInput == -1) // exit
       break;
-    }
 
     else if(userInput == 0 && size > 0) // print vectors to console
       printMatrices(matrices);
