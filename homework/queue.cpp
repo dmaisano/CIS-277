@@ -1,8 +1,18 @@
+/*
+CIS-277-601HY
+Domenico Maisano
+Prof. Aljamal
+Queue Project
+*/
+
 #include <iostream>
 #include <cstdlib>
 #include <iomanip> // setw
 using namespace std;
 
+void cat(const int, const int*, int, int, int);
+
+// Class Object 'Queue'
 class Queue {
 
 private:
@@ -41,24 +51,23 @@ public:
       return;
     }
 
-    cout << "Items in Queue '" << name << "': \n";
+    cout << "Items in Queue '" << name << "'\nCategory\n";
 
-    // Executes if the rear is larger than the front (this executes in most cases)
+    // Executes if array is linear (this executes in most cases)
     if(rear >= front) {
-      for(int i = front; i <= rear; i++) {
-        cout << "Item: " << setw(2) << i << "\tValue: " << setw(2) << data[i] << "\n";
-      }
+      // cout << "1 to 9:";
+      
+      // for(int i = front; i <= rear; i++) {
+      //   if(data[i] > 0 && data[i] < 10)
+      //     cout << " " << data[i];
+      // }
+
+      cat(0, data, front, rear, max);
     }
 
     // Executes if the array is circular and wraps around
     else {
-      for(int i = front; i < size; i++) {
-        cout << "Item: " << setw(2) << i << "\tValue:" << setw(2) << data[i] << "\n";;
-      }
-
-      for(int i = 0; i <= rear; i++) {
-        cout << "Item: " << setw(2) << i << "\tValue: " << setw(2) << data[i] << "\n";
-      }
+      cat(1, data, front, rear, max);
     }
   }
 
@@ -211,6 +220,95 @@ void menu(Queue q) {
     }
 
   }
+}
+
+void cat(const int type, const int *data, int front, int rear, int size = 0) {
+  // if type == 1, array wraps around (circular)
+  // if type == 0, array does not wrap around
+
+  // excecutes if the array is linear
+  if(type == 0) {
+    cout << "1 to 9:    ";
+    
+    for(int i = front; i <= rear; i++) {
+      if(data[i] > 0 && data[i] <= 9)
+        cout << " " << data[i];
+    }
+  
+    cout << "\n10 to 19:  ";
+    
+    for(int i = front; i <= rear; i++) {
+      if(data[i] >= 10 && data[i] < 20)
+        cout << " " << data[i];
+    }
+  
+    cout << "\n20 to 29:  ";
+    
+    for(int i = front; i <= rear; i++) {
+      if(data[i] >= 20 && data[i] < 29)
+        cout << " " << data[i];
+    }
+  
+    cout << "\n30 or more:";
+    
+    for(int i = front; i <= rear; i++) {
+      if(data[i] >= 30)
+      cout << " " << data[i];
+    }
+  }
+  
+  // executes if the array is circular and wraps around
+  if(type == 1) {
+    cout << "1 to 9:    ";
+    
+    for(int i = front; i <= size; i++) {
+      if(data[i] > 0 && data[i] <= 9)
+        cout << " " << data[i];
+    }
+
+    for(int i = 0; i <= size; i++) {
+      if(data[i] > 0 && data[i] <= 9)
+        cout << " " << data[i];
+    }
+  
+    cout << "\n10 to 19:  ";
+    
+    for(int i = front; i <= rear; i++) {
+      if(data[i] >= 10 && data[i] < 20)
+        cout << " " << data[i];
+    }
+
+    for(int i = 0; i <= size; i++) {
+      if(data[i] >= 10 && data[i] < 20)
+        cout << " " << data[i];
+    }
+  
+    cout << "\n20 to 29:  ";
+    
+    for(int i = front; i <= rear; i++) {
+      if(data[i] >= 20 && data[i] < 29)
+        cout << " " << data[i];
+    }
+
+    for(int i = 0; i <= size; i++) {
+      if(data[i] >= 20 && data[i] < 29)
+        cout << " " << data[i];
+    }
+  
+    cout << "\n30 or more:";
+    
+    for(int i = front; i <= rear; i++) {
+      if(data[i] >= 30)
+        cout << " " << data[i];
+    }
+
+    for(int i = 0; i <= size; i++) {
+      if(data[i] >= 30)
+        cout << " " << data[i];
+    }
+  }
+
+  cout << "\n\n";
 }
 
 // Dummy function that will be executed in class
