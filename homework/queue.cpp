@@ -10,6 +10,7 @@ Queue Project
 #include <iomanip> // setw
 using namespace std;
 
+// categorize function
 void cat(const int, const int*, int, int, int);
 
 // Class Object 'Queue'
@@ -113,7 +114,7 @@ public:
     // Executes if there is only one item in the Queue
     if(front == rear) {
       front = rear = -1;
-    }
+    } 
 
     // Wraps the Queue around itself (circular)
     else if(front == max)
@@ -124,6 +125,12 @@ public:
       front++;
 
     return num;
+  }
+
+  // Deletes existing data in the queue and creates a new empty queue
+  void purge() {
+    front = rear = -1;
+    data = new int[size];
   }
 
   // Function that returns true if the queue is full, false if not
@@ -140,12 +147,6 @@ public:
       return true;
 
     return false;
-  }
-
-  // Deletes existing data in the queue and creates a new empty queue
-  void purge() {
-    front = rear = -1;
-    data = new int[size];
   }
 };
 
@@ -225,6 +226,7 @@ void menu(Queue q) {
 void cat(const int type, const int *data, int front, int rear, int size = 0) {
   // if type == 1, array wraps around (circular)
   // if type == 0, array does not wrap around
+  // size == size of the array
 
   // excecutes if the array is linear
   if(type == 0) {
