@@ -78,28 +78,27 @@ int main() {
   return 0;
 }
 
-
 void demo() {
   List list;
   
-    list.createNode(10);
-    list.createNode(20);
-    list.createNode(30);
-    list.createNode(40);
-    list.createNode(50);
-    list.createNode(60);
-    list.createNode(70);
-    list.createNode(80);
-    list.createNode(90);
-  
-    cout << "--Initial List--\n";
-    list.print();
-    cout << "\n\n--Updated List--\n";
-  
-    list.deleteNode();
-    list.deleteNode();
-    list.deleteNode();
-    list.deleteNode();
-  
-    list.print();
+  list.createNode(10);
+  list.createNode(20);
+  list.createNode(30);
+  list.createNode(40);
+  list.createNode(50);
+  list.createNode(60);
+  list.createNode(70);
+  list.createNode(80);
+  list.createNode(90);
+
+  cout << "--Initial List--\n";
+  list.print();
+  cout << "\n\n--Updated List--\n";
+
+  list.deleteNode();
+  list.deleteNode();
+  list.deleteNode();
+  list.deleteNode();
+
+  list.print();
 }
