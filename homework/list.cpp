@@ -1,3 +1,10 @@
+/*
+CIS-277-601HY
+Domenico Maisano
+Prof. Aljamal
+Linked List Program
+*/
+
 #include <iostream>
 using namespace std;
 
@@ -31,9 +38,10 @@ public:
     }
   }
 
+  // creates node to end of list
   void createNode(int value) {
     node *temp = new node;
-    temp->data = value; // assigns the arg to the 
+    temp->data = value; // assigns the 'value' to the node's data
     temp->next = NULL; // creating a new node in the list sets it as the top hence 'NULL'
 
     if(head == NULL) { // if there are no items in the list, set the temp item as the top hence 'NULL'
@@ -48,84 +56,49 @@ public:
     }
   }
 
-  void insertHead(int value) {
-    node *temp = new node;
-    temp->data = value;
-    temp->next = head;
-    head = temp;
-  }
-
-  void insertPos(int value, int pos) {
-    node *pre = new node;
-    node *cur = new node;
-    node *temp = new node; // new node that will be inserted between the pre and cur nodes
-
-    cur = head;
-
-    for(int i = 0; i < pos; i++) { // iterates through the list until the node before the desired is found
-      pre = cur;
-      cur = cur->next;
-    }
-
-    temp->data = value;
-    pre->next = temp;
-    temp->next = cur;
-  }
-
-  void deleteHead() {
+  // deletes the head node and assigns the next one as the head
+  void deleteNode() {
     node *temp = new node;
     temp = head; // the new node is set as the head
     head = head->next; // the head now becomes the next node in the list
 
     delete temp; // the original head is dereferenced in memory and is deleted
   }
-
-  void deleteTail() {
-    node *pre = new node;
-    node *cur = new node;
-    
-    cur = head; // initialize the current node as the head to iterate over it
-
-    while(cur->next != NULL) { // iterates through the list until the tail is found
-      pre = cur;
-      cur = cur->next;
-    }
-
-    tail = pre; // sets the previous element before the tail as the new tail
-    pre->next = NULL;
-    delete cur; // removes the original tail
-  }
-
-  void deletePos(int pos) {
-    node *cur = new node;
-    node *pre = new node;
-    
-    cur = head;
-
-    for(int i = 0; i < pos; i++) {
-      pre = cur;
-      cur = cur->next;
-    }
-
-    pre->next = cur->next;
-  }
 };
 
+// dummy function to run in class
+void demo();
+
 int main() {
-  List list;
 
-  list.createNode(10);
-  list.createNode(100);
-  list.createNode(30);
-  list.createNode(40);
-  list.createNode(50);
-
-  list.insertPos(20, 1);
-  list.deletePos(2);
-
-  list.print();
+  demo();
 
   cout << "\n";
 
   return 0;
+}
+
+void demo() {
+  List list;
+  
+  list.createNode(10);
+  list.createNode(20);
+  list.createNode(30);
+  list.createNode(40);
+  list.createNode(50);
+  list.createNode(60);
+  list.createNode(70);
+  list.createNode(80);
+  list.createNode(90);
+
+  cout << "--Initial List--\n";
+  list.print();
+  cout << "\n\n--Updated List--\n";
+
+  list.deleteNode();
+  list.deleteNode();
+  list.deleteNode();
+  list.deleteNode();
+
+  list.print();
 }
