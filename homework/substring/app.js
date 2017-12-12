@@ -12,7 +12,6 @@ document.getElementById('stringInput').addEventListener('input', (event) => {
   let userInput = event.target.value;
   let result = fms(userInput);
 
-<<<<<<< HEAD
   if(result === true) {
     result = 'VALID SUBSTRING';
     document.getElementById('card').style.backgroundColor = '#5FB760';
@@ -22,9 +21,6 @@ document.getElementById('stringInput').addEventListener('input', (event) => {
     result = 'INVALID SUBSTRING';
     document.getElementById('card').style.backgroundColor = '#D75452';
   }
-=======
-  result = result == 1 ? 'TRUE' : 'FALSE';
->>>>>>> 4cb5841ba5163130326f097ff50ac20642a02ef0
 
   document.getElementById('result').innerHTML = result;
   document.getElementById('result').style.textAlign = 'center';
