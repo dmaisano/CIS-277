@@ -1,4 +1,7 @@
+// Source code of the FMS function that includes the inline comments
+
 // finite state machine func() to find a substring containing '1101'
+// the function accepts any particular string and is not restricted to binary strings
 function fms(str) {
   str = str.split('') // splits the string up into a character array
 
@@ -14,5 +17,3 @@ function fms(str) {
 
   // return false
 }
-
-module.exports = fms;
