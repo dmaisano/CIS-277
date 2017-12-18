@@ -21,26 +21,29 @@ public class substring {
     String choice = prompt("Restart program?\n1 = Yes\n2 = No\nEnter choice: ");
 
     // if the user enters 1, recursively call the menu function
-    if(choice.matches("1"))
+    if(choice.contains("1"))
       menu();
 
-    else
+    else {
       System.out.println("Exiting program...");
+      prompt.close(); // closes the scanner to prevent resource leaks 
+    }
   }
+
+  public static Scanner prompt = new Scanner(System.in); // scanner object
 
   // function to get input from the user
   public static String prompt(String phrase) {
-    Scanner prompt = new Scanner(System.in);
-
     System.out.print(phrase);
+
     String str = prompt.next(); // gets input from user
 
-    return str;
+    return str; 
   }
 
   public static String validateString(String str) {
     // uses regex to check if the string contains illegal characters
-    while(str.matches("[a-zA-Z]+") || str.matches("[2-9]+")) {
+    while(!str.matches("[01]+")) {
       System.out.println("Invalid string!");
       str = prompt("Enter a binary string: "); // recursively calls the function until a valid string is entered
     }
@@ -50,7 +53,7 @@ public class substring {
 
   public static boolean isSubstr(String str) {
     // if the string contains the substring '1101' return true
-    if(str.matches("1101"))
+    if(str.contains("1101"))
       return true;
 
     // else return false
