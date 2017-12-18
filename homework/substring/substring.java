@@ -1,3 +1,7 @@
+// substring.java
+// Java(8) program source code
+// Github link: https://github.com/dmaisano/CIS-277/blob/master/homework/substring/substring.java
+
 import java.util.Scanner; // allows us to get input from the user
 
 public class substring {
@@ -42,8 +46,7 @@ public class substring {
   }
 
   public static String validateString(String str) {
-    // uses regex to check if the string contains illegal characters
-    while(!str.matches("[01]+")) {
+    while(!str.matches("[01]+")) { // uses regex to check if the string contains illegal characters
       System.out.println("Invalid string!");
       str = prompt("Enter a binary string: "); // recursively calls the function until a valid string is entered
     }
