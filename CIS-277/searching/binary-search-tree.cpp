@@ -31,6 +31,6 @@ int main() {
   // binarySearch(toast);
 
   cout << "\n";
-  
+
   return 0;
 }
