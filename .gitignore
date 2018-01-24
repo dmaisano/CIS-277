@@ -1,6 +1,8 @@
 .vscode
 *.dat
 *.txt
+project*
+!project*.cpp
 **/test.*
 .DS_Store
 **/*.class
