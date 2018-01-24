@@ -4,5 +4,6 @@
 *.txt
 *.class
 test.*
-project* # ignores extensionless executable files
-!project*.cpp
+
+# ignore executables (.exe)
+*.exe

@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
   size md = { "medium", 10 };
   size lg = { "large", 20 };
 
-  if(argc <= 1)
+  if(argc < 1)
     cout << "MISSING SIZE" << endl;
 
   for(int i = 1; i < argc; i++) {
