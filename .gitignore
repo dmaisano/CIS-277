@@ -1,8 +1,8 @@
 .vscode
+.DS_Store
 *.dat
 *.txt
-project*
+*.class
+test.*
+project* # ignores extensionless executable files
 !project*.cpp
-**/test.*
-.DS_Store
-**/*.class
