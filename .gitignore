@@ -1,8 +1,9 @@
 .vscode
+.DS_Store
 *.dat
 *.txt
-project*
-!project*.cpp
-**/test.*
-.DS_Store
-**/*.class
+*.class
+test.*
+
+# ignore executables (.exe)
+*.exe
