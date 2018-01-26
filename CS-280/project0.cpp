@@ -5,15 +5,15 @@
 #include <string.h>
 using namespace std;
 
-struct size {
+struct params {
   string s;
   int value;
 };
 
 int main(int argc, char *argv[]) {
-  size sm = { "small", 5 };
-  size md = { "medium", 10 };
-  size lg = { "large", 20 };
+  params sm = { "small", 5 };
+  params md = { "medium", 10 };
+  params lg = { "large", 20 };
 
   if(argc <= 1)
     cout << "MISSING SIZE" << endl;
