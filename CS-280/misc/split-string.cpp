@@ -5,10 +5,6 @@
 #include<vector>
 using namespace std;
 
-struct flag {
-  string flag, name;
-};
-
 vector<string> splitString(const string &str, const char delim) {
   stringstream ss(str);
   string item;
@@ -22,17 +18,16 @@ vector<string> splitString(const string &str, const char delim) {
 }
 
 int main() {
-  vector<flag> flags = {
-    { "-q", "Quiet Mode"  },
-    { "-s", "Squish Mode" },
-    { "-c", "Censor Mode" },
-    { "-p", "Print Mode"  },
-    { "-l", "Length Mode" }
-  };
+  string test = "I-hate-doing-lab-reports-for-physics";
 
-  find(flags.begin(), flags.end(), '-p');
+  vector<string> words;
 
-  // auto x = flags.begin();
+  words = splitString(test, '-');
 
-  // cout << flags[0].flag;
+  for(int i = 0; i < words.size(); i++) {
+    cout << words[i];
+
+    if(i < words.size() - 1)
+      cout << endl;
+  }
 }
