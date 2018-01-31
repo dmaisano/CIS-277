@@ -27,7 +27,7 @@ int main() {
 
   // find_if()
   // anonymous / lambda functions are so beautiful!!
-  vector<int>::iterator iter = find_if(vect.begin(), vect.end(), [](int num) {
+  auto iter = find_if(vect.begin(), vect.end(), [](int num) {
     return (num % 2) == 1;
   });
 

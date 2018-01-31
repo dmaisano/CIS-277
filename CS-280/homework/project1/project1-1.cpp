@@ -8,37 +8,39 @@
 // #include <algorithm>
 using namespace std;
 
-void argsFunc(int argc, char *argv[], map<string, string> flags) {
-  vector<string> args;
+// stores an iteration of the flag map
+map<string, string >::iterator iter;
 
-  for(int i = 0; i < argc; i++) {
-    args.push_back(argv[i]);
-  }
+void argsFunc(int argc, char *argv[]) {
+  vector<string> temp(argv, argv + argc); // copy of argv
+  // vector<string> flagTypes = { "-q", "-s", "-c", "-p", "-l" };
+  map<string, string> flagMap;
+  vector<string> nonFlags;
+  vector<string> flags;
+
+  flagMap["-q"] = "Quiet Mode";
+  flagMap["-s"] = "Squish Mode";
+  flagMap["-c"] = "Censor Mode";
+  flagMap["-p"] = "Print Mode";
+  flagMap["-l"] = "Length Mode";
 
   if(argc <= 1) {
-    cout << "MISSING ARGS";
+    cout << "MISSING ARGS" << endl;
     return;
   }
 
-  for(auto const &arg : args) {
-    cout << arg << endl;
+  for(auto const &arg : temp) {
+    // finds flags
+    if(arg[0] == '-') {
+      if(flagMap.count(arg))
+        cout << "Flag: " << arg << "\tDesc: " << flagMap[arg] << endl;
+
+      else
+        cout << "Flag: " << arg << "\tINVALID FLAG" << endl;
+    }
   }
 }
 
 int main(int argc, char *argv[]) {
-  // vector<string> flags = { "q", "-s", "-c", "-p", "-l" };
-  map<string, string> flags;
-
-  flags["-q"] = "Quiet Mode";
-  flags["-s"] = "Squish Mode";
-  flags["-c"] = "Censor Mode";
-  flags["-p"] = "Print Mode";
-  flags["-l"] = "Length Mode";
-
-  argsFunc(argc, argv, flags);
-
-  // iterate over keys and values of map
-  // for(auto const &flag : flags) {
-  //   cout << flag.first << "\t" << flag.second << endl;
-  // }
+  argsFunc(argc, argv);
 }
