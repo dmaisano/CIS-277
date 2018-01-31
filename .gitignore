@@ -4,6 +4,7 @@
 *.txt
 *.class
 test.*
+tempCodeRunnerFile.*
 
 # ignore executables (.exe)
 *.exe
