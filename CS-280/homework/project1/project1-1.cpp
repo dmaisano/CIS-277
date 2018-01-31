@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-// #include <sstream> // splitstring
+// #include <sstream> // splitString()
 // #include <fstream> // files
 #include <vector> // vector<type>
 #include <map> // map<type, type>
@@ -55,20 +55,11 @@ void argsFunc(int argc, char *argv[]) {
       files.push_back(argv[i]);
   }
 
-  for(auto const flag : flags) {
+  for(auto const flag : flags)
     if((inFlags(flags, "-s") || inFlags(flags, "-c")) && inFlags(flags, "-q")) {
       cout << "CONFLICTING FLAGS" << endl;
       return;
     }
-
-    // else if((inFlags(flags, "-s") || inFlags(flags, "-c")) && inFlags(flags, "-q")) {
-    //   cout << "CONFLICTING FLAGS";
-    //   return;
-    // }
-
-    // else
-    //   continue;
-  }
 
   if(files.size() > 1) {
     cout << files.size() << " TOO MANY FILES" << endl;
@@ -76,8 +67,10 @@ void argsFunc(int argc, char *argv[]) {
   }
 
   // will eventually open a file
-  else
+  else {
     cout << files[0] << " CANNOT OPEN" << endl;
+    return;
+  }
 }
 
 bool inFlags(vector<string> flags, string flag) {
