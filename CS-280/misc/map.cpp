@@ -27,7 +27,7 @@ int main () {
 
   // string word = "-q";
 
-  for(auto const& flag : flagTypes)
+  for(auto const flag : flagTypes)
     if(flags.count(flag))
       cout << flags[flag] << endl;
 }

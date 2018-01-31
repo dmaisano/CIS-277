@@ -24,10 +24,9 @@ int main() {
 
   words = splitString(test, '-');
 
-  for(int i = 0; i < words.size(); i++) {
-    cout << words[i];
+  // for(int i = 0; i < words.size(); i++) {
+  //   cout << words[i];
 
-    if(i < words.size() - 1)
-      cout << endl;
-  }
+  for(auto const word : words)
+    cout << word << endl;
 }
