@@ -10,22 +10,10 @@ using namespace std;
 
 void argsFunc(int argc, char *argv[]); // program1
 bool inFlags(vector<string> flags, string flag); // returns true if flag is found
-vector<string> splitString(const string &str, const char delim) {
-  stringstream ss(str);
-  string item;
-
-  vector<string> res;
-
-  while(getline(ss, item, delim))
-    res.push_back(item);
-
-  return res;
-}
+vector<string> splitString(const string &str, const char delim); // split a string
 
 int main(int argc, char *argv[]) {
-  // vector<string> flags = { "q", "-s", "-c", "-p", "-l" };
   map<string, string> flags;
-
   flags["-q"] = "Quiet Mode";
   flags["-s"] = "Squish Mode";
   flags["-c"] = "Censor Mode";
@@ -48,7 +36,6 @@ int main(int argc, char *argv[]) {
 vector<string> splitString(const string &str, const char delim) {
   stringstream ss(str);
   string item;
-
   vector<string> res;
 
   while(getline(ss, item, delim))

@@ -27,7 +27,12 @@ int main () {
 
   // string word = "-q";
 
-  for(auto const flag : flagTypes)
-    if(flags.count(flag))
-      cout << flags[flag] << endl;
+  // iterate over keys and values of map
+  for(auto const &flag : flags) {
+    cout << flag.first << "\t" << flag.second << endl;
+  }
+
+  // for(auto const flag : flagTypes)
+  //   if(flags.count(flag))
+  //     cout << flags[flag] << endl;
 }
