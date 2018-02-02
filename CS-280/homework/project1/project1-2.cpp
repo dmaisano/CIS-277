@@ -6,11 +6,11 @@
 #include <map> // map<type, type>
 #include <algorithm> // find
 #include <cctype> // check whitespace
+#include "../lex.h";
 using namespace std;
 
-void argsFunc(int argc, char *argv[]); // program1
-bool inFlags(vector<string> flags, string flag); // returns true if flag is found
-vector<string> splitString(const string &str, const char delim); // split a string
+void argsFunc(int argc, char *argv[]);
+bool inFlags(vector<string> flags, string flag);
 
 int main(int argc, char *argv[]) {
   map<string, string> flags;
@@ -20,35 +20,14 @@ int main(int argc, char *argv[]) {
   flags["-p"] = "Print Mode";
   flags["-l"] = "Length Mode";
 
-  vector<string> split = splitString("Hello World", ' ');
-
-  for(auto const &x : split) {
-    cout << x << endl;
-  }
-
-  // iterate over keys and values of map
-  // for(auto const &flag : flags) {
-  //   cout << flag.first << "\t" << flag.second << endl;
-  // }
+  string spaces = "  this is  a    string with  spaces";
+  string res = Lex::squish(spaces);
+  cout << res << endl << "Length: " << res.length() << endl;
 }
 
-
-vector<string> splitString(const string &str, const char delim) {
-  stringstream ss(str);
-  string item;
-  vector<string> res;
-
-  while(getline(ss, item, delim))
-    res.push_back(item);
-
-  return res;
-}
-
-
+// handles command line args
 void argsFunc(int argc, char *argv[]) {
-  // vector<string> temp(argv, argv + argc); // copy of argv
-  // vector<string> flagTypes = { "-q", "-s", "-c", "-p", "-l" };
-  map<string, string> flagMap;
+  map<string, string> flagMap; // dictionary for flags
   vector<string> files; // stores a list of file args
   vector<string> flags; // stores a list of flag args
 
@@ -75,17 +54,19 @@ void argsFunc(int argc, char *argv[]) {
       }
     }
 
-    // finds files
+    // finds file flags
     else if(i != 0)
       files.push_back(argv[i]);
   }
 
+  // Conflicting flags
   for(auto const flag : flags)
     if((inFlags(flags, "-s") || inFlags(flags, "-c")) && inFlags(flags, "-q")) {
       cout << "CONFLICTING FLAGS" << endl;
       return;
     }
 
+  // Too many files
   if(files.size() > 1) {
     cout << files.size() << " TOO MANY FILES" << endl;
     return;
@@ -98,6 +79,7 @@ void argsFunc(int argc, char *argv[]) {
   }
 }
 
+// returns true if flag is found
 bool inFlags(vector<string> flags, string flag) {
   if(find(flags.begin(), flags.end(), flag) != flags.end())
     return true;
