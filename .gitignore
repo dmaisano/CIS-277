@@ -8,3 +8,4 @@ tempCodeRunnerFile.*
 
 # ignore executables (.exe)
 *.exe
+*.sh

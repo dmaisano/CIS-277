@@ -6,11 +6,10 @@
 #include <map> // map<type, type>
 #include <algorithm> // find
 #include <cctype> // check whitespace
-#include "../lex.h";
+#include "../lex.h"
 using namespace std;
 
 void argsFunc(int argc, char *argv[]);
-bool inFlags(vector<string> flags, string flag);
 
 int main(int argc, char *argv[]) {
   map<string, string> flags;
@@ -25,7 +24,7 @@ int main(int argc, char *argv[]) {
   cout << res << endl << "Length: " << res.length() << endl;
 }
 
-// handles command line args
+// main prog (handles command line args)
 void argsFunc(int argc, char *argv[]) {
   map<string, string> flagMap; // dictionary for flags
   vector<string> files; // stores a list of file args
@@ -61,7 +60,7 @@ void argsFunc(int argc, char *argv[]) {
 
   // Conflicting flags
   for(auto const flag : flags)
-    if((inFlags(flags, "-s") || inFlags(flags, "-c")) && inFlags(flags, "-q")) {
+    if((Lex::inFlags(flags, "-s") || Lex::inFlags(flags, "-c")) && Lex::inFlags(flags, "-q")) {
       cout << "CONFLICTING FLAGS" << endl;
       return;
     }
@@ -77,12 +76,4 @@ void argsFunc(int argc, char *argv[]) {
     cout << files[0] << " CANNOT OPEN" << endl;
     return;
   }
-}
-
-// returns true if flag is found
-bool inFlags(vector<string> flags, string flag) {
-  if(find(flags.begin(), flags.end(), flag) != flags.end())
-    return true;
-  
-  return false;
 }

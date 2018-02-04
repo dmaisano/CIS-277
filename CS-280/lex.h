@@ -1,5 +1,6 @@
 #ifndef LEX_H
 #define LEX_H
+
 #include<iostream>
 #include<sstream>
 #include<string>
@@ -55,6 +56,15 @@ public:
     res.pop_back(); // removes the trailing space at the end of the string
     return res;
   }
+
+  // returns true if flag is found
+  static bool inFlags(vector<string> flags, string flag) {
+    if(find(flags.begin(), flags.end(), flag) != flags.end())
+      return true;
+    
+    return false;
+  }
+
 };
 
 #endif 
