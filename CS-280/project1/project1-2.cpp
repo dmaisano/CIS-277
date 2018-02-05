@@ -12,23 +12,16 @@ using namespace std;
 void argsFunc(int argc, char *argv[]);
 
 int main(int argc, char *argv[]) {
-  map<string, string> flags;
-  flags["-q"] = "Quiet Mode";
-  flags["-s"] = "Squish Mode";
-  flags["-c"] = "Censor Mode";
-  flags["-p"] = "Print Mode";
-  flags["-l"] = "Length Mode";
-
-  string spaces = "  this is  a    string with  spaces";
-  string res = Lex::squish(spaces);
-  cout << res << endl << "Length: " << res.length() << endl;
+  // string spaces = "  this is  a    string with  spaces";
+  // string res = Lex::squish(spaces);
+  // cout << res << endl << "Length: " << res.length() << " chars" << endl;
 }
 
 // main prog (handles command line args)
 void argsFunc(int argc, char *argv[]) {
-  map<string, string> flagMap; // dictionary for flags
   vector<string> files; // stores a list of file args
   vector<string> flags; // stores a list of flag args
+  map<string, string> flagMap; // dictionary for flags
 
   flagMap["-q"] = "Quiet Mode";
   flagMap["-s"] = "Squish Mode";
@@ -44,12 +37,13 @@ void argsFunc(int argc, char *argv[]) {
   for(int i = 0; i < argc; i++) {
     // finds flags
     if(argv[i][0] == '-') {
+      // of the valid is valid, add it to the list of flags
       if(flagMap.count(argv[i]))
         flags.push_back(argv[i]);
 
       else {
         cout << argv[i] << " INVALID FLAG" << endl;
-        return;
+        exit(0);
       }
     }
 
@@ -57,7 +51,7 @@ void argsFunc(int argc, char *argv[]) {
     else if(i != 0)
       files.push_back(argv[i]);
   }
-
+  
   // Conflicting flags
   for(auto const flag : flags)
     if((Lex::inFlags(flags, "-s") || Lex::inFlags(flags, "-c")) && Lex::inFlags(flags, "-q")) {

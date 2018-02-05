@@ -8,18 +8,15 @@
 // #include <cctype> // check whitespace
 using namespace std;
 
-// stores an iteration of the flag map
-// map<string, string >::iterator iter;
-
 void argsFunc(int argc, char *argv[]); // program1
 bool inFlags(vector<string> flags, string flag); // returns true if flag is found
 
-
+// main program
 int main(int argc, char *argv[]) {
   argsFunc(argc, argv);
 }
 
-
+// function to handle the CLI
 void argsFunc(int argc, char *argv[]) {
   // vector<string> temp(argv, argv + argc); // copy of argv
   // vector<string> flagTypes = { "-q", "-s", "-c", "-p", "-l" };
