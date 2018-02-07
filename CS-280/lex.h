@@ -9,6 +9,8 @@
 #include <vector>
 using namespace std;
 
+void flagHandler(ifstream fiel, map<string, int> flags);
+
 class Lex {
 public:
   // function to handle the CLI
@@ -149,5 +151,10 @@ public:
 }
 
 };
+
+// Will handle flag options (ie. Squish, Quiet, etc)
+void flagHandler(ifstream fiel, map<string, int> flags) {
+  // do something
+}
 
 #endif 
