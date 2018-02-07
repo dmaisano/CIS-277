@@ -1,15 +1,12 @@
 #include <iostream>
 #include <string>
-// #include <sstream> // splitString()
-// #include <fstream> // files
 #include <vector> // vector<type>
 #include <map> // map<type, type>
-#include <algorithm> // find
-// #include <cctype> // check whitespace
+#include <algorithm> // find]
 using namespace std;
 
-void argsFunc(int argc, char *argv[]); // program1
-bool inFlags(vector<string> flags, string flag); // returns true if flag is found
+void argsFunc(int argc, char *argv[]); // basically program0
+bool inFlags(map<string, int> flagMap, string flag); // returns true if flag is found
 
 // main program
 int main(int argc, char *argv[]) {
@@ -20,15 +17,25 @@ int main(int argc, char *argv[]) {
 void argsFunc(int argc, char *argv[]) {
   // vector<string> temp(argv, argv + argc); // copy of argv
   // vector<string> flagTypes = { "-q", "-s", "-c", "-p", "-l" };
-  map<string, string> flagMap;
-  vector<string> files; // stores a list of file args
-  vector<string> flags; // stores a list of flag args
+  map<string, string> flagMap = {
+    { "-q", "Quiet Mode"  },
+    { "-s", "Squish Mode" },
+    { "-c", "Censor Mode" },
+    { "-p", "Print Mode"  },
+    { "-l", "Length Mode" },
+  };
 
-  flagMap["-q"] = "Quiet Mode";
-  flagMap["-s"] = "Squish Mode";
-  flagMap["-c"] = "Censor Mode";
-  flagMap["-p"] = "Print Mode";
-  flagMap["-l"] = "Length Mode";
+  // stores a dict of flag args
+  map<string, int> flags = {
+    // the int value stores the count of the flag
+    { "-q", 0 },
+    { "-s", 0 },
+    { "-c", 0 },
+    { "-p", 0 },
+    { "-l", 0 },
+  };
+
+  vector<string> files; // stores a list of file args
 
   if(argc <= 1) {
     cout << "MISSING ARGS" << endl;
@@ -36,10 +43,12 @@ void argsFunc(int argc, char *argv[]) {
   }
 
   for(int i = 0; i < argc; i++) {
+    string arg = argv[i];
+
     // finds flags
-    if(argv[i][0] == '-') {
-      if(flagMap.count(argv[i]))
-        flags.push_back(argv[i]);
+    if(arg[0] == '-') {
+      if(flagMap.count(arg))
+        ++flags[arg];
 
       else {
         cout << argv[i] << " INVALID FLAG" << endl;
@@ -70,9 +79,9 @@ void argsFunc(int argc, char *argv[]) {
   }
 }
 
-bool inFlags(vector<string> flags, string flag) {
-  if(find(flags.begin(), flags.end(), flag) != flags.end())
+bool inFlags(map<string, int> flags, string f) {
+  if(flags[f] > 0)
     return true;
-  
+
   return false;
 }
