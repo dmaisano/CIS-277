@@ -13,7 +13,7 @@ Contains C++ Projects / Files from various CS courses
 ***
 
 **Newfound Wisdom 💭**
-- Although I have known this for some time I'm just going to share a few good things about `C++`
+- Although I have known this for some time I'm just going to share a few good things about **C++**
   - C like performance
   - Pointers && References 🔍📋
   - C strings and other C structures/types
