@@ -2,10 +2,12 @@
 #define LEX_H
 
 #include <iostream>
+#include <fstream>
 #include <sstream>
 #include <string>
 #include <cctype>
 #include <ctype.h>
+#include <map>
 #include <vector>
 using namespace std;
 
@@ -142,7 +144,7 @@ public:
     return;
   }
 
-  fstream file(fileName);
+  ifstream file(fileName);
   string line = "";
 
   while(getline(file, line)) {
