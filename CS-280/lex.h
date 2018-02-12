@@ -16,7 +16,7 @@ void flagHandler(ifstream fiel, map<string, int> flags);
 class Lex {
 public:
   // function to handle the CLI
-  static void argsFunc(int argc, char *argv[]) {
+  static void argsFunc(int argc, vector<string> argv) {
     map<string, string> flagMap = {
       { "-q", "Quiet Mode"  },
       { "-s", "Squish Mode" },
@@ -35,30 +35,38 @@ public:
       { "-l", 0 },
     };
 
-    vector<string> files; // stores a list of file args
+    bool foundFile = false;
+    string file = "";
 
-    if(argc <= 1) {
+    if(argc == 1) {
       cout << "MISSING ARGS" << endl;
       return;
     }
 
-    for(int i = 0; i < argc; i++) {
-      string arg = argv[i];
-
+    for(auto arg : argv) {
       // finds flags
       if(arg[0] == '-') {
         if(flagMap.count(arg))
           ++flags[arg];
 
         else {
-          cout << argv[i] << " INVALID FLAG" << endl;
+          cout << arg << " INVALID FLAG" << endl;
           return;
         }
       }
 
       // finds files
-      else if(i != 0)
-        files.push_back(argv[i]);
+      else {
+        if(foundFile == false) {
+          file = arg;
+          foundFile = true;
+        }
+
+        else if(foundFile == true) {
+          cout << "TOO MANY FILES" << endl;
+          return;
+        }
+      }
     }
 
     for(auto const flag : flags)
@@ -67,14 +75,9 @@ public:
         return;
       }
 
-    if(files.size() > 1) {
-      cout << files.size() << " TOO MANY FILES" << endl;
-      return;
-    }
-
     // will eventually open a file
     else {
-      cout << files[0] << " CANNOT OPEN" << endl;
+      cout << file << " CANNOT OPEN" << endl;
       return;
     }
   }
@@ -134,27 +137,26 @@ public:
     return false;
   }
 
-  void file(string fileName) {
-  // executes if file exists
-  if(fstream(fileName))
-    ; // does nothing
+  void openFile(string fileName) {
+    // executes if file exists
+    if(fstream(fileName))
+      ; // does nothing
 
-  else {
-    cout << fileName << " CANNOT OPEN" << endl;
-    return;
-  }
+    else {
+      cout << fileName << " CANNOT OPEN" << endl;
+      return;
+    }
 
-  ifstream file(fileName);
-  string line = "";
+    ifstream file(fileName);
+    string line = "";
 
-  while(getline(file, line)) {
+  while(getline(file, line))
     cout << line << endl;
-  }
 }
 
 };
 
-// Will handle flag options (ie. Squish, Quiet, etc)
+// Will handle file with included flag options (ie. Squish, Quiet, etc)
 void flagHandler(ifstream fiel, map<string, int> flags) {
   // do something
 }
