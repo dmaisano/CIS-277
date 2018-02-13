@@ -11,7 +11,20 @@
 #include <vector>
 using namespace std;
 
-void flagHandler(ifstream fiel, map<string, int> flags);
+void openFile(string fileName);
+bool is_good_word(string);
+bool is_real_word(string);
+bool is_cap_word(string);
+bool is_acryonym(string);
+// this returns a dictionary that contains all word types
+map<string, vector<string>> flagHandler(ifstream file, map<string, int> flags);
+
+class Token {
+public:
+  Token(string tokenName) {
+    map<string, vector<string>> token;
+  }
+}
 
 class Lex {
 public:
@@ -93,7 +106,7 @@ public:
       string temp = "";
       bool foundChar = false;
 
-      // loops over each character in 'item'
+      // loops over each character in strin 'item'
       for(auto c : item) {
         // executes if any non-whitespace char is found
         if(!isspace(c)) {
@@ -136,8 +149,9 @@ public:
 
     return false;
   }
+};
 
-  void openFile(string fileName) {
+void openFile(string fileName) {
     // executes if file exists
     if(fstream(fileName))
       ; // does nothing
@@ -154,11 +168,14 @@ public:
     cout << line << endl;
 }
 
-};
+bool is_good_word(string word) {
+  for(auto c : word)
+    cout << c;
+}
 
 // Will handle file with included flag options (ie. Squish, Quiet, etc)
-void flagHandler(ifstream fiel, map<string, int> flags) {
-  // do something
+map<string, vector<string>> flagHandler(ifstream file, map<string, int> flags) {
+  map<string, vector<string>> tokens;
 }
 
 #endif 
