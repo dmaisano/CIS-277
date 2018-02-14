@@ -1,14 +1,15 @@
-#include<iostream>
-#include<sstream>
-#include<string>
-// #include<cctype>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <cctype>
 #include <ctype.h>
-#include<vector>
-#include<regex>
+#include <map>
+#include <vector>
 using namespace std;
 
 vector<string> splitString(const string &str) {
-  regex spaces("\\s(.*)");
+  // regex spaces("\\s(.*)"); 
   stringstream ss(str);
   string item;
 
@@ -50,21 +51,30 @@ string squish(string s) {
   for(auto item :  items)
     res += item + " ";
 
-  res.pop_back(); // removes the trailing space at the end of the string
+  // removes the trailing space at the end of the string
+  res.pop_back();
   return res;
 }
 
+void func(string fileName) {
+  if(ifstream(fileName))
+    ;
+
+  // skips the current word in the iteration if true
+  bool skip = false;
+
+  ifstream file(fileName);
+  string line = "";
+
+  // each current line is a string
+  while(getline(file, line)) {
+    // iterate over each char in the line
+    for(auto c : line) {
+      // do something
+    }
+  }
+}
+
 int main() {
-  // string test = "I-hate-doing-lab-reports-for-physics";
-  string spaces = "     ahhhh  another word  done";
-
-  vector<string> words;
-  words = splitString(spaces);
-  // for(auto const word : words)
-  //   cout << word << endl;
-
-
-
-  string res = squish(spaces);
-  cout << res << endl << "Length: " << res.length() << endl;
+  func("./first.txt");
 }

@@ -11,14 +11,6 @@
 #include <vector>
 using namespace std;
 
-void openFile(string fileName);
-bool is_good_word(string);
-bool is_real_word(string);
-bool is_cap_word(string);
-bool is_acryonym(string);
-// this returns a dictionary that contains all word types
-map<string, vector<string>> flagHandler(ifstream file, map<string, int> flags);
-
 class Lex {
 public:
   // function to handle the CLI
@@ -33,7 +25,7 @@ public:
 
     // stores a dict of flag args
     map<string, int> flags = {
-      // the int value stores the count of the flag
+      // the int value stores the count that the flag was found
       { "-q", 0 },
       { "-s", 0 },
       { "-c", 0 },
@@ -42,7 +34,7 @@ public:
     };
 
     bool foundFile = false;
-    string file = "";
+    string fileName = "";
 
     if(argc == 1) {
       cout << "MISSING ARGS" << endl;
@@ -64,7 +56,7 @@ public:
       // finds files
       else {
         if(foundFile == false) {
-          file = arg;
+          fileName = arg;
           foundFile = true;
         }
 
@@ -83,9 +75,13 @@ public:
 
     // will eventually open a file
     else {
-      cout << file << " CANNOT OPEN" << endl;
+      cout << fileName << " CANNOT OPEN" << endl;
       return;
     }
+
+    // code that runs if the flags and filename are valid
+    if(foundFile)
+      fileHandler(fileName);
   }
 
   static vector<string> splitString(const string str) {
@@ -99,7 +95,7 @@ public:
       string temp = "";
       bool foundChar = false;
 
-      // loops over each character in strin 'item'
+      // loops over each character in string 'item'
       for(auto c : item) {
         // executes if any non-whitespace char is found
         if(!isspace(c)) {
@@ -142,11 +138,13 @@ public:
 
     return false;
   }
-};
 
-void openFile(string fileName) {
+  static vector<string> fileHandler(string fileName) {
+    // stores a list of string per each line in a file
+    vector<string> lines;
+
     // executes if file exists
-    if(fstream(fileName))
+    if(ifstream(fileName))
       ; // does nothing
 
     else {
@@ -157,18 +155,37 @@ void openFile(string fileName) {
     ifstream file(fileName);
     string line = "";
 
-  while(getline(file, line))
-    cout << line << endl;
-}
+    while(getline(file, line))
+      lines.push_back(line);
+  }
 
-bool is_good_word(string word) {
-  for(auto c : word)
-    cout << c;
-}
+  // finds if a word is a goodword, realword, etc
+  bool wordCase(string identifier, string word) {
+    for(auto c : word) {
+      if(identifier == "goodword" && isalnum(c))
+        continue;
 
-// Will handle file with included flag options (ie. Squish, Quiet, etc)
-map<string, vector<string>> flagHandler(ifstream file, map<string, int> flags) {
-  map<string, vector<string>> tokens;
-}
+      else if(identifier == "realword" && isalpha(c))
+        continue;
+
+      else if(identifier == "capword" && isupper(c))
+        return true;
+
+      else if(identifier == "acronym" && isupper(c))
+        continue;
+
+      else
+        return false;
+    }
+
+    return true;
+  }
+
+  // will handle file with included flag options (ie. Squish, Quiet, etc)
+  // this returns a dictionary that contains all word types
+  static map<string, vector<string>> flagHandler(ifstream file, map<string, int> flags) {
+    map<string, vector<string>> tokens;
+  }
+};
 
 #endif 
