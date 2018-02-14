@@ -19,13 +19,6 @@ bool is_acryonym(string);
 // this returns a dictionary that contains all word types
 map<string, vector<string>> flagHandler(ifstream file, map<string, int> flags);
 
-class Token {
-public:
-  Token(string tokenName) {
-    map<string, vector<string>> token;
-  }
-}
-
 class Lex {
 public:
   // function to handle the CLI
