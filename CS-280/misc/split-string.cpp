@@ -63,7 +63,7 @@ vector<vector<string>> parse(const string fileName, string flag) {
 }
 
 int main() {
-  string fileName = "./second.txt";
+  string fileName = "../project1/p1cases/second.txt";
 
   // vector<vector<string>> temp = {
   //   {"hello"},

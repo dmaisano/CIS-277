@@ -83,7 +83,7 @@ public:
     }
   }
 
-  // returns true if flag is found
+  // returns true if flag(s) are found
   static bool inFlags(set<string> flags, vector<string> args) {
     for(auto arg : args) {
       if(flags.find(arg) != flags.end())
@@ -137,6 +137,7 @@ public:
     return result;
   }
 
+  // returns an exact copy of the file
   static vector<vector<string>> copyFile(const string fileName) {
     vector<vector<string>> copiedFile;
     ifstream file(fileName);
@@ -155,42 +156,6 @@ public:
     file.close();
     return copiedFile;
   }
-
-  // returns a list of good words
-  // static vector<vector<string>> goodWords(const vector<vector<string>> wordlist, const set<string> parserFlags) {
-  //   vector<vector<string>> newWordList;
-
-  //   return newWordList;
-  // }
-
-  // returns a list of real words
-  // static vector<vector<string>> realWords(const vector<vector<string>> wordlist, const set<string> parserFlags) {
-  //   vector<vector<string>> newWordList;
-
-  //   bool realWord = true;
-
-  //   for(auto line : wordlist)
-  //     for(auto word : line)
-  //       if(wordHandler(word, "realword"))
-  //         newWordList.push_back(word);
-
-  //   return newWordList;
-  // }
-
-  // static bool wordHandler(string word, string option) {
-  //   bool result;
-
-  //   if(option == "realword")
-  //     for(auto c : word) {
-  //       if(!isalpha(c) && != '\n')
-  //         result = false;
-
-  //       else
-  //         result = true;
-  //     }
-
-  //   return result;
-  // } 
 
   // will parse a file with the provided list of flags
   static vector<vector<string>> parseFile(const string fileName, const set<string> parserFlags) {

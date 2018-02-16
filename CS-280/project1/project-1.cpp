@@ -13,15 +13,15 @@ int main(int argc, char *argv[]) {
   // vector of args
   vector<string> args(argv + 1, argv + argc);
 
-  // Lex::argsFunc(argc, args);
+  Lex::argsFunc(argc, args);
 
-  auto wordlist = Lex::findWords("../second.txt", "-s");
+  // auto wordlist = Lex::findWords("../second.txt", {"-s"});
 
-  for(auto line : wordlist) {
-    for(auto word : line)
-      cout << word << " ";
+  // for(auto line : wordlist) {
+  //   for(auto word : line)
+  //     cout << word << " ";
 
-    cout << endl;
-  }
+  //   cout << endl;
+  // }
 }
 
