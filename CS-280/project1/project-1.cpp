@@ -6,7 +6,7 @@
 #include <map>        // map<type, type>
 #include <algorithm>  // find()
 #include <cctype>     // check whitespace
-#include "../lex.h"
+#include "./lex.h"
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -14,14 +14,5 @@ int main(int argc, char *argv[]) {
   vector<string> args(argv + 1, argv + argc);
 
   Lex::argsFunc(argc, args);
-
-  // auto wordlist = Lex::findWords("../second.txt", {"-s"});
-
-  // for(auto line : wordlist) {
-  //   for(auto word : line)
-  //     cout << word << " ";
-
-  //   cout << endl;
-  // }
 }
 

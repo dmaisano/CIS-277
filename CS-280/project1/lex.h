@@ -14,14 +14,14 @@ using namespace std;
 class Lex {
 public:
   // function to handle the CLI program
-  static void argsFunc(int argc, vector<string> argv) {
-    set<string> options = { "-q", "-s", "-c", "-p", "-l" };
+  void argsFunc(int argc, vector<string> argv) {
+    set<string> options = { "-q", "-s", "-c", "-p", "-l" };\
+    string fileName = "";
 
     // stores a set of flag args that will be used when parsing
     set<string> parserFlags;
 
     bool foundFile = false;
-    string fileName = "";
 
     if(argc == 1) {
       cout << "MISSING ARGS" << endl;
@@ -44,14 +44,15 @@ public:
       // finds files
       else {
         if(foundFile == false) {
-          fileName = arg;
+          thisFile = arg;
+          cout << "FOUND FILE: " << thisFile << endl << endl;
 
           // continues if file exists, if not exits program
-          if(ifstream(fileName))
+          if(ifstream(thisFile))
             ;
           
           else {
-            cout << fileName << " CANNOT OPEN" << endl;
+            cout << thisFile << " CANNOT OPEN" << endl;
             exit(0);
           }
 
@@ -65,15 +66,15 @@ public:
       }
     }
 
-    // this is such an elegant solution for finding flags :)
+    // finds if the flags passed conflict
     if((inFlags(parserFlags, {"-s"}) || inFlags(parserFlags, {"-c"})) && inFlags(parserFlags, {"-q"})) {
       cout << "CONFLICTING FLAGS" << endl;
       exit(0);
     }
 
-    // will eventually open a file
+    // open the file and parse it with the flags
     else {
-      auto parsedFile = parseFile(fileName, parserFlags);
+      auto parsedFile = parseFile(thisFile, parserFlags);
       
       for(auto line : parsedFile)
         for(auto word : line)
@@ -93,52 +94,13 @@ public:
     return true;
   }
 
-  // returns a list of words per each line
-  static vector<vector<string>> findWords(const string fileName, set<string> parserFlags = {}, const char delim = ' ') {
-    vector<vector<string>> result;
-    ifstream file(fileName);
-    string curLine = "";
-
-    // iterate over each line in the file
-    while(getline(file, curLine)) {
-      vector<string> words = {};
-      istringstream ss(curLine);
-      string word = "";
-      // does not append empty lines to our list
-      if(curLine.empty() && inFlags(parserFlags, {"-s"}))
-        continue;
-      // iterates over each word per line
-      while(ss >> word) {
-        string tmp = ""; // current word in line
-        bool foundWord = false;
-        // iterates over each character per word
-        for(auto c : word) {
-          // executes if any non-whitespace char is found
-          if(!isspace(c)) {
-            tmp += c;
-            foundWord = true;
-          }
-          // executes if whitespace or delim is found after the word
-          else if((isspace(c) && foundWord) || (foundWord && c == delim))
-            break;
-        }
-        tmp += " ";
-        words.push_back(tmp);
-      }
-      string temp;
-      for(auto c : words.back()) {
-        if(!isspace(c))
-          temp += c;
-      }
-      words.back() = temp += "\n";
-      result.push_back(words);
-    }
-    file.close();
-    return result;
+  // finds the list of words per each line
+  static vector<string> findWords(const string fileName, parserFlags = {}, const char delim = ' ') {
+    
   }
 
   // returns an exact copy of the file
-  static vector<vector<string>> copyFile(const string fileName) {
+  static vector<string> copyFile(const string fileName) {
     vector<vector<string>> copiedFile;
     ifstream file(fileName);
     string curLine = "";

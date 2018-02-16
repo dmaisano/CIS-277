@@ -1,11 +1,6 @@
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <string>
-#include <cctype>
-#include <ctype.h>
-#include <map>
-#include <vector>
+#include <fstream>
 using namespace std;
 
 int main() {
