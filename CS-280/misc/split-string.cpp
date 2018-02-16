@@ -8,22 +8,21 @@
 #include <vector>
 using namespace std;
 
-vector<string> splitString(const string &str) {
-  // regex spaces("\\s(.*)"); 
-  stringstream ss(str);
+vector<string> squish(string line) {
+  vector<string> res; // result to be returned
+  istringstream ss(line);
   string item;
 
-  vector<string> res;
-
+  // iterates over each word per line
   while(ss >> item) {
-    string temp = "";
+    string tmp = "";
     bool foundChar = false;
 
-    // loops over each character in 'item'
+    // iterates over each character per word
     for(auto c : item) {
       // executes if any non-whitespace char is found
       if(!isspace(c)) {
-        temp += c;
+        tmp += c;
         foundChar = true;
       }
 
@@ -32,49 +31,53 @@ vector<string> splitString(const string &str) {
         break;
     }
 
-    // appends word to the list
-    res.push_back(temp);
+    res.push_back(tmp);
   }
 
   return res;
 }
 
-string squish(string s) {
-  if(s == "") {
-    cout << "NO STRING PROVIDED" << endl;
-    return "";
-  }
-  
-  string res = "";
-  auto items = splitString(s);
-
-  for(auto item :  items)
-    res += item + " ";
-
-  // removes the trailing space at the end of the string
-  res.pop_back();
-  return res;
-}
-
-void func(string fileName) {
+vector<vector<string>> parse(const string fileName, string flag) {
+  // continues if file exists, if not exits program
   if(ifstream(fileName))
-    ;
+    ; else exit(0);
 
-  // skips the current word in the iteration if true
-  bool skip = false;
+  vector<vector<string>> res; // contains list of all lines with their words
+  ifstream file(fileName); // file
+  string line = ""; // current line
 
-  ifstream file(fileName);
-  string line = "";
+  // since nothing is copied there is no need to iterate over the file
+  if(flag == "-q")
+    return res;
 
-  // each current line is a string
+  // iterate over each line in the file
   while(getline(file, line)) {
-    // iterate over each char in the line
-    for(auto c : line) {
-      // do something
+    if(flag == "-s") {
+      auto words = squish(line);
+
+      res.push_back(words);
     }
   }
+
+  return res;
 }
 
 int main() {
-  func("./first.txt");
+  string fileName = "./second.txt";
+
+  // vector<vector<string>> temp = {
+  //   {"hello"},
+  //   {"jello"},
+  //   {"yello"}
+  // };
+
+  auto res = parse(fileName, "-s");
+
+  for(auto line : res) {
+    for(auto word : line) {
+      cout << word << " ";
+    }
+      
+    cout << endl;
+  }
 }
