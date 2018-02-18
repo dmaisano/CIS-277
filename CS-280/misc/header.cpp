@@ -3,7 +3,9 @@
 using namespace std;
 
 int main() {
-  Dog bork;
+  // Dog bork;
 
-  cout << bork.getName() << " is a " << bork.getBreed() << " who is " << bork.getAge() <<  " years old";
+  Foo bar;
+  
+  // cout << bork.getName() << " is a " << bork.getBreed() << " who is " << bork.getAge() <<  " years old";
 }

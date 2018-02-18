@@ -1,6 +1,22 @@
-#ifndef NUM_H
-#define NUM_H
+#ifndef HEADER_H
+#define HEADER_H
+
+#include <iostream>
+#include <string>
 using namespace std;
+
+class Foo {
+private:
+  bool bar = false;
+
+public:
+  Foo() {
+    this->bar = true;
+
+    if(this->bar)
+      cout << "I WORK";
+  }
+};
 
 class Dog {
 private:
@@ -10,17 +26,13 @@ private:
 public:
   Dog() {
     cout << "Enter the name for the dog: ";
-    cin >> name;
+    cin >> this->name;
 
     cout << "How old is " << this->name << ": ";
-    cin >> age;
+    cin >> this->age;
 
     cout << "What breed is " << this->name << ": ";
-    cin >> breed;
-
-    this->name = name;
-    this->age = age;
-    this->breed = breed;
+    cin >> this->breed;
   }
 
   string getName() {
