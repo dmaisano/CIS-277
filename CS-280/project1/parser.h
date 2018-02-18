@@ -7,7 +7,6 @@
 #include <fstream>
 #include <cctype>
 #include <ctype.h>
-#include <numeric>
 #include <vector>
 #include <set>
 using namespace std;
@@ -100,16 +99,14 @@ public:
     auto file = Parser::copyFile(fileName);
 
     for(auto line : file) {
-      string currentLine;
-      currentLine = accumulate(begin(line), end(line), currentLine);
       vector<string> words;
       istringstream ss(line);
       string item;
 
-      if(currentLine.empty() || currentLine == "\n")
-       cout << "\\n\n";
-      else
-        cout << currentLine;
+      if(line == "\n" || line.empty()) {
+        wordlist.push_back({"\\0"});
+        continue;
+      }
 
       // iterates over each word per line
       while(ss >> item) {
@@ -129,7 +126,6 @@ public:
         }
         words.push_back(word);
       }
-      words.push_back("\n");
       wordlist.push_back(words);
     }
     return wordlist;
@@ -155,6 +151,8 @@ public:
     file.close();
     return copiedFile;
   }
+
+
 
   // will parse a file with the provided list of flags
   static vector<string> parseFile(const string fileName, const set<string> parserFlags) {
