@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include "./parser.h"
 using namespace std;
 
@@ -9,24 +10,21 @@ int main(int argc, char *argv[]) {
 
   // Parser::main(argc, args);
 
-  auto wordlist = Parser::findWords("./sample.txt");
+  set<string> options = { "-c" };
+  auto parsedFile = Parser::parse("./sample.txt", options);
+
+  cout << parsedFile;
+
+  cout << "\n[done]";
 
 
-  vector<string> foo;
+  // auto copyFile = Parser::copyFile("./sample.txt");
 
-  for(auto line : wordlist) {
-    string currentLine;
+  // int empty = 0;
+  // for(auto line : copyFile)
+  //   for(auto c : line)
+  //     if(c == '\n')
+  //       ++empty;
 
-    if(line == vector<string>{"\\0"}) {
-      cout << "\\0\n";
-      continue;
-    }
-
-    for(auto word : line) {
-      if(word != line.back())
-        cout << word << " ";
-      else
-        cout << word << endl;
-    }
-  }
+  // cout << empty;
 }

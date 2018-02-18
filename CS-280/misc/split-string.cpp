@@ -15,6 +15,7 @@ vector<string> squish(string line) {
 
   // iterates over each word per line
   while(ss >> item) {
+    cout << item; continue;
     string tmp = "";
     bool foundChar = false;
 
@@ -63,7 +64,7 @@ vector<vector<string>> parse(const string fileName, string flag) {
 }
 
 int main() {
-  string fileName = "../project1/p1cases/second.txt";
+  string fileName = "../project1/p1cases/third.txt";
 
   // vector<vector<string>> temp = {
   //   {"hello"},

@@ -11,80 +11,58 @@
 #include <set>
 using namespace std;
 
+vector<string> findWords(string line);
+
 class Parser {
 public:
   // encapsulate's main functionality of the program
-  static void CLI(int argc, vector<string> argv) {
-    set<string> options = { "-q", "-s", "-c", "-p", "-l" };
-
+  static string CLI(int argc, vector<string> argv) {
     // stores a set of flag args that will be used when parsing
-    set<string> parserFlags;
-
+    set<string> parserFlags = {}, options = { "-q", "-s", "-c", "-p", "-l" };
     bool foundFile = false;
     string fileName = "";
 
-    if(argc == 1) {
-      cout << "MISSING ARGS" << endl;
-      exit(0);
-    }
+    if(argc == 1) { cout << "MISSING ARGS" << endl; exit(0); }
 
     for(auto arg : argv) {
       // args beginning with '-' are flags
       if(arg[0] == '-') {
         // executes if valid value is found
-        if(inFlags(options, {arg}))
+        if(checkFlags(options, {arg}))
           parserFlags.insert(arg);
 
-        else {
-          cout << arg << " INVALID FLAG" << endl;
-          exit(0);
-        }
+        else { cout << arg << " INVALID FLAG" << endl; exit(0); }
       }
 
       // finds files
       else {
         if(foundFile == false) {
           fileName = arg;
-
           // continues if file exists, if not exits program
-          if(ifstream(fileName))
-            ;
-          
-          else {
-            cout << fileName << " CANNOT OPEN" << endl;
-            exit(0);
-          }
-
+          if(ifstream(fileName)) ;
+          else { cout << fileName << " CANNOT OPEN" << endl; exit(0); }
           foundFile = true;
         }
 
-        else if(foundFile == true) {
-          cout << "TOO MANY FILES" << endl;
-          exit(0);
-        }
+        else if(foundFile == true) { cout << "TOO MANY FILES" << endl; exit(0); }
       }
     }
 
-    // this is such an elegant solution for finding flags :)
-    if((inFlags(parserFlags, {"-s"}) || inFlags(parserFlags, {"-c"})) && inFlags(parserFlags, {"-q"})) {
+    // finds conflicting flags
+    if((checkFlags(parserFlags, {"-s"}) || checkFlags(parserFlags, {"-c"})) && checkFlags(parserFlags, {"-q"})) {
       cout << "CONFLICTING FLAGS" << endl;
       exit(0);
     }
 
-    // parses the file//
+    // parses the file
     else {
-      // auto parsedFile = parseFile(fileName, parserFlags);
-      
-      // for(auto line : parsedFile)
-      //   for(auto word : line)
-      //     cout << word;
-
-      exit(0);
+      auto parsedFile = parse(fileName, parserFlags);
+      return parsedFile;
     }
   }
 
-  // returns true if the flag(s) are found
-  static bool inFlags(const set<string> flags, vector<string> args) {
+  // returns true if all flag(s) are found
+  static bool checkFlags(const set<string> flags, vector<string> args) {
     for(auto arg : args) {
       if(flags.find(arg) != flags.end())
         continue;
@@ -93,42 +71,12 @@ public:
     return true;
   }
 
-  // returns a list of words per each line
-  static vector<vector<string>> findWords(const string fileName) {
-    vector<vector<string>> wordlist;
-    auto file = Parser::copyFile(fileName);
-
-    for(auto line : file) {
-      vector<string> words;
-      istringstream ss(line);
-      string item;
-
-      if(line == "\n" || line.empty()) {
-        wordlist.push_back({"\\0"});
-        continue;
-      }
-
-      // iterates over each word per line
-      while(ss >> item) {
-        string word = "";
-        bool foundChar = false;
-
-        // iterates over each character per word
-        for(auto c : item) {
-          // executes if any non-whitespace char is found
-          if(!isspace(c)) {
-            word += c;
-            foundChar = true;
-          }
-          // executes if any whitespace is found after the word/char
-          if(isspace(c) && foundChar)
-            break;
-        }
-        words.push_back(word);
-      }
-      wordlist.push_back(words);
-    }
-    return wordlist;
+  // returns true if the flag provided is found
+  static bool inFlags(const set<string> flags, string arg) {
+    for(auto flag : flags)
+      if(flag == arg)
+        return true;
+    return false;
   }
 
   // returns an exact copy / list of words per line in the file
@@ -152,29 +100,90 @@ public:
     return copiedFile;
   }
 
+  bool validateWord(string str) {
+    for(auto c : str)
+      if(!isalpha(c))
+        return false;
+      return true;
+  }
 
+  // returns a list of words per each line
+  static string parse(const string fileName, const set<string> args = {}) {
+    string parsedFile;
+    vector<string> currentLine;
+    auto file = copyFile(fileName);
 
-  // will parse a file with the provided list of flags
-  static vector<string> parseFile(const string fileName, const set<string> parserFlags) {
-    auto wordlist = findWords(fileName);
-    vector<string> parsedFile;
+    // if(args == set<string>{})
+    //   return file;
 
-    // return exact copy of file
-    // if(parserFlags.empty())
-    //   return copyFile(fileName);
+    for(auto line : file) {
+      bool validWord = false, foundWord = false;
+      string currentWord, whitespace;
+      vector<string> words, whitespace;
 
-    // return no output
-    // else if(inFlags(parserFlags, {"-q"}))
-    //   return parsedFile;
+      if(args == set<string>{}) {
+        parsedFile += line;
+        continue;
+      }
 
-    // else if(inFlags(parserFlags, {"-s"}))
-    //   return findWords(fileName, {"-s"});
+      // iterates over each char in the line
+      for(auto c : line) {
+        if(!inFlags(args, "-s"))
+          ;
 
-    // else if(inFlags(parserFlags, {"-c"}))
-      // return realWords(wordlist, "realword");
+        if(inFlags(args, "-c"))
+          ;
 
+        if(!isspace(c) && isalpha(c)) {
+          currentWord += c;
+          validWord = true;
+        }
+
+        if(isspace(c) && validWord) {
+          currentWord += c;
+          foundWord = false;
+        }
+
+        if(!isspace(c) && !isalpha(c)) {
+          foundWord = true;
+          validWord = false;
+        }
+        parsedFile += currentWord;
+        currentWord = "";
+      }
+    }
     return parsedFile;
   }
 };
+
+vector<string> findWords(string line) {
+  vector<string> res; // result to be returned
+  istringstream ss(line);
+  string item;
+
+  // iterates over each word per line
+  while(ss >> item) {
+    cout << item; continue;
+    string tmp = "";
+    bool foundChar = false;
+
+    // iterates over each character per word
+    for(auto c : item) {
+      // executes if any non-whitespace char is found
+      if(!isspace(c)) {
+        tmp += c;
+        foundChar = true;
+      }
+
+      // executes if any whitespace is found after the word/char
+      if(isspace(c) && foundChar)
+        break;
+    }
+
+    res.push_back(tmp);
+  }
+
+  return res;
+}
 
 #endif 
