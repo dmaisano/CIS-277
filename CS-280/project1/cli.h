@@ -36,9 +36,16 @@ public:
       else {
         if(foundFile == false) {
           fileName = arg;
+
           // continues if file exists, if not exits program
-          if(ifstream(fileName)) ;
-          else { cout << fileName << " CANNOT OPEN" << endl; exit(0); }
+          if(ifstream(fileName))
+            ;
+            
+          else {
+            cout << fileName << " CANNOT OPEN" << endl;
+            exit(0); 
+          }
+
           foundFile = true;
         }
 
@@ -99,7 +106,7 @@ public:
   }
 
   // returns the word if it is a realword
-  static string isRealWord(string str) {
+  static bool isRealWord(string str) {
     istringstream ss(str);
     string item;
 
@@ -111,11 +118,11 @@ public:
       if(isalpha(c))
         continue;
       else
-        return "";
+        return false;
     }
 
     // if the word is valid, return it
-    return item;
+    return true;
   }
   
   // removes extra whitespace from current line
@@ -123,16 +130,18 @@ public:
     istringstream ss(str);
     string result, item;
 
-    if(!inFlags(args, "-c")) {
+    if(inFlags(args, "-s") && !inFlags(args, "-c")) {
       while(ss >> item)
         result += item + " ";
     }
 
-    else if(inFlags(args, "-c")) {
-      // do something
+    else if(inFlags(args, "-s") && inFlags(args, "-c")) {
+      while(ss >> item)
+        if(isRealWord(item)) {
+          result += item + " ";
+        }
     }
     
-
     // removes the additional space inserted by the loop
     result.pop_back();
     return result + "\n";
@@ -147,8 +156,8 @@ public:
     return true;
   }
 
-  // finds all words in the line
-  static vector<string> findWords(const string str) {
+  // returns a list of all words in the line
+  static vector<string> findWords(const string str, const set<string> args = {}) {
     vector<string> words;
     istringstream ss(str);
     string tmp;
@@ -188,28 +197,119 @@ public:
         words.push_back(tmp);
     }
 
+    if(inFlags(args, "-c")) {
+      vector<string> realWords;
+
+      for(auto word : words)
+        if(isRealWord(word))
+          realWords.push_back(word);
+      
+      return realWords;
+    }
+
     return words;
   }
 
-  // returns a list of words per each line
+  // finds all words in the line
+  static string wordString(const string str, const set<string> args = {}) {
+    string result, tmp;
+    istringstream ss(str);
+    bool foundWord = false;
+    bool foundWS = false;
+    int size = str.size() - 1;
+
+    // if the line is empty, return a newline
+    if(str == "\n" || isWhiteSpace(str)) {
+      return "\n";
+    }
+
+    for(int i = 0; i <= size; i++) {
+      // appends anywhite to the word if found at the start of the line
+      if(isWhiteSpace(tmp) && isspace(str[i]) && !foundWS) {
+        tmp += str[i];
+      }
+      // if a character is found
+      if(!isspace(str[i]) && !foundWS) {
+        tmp += str[i];
+        foundWord = true;
+      }
+      // appends the whitespace after a word
+      else if(isspace(str[i]) && foundWord) {
+        tmp += str[i];
+        foundWord = false;
+        foundWS = true;
+      }
+      // appends additional whitespace after the word 
+      else if(isspace(str[i]) && !foundWord && foundWS) {
+        tmp += str[i];
+      }
+      // if a word is found after the trailing whitespace of the previous word
+      else if(!isspace(str[i]) && !foundWord && foundWS) {
+        result += tmp;
+        tmp = str[i];
+        foundWord = true;
+        foundWS = false;
+      }
+      // if the last word is found
+      if(i == size)
+        result += tmp;
+    }
+
+    if(inFlags(args, "-c")) {
+      if(result == "\n" || isWhiteSpace(result))
+        return "";
+
+      auto wordList = findWords(result);
+      string realWords, item;
+
+      for(auto word : wordList) {
+        istringstream ss(word);
+
+        if(isRealWord(ss.str()))
+          realWords += word;
+      }
+
+      // for(auto word : words)
+      //   if(isRealWord(word))
+      //     realWords.push_back(word);
+      
+      return realWords;
+    }
+
+    return result;
+  }
+
+  // returns a string containing all the lines of the parsed file
   static string parse(const string fileName, const set<string> args = {}) {
     string parsedFile;
     auto file = copyFile(fileName);
     vector<vector<string>> wordList;
 
     // if no args, return exact copy of file
-    if(args == set<string>{} || checkFlags) {;
+    if(args.empty()) {
       for(auto line : file) {
         parsedFile += line;
-        continue;
       }
-      return parsedFile;
     }
 
-    if(checkFlags(args, {"-s"})) {
+    // finds all realwords in the string
+    if(!inFlags(args, "-s") && inFlags(args, "-c")) {
       for(auto line : file) {
-        parsedFile += squishLine(line);
+        string currentLine = wordString(line, args);
+        parsedFile += currentLine;
       }
+    }
+
+    // squishes each line in the file
+    if(inFlags(args, "-s") && !inFlags(args, "-c")) {
+      for(auto line : file)
+        parsedFile += squishLine(line, args);
+    }
+
+    // squishes each line in the file, containing only real words
+    if(inFlags(args, "-s") && inFlags(args, "-c")) {
+      for(auto line : file)
+        parsedFile += squishLine(line, args);
     }
 
     return parsedFile;

@@ -10,31 +10,34 @@ int main(int argc, char *argv[]) {
 
   // PatternMatcher::CLI(argc, args);
 
-  set<string> options = { "-c" };
+  set<string> options = { "-q", "-s", "-c", "-p", "-l" };
+  set<string> parserFlags = { "-c" };
 
   // auto parsedFile = PatternMatcher::parse("./sample.txt", options);
   // cout << parsedFile;
 
-  auto x = PatternMatcher::squishLine("  this file has      sev3ral      Extra      words!   ");
-  auto y = PatternMatcher::squishLine("  this file has      sev3ral      Extra      words!   ");
+  auto squished = PatternMatcher::squishLine("  this file has      sev3ral      Extra      words!   ", parserFlags);
 
-  // cout << x << y;
+  auto parsedFile = PatternMatcher::parse("./sample.txt", parserFlags);
 
-  for(auto c : x) {
-    if(c == ' ')
-      cout << "*";
-    else
+  // cout << parsedFile;
+
+  for(auto c : parsedFile) {
+    if(c ==  ' ')
+      cout << '*';
+    else if(c == '\n')
+      cout << "\\n\n";
+    else if(!isspace(c))
       cout << c;
   }
-  
-  // for(auto word : words) {
-  //   for(auto c : word) {
-  //     if(c == ' ')
-  //       cout << "*";
-  //     else
-  //       cout << c;
-  //   }
-  //   cout << "\\n\n";
+
+  // auto realWords = PatternMatcher::
+
+  // for(auto c : squished) {
+  //   if(c == ' ')
+  //     cout << "*";
+  //   else
+  //     cout << c;
   // }
 
   cout << "\n[done]";

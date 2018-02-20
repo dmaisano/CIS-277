@@ -7,16 +7,16 @@ using namespace std;
 
 class Foo {
 private:
-  bool bar = false;
-
-public:
-  Foo() {
-    this->bar = true;
-
-    if(this->bar)
-      cout << "I WORK";
+  static void doSomething() {
+    cout << "foo bar baz";
   }
+public:
+  static void bar();
 };
+
+void Foo::bar() {
+  doSomething();
+}
 
 class Dog {
 private:
