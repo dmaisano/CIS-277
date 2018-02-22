@@ -17,6 +17,7 @@ void printPattern(const string str, const regex pattern) {
       else
         cout << c;
     }
+    cout << endl;
   }
 }
 
@@ -25,18 +26,6 @@ int main() {
   string sample2 = "The the cow jumped over the the moon";
   const regex re(R"([\s]*[\w]+[\s]*)");
   sregex_iterator it(sample1.begin(), sample1.end(), re), reg_end;
-  int count = 0;
 
-  for(; it != reg_end; ++it) {
-    ++count;
-    for(auto c : it->str()) {
-      if(c == ' ')
-        cout << '*';
-      else
-        cout << c;
-    }
-    cout << endl;
-  }
-
-  cout << count << endl;
+  printPattern(sample1, re);
 }
