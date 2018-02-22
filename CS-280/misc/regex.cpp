@@ -3,12 +3,40 @@
 #include <regex>
 using namespace std;
 
-int main() {
-  const string s = "/home/toto/FILE_mysymbol_EVENT.DAT";
-  regex rgx(".*FILE_(\\w+)_EVENT\\.DAT.*");
-  smatch match;
+void printPattern(const string str, const regex pattern) {
+  sregex_iterator it(str.begin(), str.end(), pattern), reg_end;
 
-  if (regex_search(s.begin(), s.end(), match, rgx))
-    cout << "match: " << match[1] << '\n';
+  // reg_end == empty/null iterator
+  for(; it != reg_end; ++it) {
+    // cout << it->str() << endl;
+
+    // visibly shows whitespace in output
+    for(auto c : it->str()) {
+      if(c == ' ')
+        cout << '*';
+      else
+        cout << c;
+    }
+  }
 }
-        
+
+int main() {
+  string sample1 = "   parse   me  I   dare  you  ";
+  string sample2 = "The the cow jumped over the the moon";
+  const regex re(R"([\s]*[\w]+[\s]*)");
+  sregex_iterator it(sample1.begin(), sample1.end(), re), reg_end;
+  int count = 0;
+
+  for(; it != reg_end; ++it) {
+    ++count;
+    for(auto c : it->str()) {
+      if(c == ' ')
+        cout << '*';
+      else
+        cout << c;
+    }
+    cout << endl;
+  }
+
+  cout << count << endl;
+}
