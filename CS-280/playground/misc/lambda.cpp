@@ -2,11 +2,11 @@
 using namespace std;
 
 int main() {
-  auto sayHello = []() {
-    cout << "Hello World";
+  auto saySomething = [](string phrase = "") {
+    cout << phrase;
   };
 
-  sayHello();
+  saySomething("taco cat");
   
   return 0;
 }

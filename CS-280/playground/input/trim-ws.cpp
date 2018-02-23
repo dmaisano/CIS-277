@@ -5,15 +5,6 @@
 using namespace std;
 
 int main() {
-  // vector<string> temp = {"HELLO", "WORLD", "\0"};
-
-  // for(auto word : temp) {
-  //   if(word == "\0")
-  //     cout << "NULL";
-  //   else
-  //     cout << word << " ";
-  // }
-
   istringstream ss("hello  ");
   string word;
 
@@ -21,10 +12,9 @@ int main() {
   int count = 0;
 
   for(auto c : word) {
+    cout << c;
     ++count;
   }
 
-  cout << ss.str() << endl;
-
-  cout << count;
+  cout << endl << "chars: " << count;
 }
