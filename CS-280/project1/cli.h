@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef CLI_H
+#define CLI_H
 
 #include <iostream>
 #include <string>
@@ -15,11 +15,11 @@ using namespace std;
 
 class PatternMatcher {
 public:
-  // encapsulate's main functionality of the program
+  // exposes the main functionality of the program
   static string CLI(int argc, vector<string> argv) {
     // stores a set of flag args that will be used when parsing
-    set<string> parserFlags = {}, options = { "-q", "-s", "-c", "-p", "-l" };
-    bool foundFile = false;
+    set<string> parserFlags, options = { "-q", "-s", "-c", "-p", "-l" };
+    bool foundFile;
     string fileName;
 
     // if no args provided
@@ -103,7 +103,7 @@ private:
     while(file.get(c)) {
       curLine += c;
       if(c == '\n') {
-        copiedFile.push_back({curLine});
+        copiedFile.push_back(curLine);
         // reinitalizes the current line to an empty string
         curLine = "";
       }
@@ -113,63 +113,43 @@ private:
     return copiedFile;
   }
 
-  // increments the occurence of the wordtype
-  static void wordType(string str, map<string, int>& wordCount) {
-    bool goodWord = true, realWord = true, capWord = false, acronym = true;
-
+  // increments the occurences of the given word types
+  static void classifyWord(string str, map<string, int>& wordCount) {
+    int goodWord, realWord, capWord, acronym;
     istringstream ss(str);
-    string trimmedWord;
-    // removes whitespace from the current word
-    ss >> trimmedWord;
+    string word;
+    ss >> word;  // removes whitespace from the current word
 
-    if(isupper(trimmedWord[0]))
-      capWord = true;
+    if(isupper(word[0])) // checks if word is a capword
+      capWord = word.size();
 
-    // checks if word is a goodword
-    for(auto c : trimmedWord) {
-      if(isalnum(c))
-        continue;
-      else {
-        goodWord = false;
-        break;
-      }
+    // some magic happens here
+    for(auto c : word) {
+      if(isalnum(c)) // checks if word is a goodword
+        ++goodWord;
+
+      if(isalpha(c)) // checks if word is a realword
+        ++realWord;
+
+      if(isupper(c)) // checks if word is an acronym
+        ++acronym;
     }
 
-    // checks if word is a realword
-    for(auto c : trimmedWord) {
-      if(isalnum(c))
-        continue;
-      else {
-        realWord = false;
-        break;
-      }
-    }
+    if(goodWord == word.size())
+      ++wordCount["goodword"];
 
-    // checks if word is an acronym
-    for(auto c : trimmedWord) {
-      if(isupper(c))
-        continue;
-      else {
-        acronym = false;
-        break;
-      }
-    }
+    if(realWord == word.size())
+      ++wordCount["realword"];
 
-    if(goodWord)
-      wordCount["goodword"];
+    if(capWord == word.size())
+      ++wordCount["capword"];
 
-    if(realWord)
-      wordCount["realword"];
-
-    if(capWord)
-      wordCount["capword"];
-
-    if(acronym)
-      wordCount["acronym"];
+    if(acronym == word.size())
+      ++wordCount["acronym"];
   }
 
-  // returns a vector of strings within a search string that match the given pattern
-  vector<string> findWords(const string str) {
+  // returns a vector of strings from a search string that matches the given pattern
+  static vector<string> findWords(const string str) {
     const regex pattern(R"([\s]*[\w|.!?]+[\s]*)");
     sregex_iterator it(str.begin(), str.end(), pattern), reg_end;
     vector<string> words;
@@ -181,11 +161,35 @@ private:
     return words;
   }
 
-  // returns a string containing all the lines of the parsed file
+  static string squish() {
+    // squish the copied file
+  }
+
+  static string realWords() {
+    // only leave realwords in the string
+  }
+
+  static vector<string> printStats() {
+    // do something
+  }
+
+  // parses the file and returns it
   static string parse(const string fileName, const set<string> args = {}) {
     string parsedFile;
+    auto file = copyFile(fileName);
+
+    // if no args, return exact copy of file
+    if(args.empty()) {
+      for(auto line : file) {
+        parsedFile += line;
+      }
+    }
 
     return parsedFile;
+  }
+
+  static void output(const string parsedFile, const map<string, int> wordCount, const set<string> args = {}) {
+    // handles the output of the program with the flags (quiet, stats, length)
   }
 };
 
