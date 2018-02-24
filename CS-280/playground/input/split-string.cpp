@@ -9,13 +9,12 @@
 using namespace std;
 
 vector<string> squish(string line) {
-  vector<string> res; // result to be returned
   istringstream ss(line);
-  string item;
+  string item, squishedLine;
 
   // iterates over each word per line
   while(ss >> item) {
-    cout << item; continue;
+    cout << item; // continue;
     string tmp = "";
     bool foundChar = false;
 
@@ -31,32 +30,27 @@ vector<string> squish(string line) {
       if(isspace(c) && foundChar)
         break;
     }
-
-    res.push_back(tmp);
   }
 
-  return res;
+  return squishedLine;
 }
 
-vector<vector<string>> parse(const string fileName, string flag) {
+string parse(const string fileName, string flag) {
   // continues if file exists, if not exits program
-  if(ifstream(fileName))
-    ; else exit(0);
+  if(ifstream(fileName).fail())
+    exit(0);
 
-  vector<vector<string>> res; // contains list of all lines with their words
-  ifstream file(fileName); // file
-  string line = ""; // current line
+  string res, curLine;
+  ifstream file(fileName);
 
   // since nothing is copied there is no need to iterate over the file
   if(flag == "-q")
     return res;
 
   // iterate over each line in the file
-  while(getline(file, line)) {
+  while(getline(file, curLine)) {
     if(flag == "-s") {
-      auto words = squish(line);
-
-      res.push_back(words);
+      auto words = squish(curLine);
     }
   }
 

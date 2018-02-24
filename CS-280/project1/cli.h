@@ -69,17 +69,9 @@ public:
     }
 
     // FINALLY. we parse the file!
+    parse(fileName, parserFlags);
 
-    // contains the count of each type of word
-    map<string, int> wordCount = {
-      { "goodword", 0 },
-      { "realword", 0 },
-      { "capword",  0 },
-      { "acronym",  0 }
-    };
-
-
-
+    // exit program when done
     exit(0);
   }
   
@@ -93,8 +85,8 @@ private:
   }
 
   // returns an exact copy of each line in the file
-  static vector<string> copyFile(const string fileName) {
-    vector<string> copiedFile;
+  static vector<string> getFile(const string fileName) {
+    vector<string> copyFile;
     ifstream file(fileName);
     string curLine;
     char c;
@@ -103,14 +95,14 @@ private:
     while(file.get(c)) {
       curLine += c;
       if(c == '\n') {
-        copiedFile.push_back(curLine);
+        copyFile.push_back({curLine});
         // reinitalizes the current line to an empty string
         curLine = "";
       }
     }
 
     file.close();
-    return copiedFile;
+    return copyFile;
   }
 
   // increments the occurences of the given word types
@@ -149,48 +141,74 @@ private:
   }
 
   // returns a vector of strings from a search string that matches the given pattern
-  static vector<string> findWords(const string str) {
-    const regex pattern(R"([\s]*[\w|.!?]+[\s]*)");
+  static vector<string> findWords(const string str, const string option = "") {
+    regex pattern;
     sregex_iterator it(str.begin(), str.end(), pattern), reg_end;
-    vector<string> words;
+    vector<string> wordlist;
+
+    if(option != "-s")
+      pattern.assign(R"([\s]*[\w|.!?]+[\s]*)");
+
+    else if(option == "-s")
+      pattern.assign((R"([\w|.!?]+)"))
 
     // reg_end == empty/null iterator
     for(; it != reg_end; ++it)
-      words.push_back(it->str());
+      wordlist.push_back(it->str());
 
-    return words;
+    return wordlist;
   }
 
-  static string squish() {
-    // squish the copied file
+  /*
+  TODO
+
+  use getline with squishFile for easier use
+  */
+
+  // returns the file with whitespace trimmed
+  static string squishFile(const string file) {
+    string squishedFile;
+    auto words = findWords(file, "-s");
+
+    for(auto word : words) {
+      if(word != words.back())
+        tmp += word + " ";
+
+      else if(word == words.back())
+        tmp += word + "\n";
+    }
   }
 
-  static string realWords() {
-    // only leave realwords in the string
-  }
 
-  static vector<string> printStats() {
+  static vector<string> printStats(vector<string> wordlist, map<string, int>& wordCount) {
     // do something
   }
 
-  // parses the file and returns it
-  static string parse(const string fileName, const set<string> args = {}) {
+  // parses the file, with the provided flags
+  static string parse(const string fileName, const set<string> flags = {}) {
     string parsedFile;
-    auto file = copyFile(fileName);
+    auto file = getFile(fileName);
 
-    // if no args, return exact copy of file
-    if(args.empty()) {
-      for(auto line : file) {
+    // contains the count of each type of word
+    map<string, int> wordCount = {
+      { "goodword", 0 },
+      { "realword", 0 },
+      { "capword",  0 },
+      { "acronym",  0 }
+    };
+
+    // if no args, return the exact copy of file
+    if(flags.empty())
+      for(auto line : file)
         parsedFile += line;
-      }
-    }
+
 
     return parsedFile;
   }
 
-  static void output(const string parsedFile, const map<string, int> wordCount, const set<string> args = {}) {
+  // static void output(const string parsedFile, const map<string, int> wordCount, const set<string> args = {}) {
     // handles the output of the program with the flags (quiet, stats, length)
-  }
+  // }
 };
 
 #endif 

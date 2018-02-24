@@ -34,19 +34,28 @@ int main() {
   };
   string sample1 = "   parse   me  I   dare  you  ";
   string sample2 = "The the cow jumped over the the moon";
-  const regex re(R"([\s]*[\w|.!?]+[\s]*)");
+  const regex re(R"([\w|.!?]+)");
   sregex_iterator it(sample1.begin(), sample1.end(), re), reg_end;
 
-  // auto words = patternSearch(sample3, re);
-  // for(auto word : words)
-  //   cout << word << endl;
+  string tmp;
 
-  for(auto str : sampleTXT) {
-    auto words = patternSearch(str, re);
-    
-    for(auto word : words)
-      cout << word << "\t";
+  auto words = patternSearch(sample1, re);
+  for(auto word : words) {
+    if(word != words.back())
+      tmp += word + " ";
 
-    cout << endl;
+    else if(word == words.back())
+      tmp += word + "\n";
   }
+
+  cout << tmp;
+
+  // for(auto str : sampleTXT) {
+  //   auto words = patternSearch(str, re);
+    
+  //   for(auto word : words)
+  //     cout << word << "\t";
+
+  //   cout << endl;
+  // }
 }
