@@ -48,7 +48,14 @@ int main() {
       tmp += word + "\n";
   }
 
-  cout << tmp;
+  for(auto c : tmp) {
+    if(c == ' ')
+      cout << '*';
+    else if(c == '\n')
+      cout << "\\n\n";
+    else
+      cout << c;
+  }
 
   // for(auto str : sampleTXT) {
   //   auto words = patternSearch(str, re);
