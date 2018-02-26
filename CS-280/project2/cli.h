@@ -3,9 +3,6 @@
 
 #include <iostream>
 #include <string>
-#include <fstream>
-#include <vector>
-#include <set>
 #include "./project-2.h"
 using namespace std;
 

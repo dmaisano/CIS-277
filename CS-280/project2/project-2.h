@@ -4,9 +4,9 @@ using namespace std;
 
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <fstream>
 #include <cctype>
-#include <ctype.h>
 #include <vector>
 #include <set>
 #include <map>
@@ -16,15 +16,23 @@ using namespace std;
 
 class Lexer {
 public:
-  Lexer() {
-    foo();
-  }
+  // lexical analyzer program
+  Lexer(const string fileName) {
+    ifstream file(fileName);
+    string fileString, currentLine;
+    char c;
 
-  static void foo() {
-    Token myToken;
-    cout << myToken.GetTokenType() << endl;
-    cout << myToken.GetLexeme() << endl;
-    cout << myToken.GetLinenum() << endl;
+    // loop through the entire file, one char at a time
+    while(file.get(c)) {
+      currentLine += c;
+      if(c == '\n') {
+        fileString += (currentLine + '\n');
+        // reinitalizes the current line to an empty string
+        currentLine = "";
+      }
+    }
+
+
   }
 };
 
@@ -34,6 +42,11 @@ extern bool inFlags(const set<string> flags, string arg) {
     if(flag == arg)
       return true;
   return false;
+}
+
+// finds and returns the Token Obj 
+extern Token getNextToken(istream *in, int *linenum) {
+
 }
 
 #endif 

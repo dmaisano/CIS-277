@@ -17,6 +17,7 @@ using std::istream;
 using std::ostream;
 
 // enum Token Type
+// 0-17 Token Types
 enum TType {
 	// keywords
 	SET,
@@ -68,11 +69,10 @@ public:
 		this->lnum = line;
 	}
 
-  // overloading the operators below (i'm guessing)
+  // defining comparison operators
 	bool operator == (const TType tt) const { return this->tt == tt; }
 	bool operator != (const TType tt) const { return this->tt != tt; }
 
-  // ----member functions----
   // returns the enum of the "token"
 	TType GetTokenType() const {
     return tt;
