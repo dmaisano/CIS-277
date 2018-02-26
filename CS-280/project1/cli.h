@@ -141,12 +141,12 @@ private:
   }
 
   // returns a vector of strings from a search string that matches the given pattern
-  static vector<string> findWords(const string str, const string option = "") {
+  static vector<string> getWordList(const string str, const string option = " ") {
     regex pattern;
     sregex_iterator it(str.begin(), str.end(), pattern), reg_end;
     vector<string> wordlist;
 
-    if(option == "-c")
+    if(option != "-s" || option == " ")
       pattern.assign(R"([\s]*[\w|.,!?]+[\s]*)");
 
     else if(option == "-s")
@@ -163,7 +163,7 @@ private:
     for(auto c : word) {
       if(!isspace(c) && isalpha(c))
         continue;
-      else if(!isspace && !isalpha(c))
+      else if(!isspace(c) && !isalpha(c))
         return false;
     }
 
@@ -177,7 +177,7 @@ private:
 
 
     for(auto line : file) {
-      auto words = findWords(line, "-c");
+      auto words = getWordList(line, "-c");
 
       for(auto word : words) {
         if(isRealWord(word))
@@ -201,7 +201,7 @@ private:
   // returns a squished line
   static string squishLine(const string line) {
     string squishedLine;
-    auto words = findWords(line, "-s");
+    auto words = getWordList(line, "-s");
     int size = words.size();
 
     for(int i = 0; i <= size; i++) {
@@ -215,19 +215,100 @@ private:
     return squishedLine;
   }
 
+  static vector<string> getWordType(const string fileName, const string wordType) {
+    vector<string> res;
+    auto file = getFile(fileName);
+    string fileString;
 
-  static void statMode(vector<string> wordlist, map<string, int>& wordCount) {
+    for(auto line : file)
+      fileString += (line + "\n");
+
+    auto wordlist = getWordList(fileString, "-s");
+
+    if(wordType == "word")
+        return wordlist;
+
+    for(auto word : wordlist) {
+      string tmpWord;
+
+      if(wordType == "goodword") {
+        for(auto c : word) {
+          if(isalnum(c));
+            tmpWord += c;
+        }
+      }
+
+      if(wordType == "realword") {
+        for(auto c : word) {
+          if(isalpha(c));
+            tmpWord += c;
+        }
+      }
+
+      if(tmpWord.length() == word.length())
+          res.push_back(word);
+    }
+  }
+
+
+  // static void statMode(vector<string> wordlist, map<string, int>& wordCount) {
     // will print the stats
+  // }
+
+  static vector<string> findLargest(const vector<string> words, const string option) {
+  vector<string> res;
+  int size = 0;
+
+    if(option == "word") {
+      for(auto word : words) {
+        if(word.length() > size)
+          size = word.length();
+      }
+
+      for(auto word : words) {
+        if(word.length() == size)
+          res.push_back(word);
+      }
+    }
+
+    if(option == "goodword") {
+      for(auto word : words) {
+        if(word.length() > size)
+          size = word.length();
+      }
+
+      for(auto word : words) {
+        if(word.length() == size)
+          res.push_back(word);
+      }
+    }
+
+    if(option == "realword") {
+      for(auto word : words) {
+        if(word.length() > size)
+          size = word.length();
+      }
+
+      for(auto word : words) {
+        if(word.length() == size)
+          res.push_back(word);
+      }
+    }
+
+    return res;
   }
 
-  static void lengthMode() {
+  // static void lengthMode() {
     // print the longest words of each given type
-  }
+  // }
 
   // parses the file, with the provided flags
   static void parse(const string fileName, const set<string> flags = {}) {
-    string parsedFile;
+    string parsedFile, fileString;
     auto file = getFile(fileName);
+
+    for(auto line : file)
+      fileString += (line + "\n");
 
     // contains the count of each type of word
     map<string, int> wordCount = {
@@ -242,19 +323,21 @@ private:
       for(auto line : file)
         parsedFile += line;
 
+    // print the file containing only real words
     if(inFlags(flags, "-c") && !inFlags(flags, "-s")) {
-      // print the file containing only real words
+      
     }
 
+    // print the squished file containing only real words
     if(inFlags(flags, "-c") && inFlags(flags, "-s")) {
-      // print the squished file containing only real words
+      cout << squishFile(fileName);
     }
 
     if(!inFlags(flags, "-c") && inFlags(flags, "-s")) {
       // print the squished file
     }
 
-    auto wordlist = findWords(parsedFile);
+    // auto wordlist = findWords(parsedFile);
   }
 };
 
