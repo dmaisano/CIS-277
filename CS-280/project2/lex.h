@@ -50,9 +50,9 @@ enum TType {
 };
 
 class Token {
-	TType	  tt;
-	string  lexeme;
-	int			lnum;
+	TType	  tt;     // token type
+	string  lexeme; // string to be lexed
+	int			lnum;   // line number
 
 public:
   // constructor if no parameters passed??
@@ -61,12 +61,14 @@ public:
 		lnum = -1;
 	}
 
+  // idk anymore lol
 	Token(TType tt, string lexeme, int line) {
 		this->tt = tt;
 		this->lexeme = lexeme;
 		this->lnum = line;
 	}
 
+  // overloading the operators below (i'm guessing)
 	bool operator == (const TType tt) const { return this->tt == tt; }
 	bool operator != (const TType tt) const { return this->tt != tt; }
 
@@ -75,6 +77,7 @@ public:
 	int			  GetLinenum()    const   { return lnum; }
 };
 
+// functions defined but not yet written
 extern ostream& operator << (ostream& out, const Token& tok);
 
 extern Token getNextToken(istream *in, int *linenum);
