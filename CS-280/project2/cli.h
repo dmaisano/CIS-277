@@ -55,8 +55,7 @@ public:
     }
 
     // FINALLY. we lex the file!
-    Lexer();
-    
+    Lexer(fileName);
 
     exit(0); // exit the program
   }

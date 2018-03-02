@@ -6,7 +6,7 @@
 #include <regex>
 using namespace std;
 
-void getSomething(istream *in);
+string getTrimmedLine(istream *in);
 string trimWS(const string str);
 bool isWS(const string str);
 
@@ -14,26 +14,36 @@ int main() {
   // istream* in = &cin;
   // ifstream file("../../project2/p2cases/good.txt");
   ifstream file("./sample.txt");
+  string line;
 
-  getSomething(&file);
+  while(getline(file, line))
+    if(!isWS(line))
+      cout << trimWS(line) << endl;
 }
 
-void getSomething(istream *in) {
+string getTrimmedLine(istream *in) {
   string currentLine, tmp;
   char c;
 
-  while(in->get(c)) {
-    if(c != '\n')
-      currentLine += c;
-    else if(c == '\n') {
-      if(isWS(currentLine))
-        continue;
+  getline(*in, currentLine);
 
-      auto trimmedLine = trimWS(currentLine);
-      cout << trimmedLine << endl;
-      currentLine = "";
-    }
-  }
+  if(!isWS(currentLine))
+    return trimWS(currentLine);
+
+  return "";
+
+  // while(in->get(c)) {
+  //   if(c != '\n')
+  //     currentLine += c;
+  //   else if(c == '\n') {
+  //     if(isWS(currentLine))
+  //       continue;
+
+  //     auto trimmedLine = trimWS(currentLine);
+  //     cout << trimmedLine << endl;
+  //     currentLine = "";
+  //   }
+  // }
 }
 
 string trimWS(const string str) {

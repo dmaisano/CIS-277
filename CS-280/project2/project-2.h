@@ -17,22 +17,15 @@ using namespace std;
 class Lexer {
 public:
   // lexical analyzer program
-  Lexer(const string fileName) {
+  Lexer(const string fileName = "") {
+    vector<vector<Token>> tokenList;
     ifstream file(fileName);
-    string fileString, currentLine;
-    char c;
+    string fileString;
+  }
 
-    // loop through the entire file, one char at a time
-    while(file.get(c)) {
-      currentLine += c;
-      if(c == '\n') {
-        fileString += (currentLine + '\n');
-        // reinitalizes the current line to an empty string
-        currentLine = "";
-      }
-    }
-
-
+private:
+  vector<Token> getTokens(const string str) {
+    
   }
 };
 
@@ -44,9 +37,26 @@ extern bool inFlags(const set<string> flags, string arg) {
   return false;
 }
 
+// returns a vector of strings per line
+extern vector<vector<string>> parseFile() {
+  vector<vector<string>> parsedFile;
+
+  return parsedFile;
+}
+
 // finds and returns the Token Obj 
 extern Token getNextToken(istream *in, int *linenum) {
 
+}
+
+extern int getUniqueTokens(vector<Token> tokens) {
+  set<Token> uniqueTokens;
+
+  // inserts unique values into a set
+  for(auto token : tokens)
+    uniqueTokens.insert(token);
+
+  return uniqueTokens.size();
 }
 
 #endif 
