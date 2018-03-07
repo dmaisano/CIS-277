@@ -54,8 +54,10 @@ public:
       }
     }
 
+    ifstream file(fileName);
+    istream* in = &file;
     // finally we can actually run the program
-    PatternMatcher::Parse(fileName, parserFlags);
+    PatternMatcher::Parse(in);
 
     exit(0); // exit the program
   }
