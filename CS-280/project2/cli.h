@@ -25,7 +25,7 @@ public:
       // flag handler
       if(arg[0] == '-') {
         // executes if valid flag is found
-        if(inFlags(flags, arg))
+        if(inSet(flags, arg))
           parserFlags.insert(arg);
 
         else {

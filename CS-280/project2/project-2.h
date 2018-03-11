@@ -22,53 +22,57 @@ public:
   } 
 };
 
-map<TType, string> TokenNames = {
-  { SET,    "set" },
-  { PRINT,  "print" },
-  { VAR,    "var" },
-  { REPEAT, "repeat" },
-  { ICONST, "iconst" },
-  { SCONST, "sconst" },
-  { PLUS,   "plus" },
-  { MINUS,  "minus" },
-  { STAR,   "star" },
-  { COLON,  "colon" },
-  { LSQ,    "lsq" },
-  { RSQ,    "rsq" },
-  { LPAREN, "lparen" },
-  { RPAREN, "rparen" },
-  { SC,     "sc" },
-  { RPAREN, "rparen" },
-  { ERR,    "err" },
-  { DONE,   "done" }
-};
+// map<TType, string> TokenNames = {
+//   { SET,    "set" },
+//   { PRINT,  "print" },
+//   { VAR,    "var" },
+//   { REPEAT, "repeat" },
+//   { ICONST, "iconst" },
+//   { SCONST, "sconst" },
+//   { PLUS,   "plus" },
+//   { MINUS,  "minus" },
+//   { STAR,   "star" },
+//   { COLON,  "colon" },
+//   { LSQ,    "lsq" },
+//   { RSQ,    "rsq" },
+//   { LPAREN, "lparen" },
+//   { RPAREN, "rparen" },
+//   { SC,     "sc" },
+//   { RPAREN, "rparen" },
+//   { ERR,    "err" },
+//   { DONE,   "done" }
+// };
 
-map<TType, bool> TokenBools = {
-  { IDENT,  true },
-  { SCONST, true },
-  { ICONST, true },
-  { ERR,    true },
-};
+// map<TType, bool> TokenBools = {
+//   { IDENT,  true },
+//   { SCONST, true },
+//   { ICONST, true },
+//   { ERR,    true },
+// };
 
 // returns true if the flag provided is found
-extern bool inFlags(const set<string> flags, string arg) {
+extern bool inSet(const set<string> flags, string arg) {
   for(auto flag : flags)
     if(flag == arg)
       return true;
   return false;
 }
 
-// returns a vector of strings per line
-extern vector<vector<string>> parseFile() {
-  vector<vector<string>> parsedFile;
-
-  return parsedFile;
+// overloaded for TTypes
+extern bool inSet(const set<TType> types, TType arg) {
+  for(auto type : types)
+    if(arg == type)
+      return true;
+  return false;
 }
 
+set<TType> valid_output_tokens = { IDENT, SCONST, ICONST, ERR };
+
+// custom output operator
 extern ostream& operator << (ostream& out, const Token& tok) {
   out << tok.GetTokenType();
 
-  if(TokenBools[tok.GetTokenType()])
+  if(inSet(valid_output_tokens, tok.GetTokenType()))
     out << "(" << tok.GetLexeme() << ")";
 
   return out;
