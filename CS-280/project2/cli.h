@@ -3,15 +3,16 @@
 
 #include <iostream>
 #include <string>
+#include <set>
 #include "./project-2.h"
 using namespace std;
 
 class CLI {
 public:
   // exposes the main functionality of the program
-  CLI(int argc, vector<string> argv) {
+  static void Main(int argc, vector<string> argv) {
     // stores a set of flag args that will be used when parsing
-    set<string> cliFlags, flags = { "-v", "-mci", "-sum" };
+    set<string> parserFlags, flags = { "-q", "-s", "-c", "-p", "-l"  };
     bool foundFile;
     string fileName;
 
@@ -25,7 +26,7 @@ public:
       if(arg[0] == '-') {
         // executes if valid flag is found
         if(inFlags(flags, arg))
-          cliFlags.insert(arg);
+          parserFlags.insert(arg);
 
         else {
           cout << "INVALID FLAG " << arg << endl;
@@ -37,14 +38,13 @@ public:
       else if(arg[0] != '-') {
         if(foundFile == false) {
           fileName = arg;
+          foundFile = true;
 
           // if file cannot be found
           if(ifstream(fileName).fail()) {
             cout << "UNABLE TO OPEN " << fileName << endl;
             exit(0); 
           }
-
-          foundFile = true;
         }
 
         // if a file is already found
@@ -53,9 +53,11 @@ public:
         }
       }
     }
-
-    // FINALLY. we lex the file!
-    Lexer(fileName);
+    
+    // finally we can actually run the program
+    ifstream file(fileName);
+    istream* in = &file;
+    Lex::Parse(in);
 
     exit(0); // exit the program
   }
