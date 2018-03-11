@@ -9,46 +9,8 @@ using namespace std;
 #include <vector>
 #include <cctype>
 #include <regex>
-#include "./projlex.h"
+// #include "./projlex.h"
 using namespace std;
-
-class Lex {
-public:
-  static void Parse(istream* in) {
-    int lineNumber = -1;
-    char c;
-
-    getNextToken(in, &lineNumber);
-  } 
-};
-
-// map<TType, string> TokenNames = {
-//   { SET,    "set" },
-//   { PRINT,  "print" },
-//   { VAR,    "var" },
-//   { REPEAT, "repeat" },
-//   { ICONST, "iconst" },
-//   { SCONST, "sconst" },
-//   { PLUS,   "plus" },
-//   { MINUS,  "minus" },
-//   { STAR,   "star" },
-//   { COLON,  "colon" },
-//   { LSQ,    "lsq" },
-//   { RSQ,    "rsq" },
-//   { LPAREN, "lparen" },
-//   { RPAREN, "rparen" },
-//   { SC,     "sc" },
-//   { RPAREN, "rparen" },
-//   { ERR,    "err" },
-//   { DONE,   "done" }
-// };
-
-// map<TType, bool> TokenBools = {
-//   { IDENT,  true },
-//   { SCONST, true },
-//   { ICONST, true },
-//   { ERR,    true },
-// };
 
 // returns true if the flag provided is found
 extern bool inSet(const set<string> flags, string arg) {
@@ -86,12 +48,14 @@ extern Token getNextToken(istream* in, int* linenum) {
   // used to manage what state we are in when lexing
   enum LexState {
     BEGIN,    // begin 'state'
-    // INKEY,    // found a keyword 'state'
     INID,     // found an identifier 'state'
     INSTR,    // found a string 'state'
     ININT,    // found an int 'state'
     INCOM     // found a comment 'state'
-  } state = BEGIN;
+  };
+
+  // set the initial state to BEGIN
+  LexState state = BEGIN;
 
   // loop through the characters in the stream
   while(in->get(c)) {
@@ -99,8 +63,10 @@ extern Token getNextToken(istream* in, int* linenum) {
       // find the first char in our lexeme
       case BEGIN:
         // increment linenum
-        if(c == '\n')
+        if(c == '\n') {
           ++linenum;
+          continue;
+        }
 
         // ignore whitespace
         if(isspace(c))
@@ -108,7 +74,7 @@ extern Token getNextToken(istream* in, int* linenum) {
 
         lexeme = c;
 
-        // found char(s)
+        // found identifier
         if(isalpha(c)) {
           state = INID;
           continue;
@@ -122,7 +88,7 @@ extern Token getNextToken(istream* in, int* linenum) {
 
         // found a comment
         if(c == '/' && in->peek() == '/') {
-          state = ININT;
+          state = INCOM;
           continue;
         }
 
@@ -170,26 +136,30 @@ extern Token getNextToken(istream* in, int* linenum) {
       case INID:
         if(isalpha(c)) {
           lexeme += c;
+          cout << lexeme << endl;
           continue;
         }
 
+        // executes if non char is found
         in->putback(c);
+        return Token(IDENT, lexeme, *linenum);
 
         // find if the IDENT is actually a reserved keyword
-        if(lexeme == "set")
-          return Token(SET, lexeme, *linenum);
+        // if(lexeme == "set")
+        //   return Token(SET, lexeme, *linenum);
 
-        if(lexeme == "print")
-          return Token(PRINT, lexeme, *linenum);
+        // if(lexeme == "print")
+        //   return Token(PRINT, lexeme, *linenum);
 
-        if(lexeme == "var")
-          return Token(VAR, lexeme, *linenum);
+        // if(lexeme == "var")
+        //   return Token(VAR, lexeme, *linenum);
 
-        if(lexeme == "repeat")
-          return Token(REPEAT, lexeme, *linenum);
-
-        // else return the IDENT found
-        return Token(IDENT, lexeme, *linenum);
+        // if(lexeme == "repeat")
+        //   return Token(REPEAT, lexeme, *linenum);
+        
+        // // else return the IDENT found
+        // else
+        //   return Token(IDENT, lexeme, *linenum);
 
       // handles the int found
       case ININT:
@@ -214,11 +184,11 @@ extern Token getNextToken(istream* in, int* linenum) {
 
       // handles the comment found
       case INCOM:
-      if(c != '\n')
-        continue;
+        if(c != '\n')
+          continue;
 
-      state = BEGIN;
-      break;
+        state = BEGIN;
+        break;
 
       default:
         cout << "Something went horribly wrong :(" << endl;
@@ -238,5 +208,26 @@ extern Token getNextToken(istream* in, int* linenum) {
   else
     return Token();
 }
+
+// lexical analyzer class 
+class Lex {
+public:
+  static void Lexer(istream* in) {
+    int lineNumber = -1;
+    char c;
+    vector<Token> tokens;
+    Token t;
+
+    while( (t = getNextToken(in, &lineNumber)) != DONE && t != ERR) {
+      tokens.push_back(getNextToken(in, &lineNumber));
+    }
+
+    int i = 0;
+
+    for(auto token : tokens) {
+      cout << ++i << " tokens" << endl;
+    }
+  } 
+};
 
 #endif 

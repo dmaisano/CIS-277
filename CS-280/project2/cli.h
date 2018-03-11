@@ -3,8 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include <set>
-#include "./project-2.h"
+#include "./lexer.h"
 using namespace std;
 
 class CLI {
@@ -12,7 +11,7 @@ public:
   // exposes the main functionality of the program
   static void Main(int argc, vector<string> argv) {
     // stores a set of flag args that will be used when parsing
-    set<string> parserFlags, flags = { "-q", "-s", "-c", "-p", "-l"  };
+    set<string> userFlags, validFlags = { "-q", "-s", "-c", "-p", "-l"  };
     bool foundFile;
     string fileName;
 
@@ -25,8 +24,8 @@ public:
       // flag handler
       if(arg[0] == '-') {
         // executes if valid flag is found
-        if(inSet(flags, arg))
-          parserFlags.insert(arg);
+        if(inSet(validFlags, arg))
+          userFlags.insert(arg);
 
         else {
           cout << "INVALID FLAG " << arg << endl;
@@ -57,7 +56,7 @@ public:
     // finally we can actually run the program
     ifstream file(fileName);
     istream* in = &file;
-    Lex::Parse(in);
+    Lex::Lexer(in, userFlags);
 
     exit(0); // exit the program
   }
