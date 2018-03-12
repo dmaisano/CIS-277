@@ -26,11 +26,97 @@ extern bool inSet(const set<TType> types, TType arg) {
   return false;
 }
 
+Token getNextToken(istream* in, int* linenum) {
+  // used to manage what state we are in when lexing
+  enum LexState {
+    BEGIN,          // begin 'state'
+    foundINDENT,    // found an identifier 'state'
+    foundSTR,       // found a string 'state'
+    foundINT,       // found an int 'state'
+    foundCOMMENT    // found a comment 'state'
+  } state = BEGIN;  // set the initial state to BEGIN
+
+  string lexeme;
+  char c;
+  int count = 0;
+
+  while(in->get(c)) {
+    // manage each
+    switch(state) {
+      case BEGIN:
+        // 
+        if(c == '\n') {
+          ++*linenum;
+          continue;
+        }
+
+        if(isspace(c))
+          continue;
+
+        // assign the initial char of the lexeme
+        lexeme = c;
+
+        if(isalpha(c)) {
+          state = foundINDENT;
+          continue;
+        }
+
+      // handle the IDENT found
+      case foundINDENT:
+        if(isalpha(c)) {
+          lexeme += c;
+          // cout << lexeme << endl;
+          continue;
+        }
+
+        else if(!isalpha(c)) {
+          in->putback(c); // return the non-alpha char back to the strea
+
+          // find if the IDENT is actually a reserved keyword
+          if(lexeme == "set")
+            return Token(SET, lexeme, *linenum);
+
+          if(lexeme == "print")
+            return Token(PRINT, lexeme, *linenum);
+
+          if(lexeme == "var")
+            return Token(VAR, lexeme, *linenum);
+
+          if(lexeme == "repeat")
+            return Token(REPEAT, lexeme, *linenum);
+          
+          // else return the IDENT found
+          else
+            return Token(IDENT, lexeme, *linenum);
+        }
+    }
+  }
+
+  return Token();
+}
+
+vector<Token> getAllTokens(istream* in, int* linenum) {
+  vector<Token> tokens;
+  Token t;
+
+  while((t = getNextToken(in, linenum)).GetTokenType() != DONE && t.GetTokenType() != ERR)
+    tokens.push_back(t);
+
+  return tokens;
+}
+
 // lexical analyzer class 
 class Lex {
 public:
   static void Lexer(istream* in, const set<string> flags) {
-    
+    int linenum = 0;
+    auto tokens = getAllTokens(in, &linenum);
+
+    for(auto token : tokens) {
+      cout << "line num: " << token.GetLinenum();
+      cout << "\ttype: " << token.GetTokenType();
+      cout << "\t\tlexeme: " << token.GetLexeme() << endl;
+    }
   }
 };
 
