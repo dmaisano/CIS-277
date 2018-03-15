@@ -72,7 +72,7 @@ Token getNextToken(istream* in, int* linenum) {
         else if(!isalpha(c)) {
           in->putback(c); // return the non-alpha char back to the strea
 
-          // find if the IDENT is actually a reserved keyword
+          // determine if the IDENT is actually a reserved keyword
           if(lexeme == "set")
             return Token(SET, lexeme, *linenum);
 
@@ -85,14 +85,16 @@ Token getNextToken(istream* in, int* linenum) {
           if(lexeme == "repeat")
             return Token(REPEAT, lexeme, *linenum);
           
-          // else return the IDENT found
-          else
-            return Token(IDENT, lexeme, *linenum);
+          // returns the IDENT found if not matches found
+          return Token(IDENT, lexeme, *linenum);
         }
     }
   }
 
-  return Token();
+  if(state == BEGIN)
+    return Token(DONE, lexeme, *linenum);
+
+  return Token(ERR, lexeme, *linenum);
 }
 
 vector<Token> getAllTokens(istream* in, int* linenum) {
@@ -109,7 +111,7 @@ vector<Token> getAllTokens(istream* in, int* linenum) {
 class Lex {
 public:
   static void Lexer(istream* in, const set<string> flags) {
-    int linenum = 0;
+    int linenum = 1;
     auto tokens = getAllTokens(in, &linenum);
 
     for(auto token : tokens) {
