@@ -38,7 +38,6 @@ Token getNextToken(istream* in, int* linenum) {
 
   string lexeme;
   char c;
-  int count = 0;
 
   while(in->get(c)) {
     // manage each state
@@ -156,8 +155,13 @@ Token getNextToken(istream* in, int* linenum) {
           continue;
         }
 
-        if(!isdigit(c)) {
-          in->putback(c);
+        // error detection
+        if(!isdigit(c) && !isspace(c)) {
+          lexeme += c;
+          return Token(ERR, lexeme, *linenum);
+        }
+
+        if(isspace(c)) {
           return Token(ICONST, lexeme, *linenum);
         }
 
@@ -246,6 +250,8 @@ void verboseMode(vector<Token> tokens, const set<string> flags) {
         cout << "SC" << endl; continue;
       case ERR:
         errorHandler(token); break;
+      case DONE:
+        cout << "I'm done /shrug" << endl; break;
     }
   }
 }
