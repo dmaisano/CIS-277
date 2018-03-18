@@ -107,6 +107,10 @@ Token getNextToken(istream* in, int* linenum) {
             return Token(RPAREN, lexeme, *linenum);
           case ';':
             return Token(SC, lexeme, *linenum);
+
+          // catches any weird IDENTS such as commas or apostrophes
+          default:
+            continue;
         }
 
       // handle the IDENT found
