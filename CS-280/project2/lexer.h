@@ -26,10 +26,6 @@ extern bool inSet(const set<TType> types, TType arg) {
   return false;
 }
 
-void errorHandler(Token tok) {
-  cout << "Error on line " << tok.GetLinenum() << " (" << tok.GetLexeme() << ")" << endl;
-}
-
 Token getNextToken(istream* in, int* linenum) {
   // used to manage what state we are in when lexing
   enum LexState {
@@ -182,18 +178,76 @@ Token getNextToken(istream* in, int* linenum) {
   return Token(ERR, lexeme, *linenum);
 }
 
-vector<Token> getAllTokens(istream* in, int* linenum) {
+void errorHandler(Token tok) {
+  cout << "Error on line " << tok.GetLinenum() << " (" << tok.GetLexeme() << ")" << endl;
+}
+
+vector<Token> getAllTokens(istream* in, int* linenum, const set<string> flags = {}) {
   vector<Token> tokens;
   Token t;
 
   while((t = getNextToken(in, linenum)).GetTokenType() != DONE) {
     tokens.push_back(t);
 
-    if(t.GetTokenType() == ERR)
+    if(t.GetTokenType() == ERR) {
+      // raise an error by default if not in verbose mode
+      if(!inSet(flags, "-v"))
+        errorHandler(t);
       break;
+    }
   }
 
   return tokens;
+}
+
+void verboseMode(vector<Token> tokens, const set<string> flags) {
+  for(auto token : tokens) {
+    auto tok = token.GetLexeme();
+    auto toktype = token.GetTokenType();
+
+    // removes the quotes from the SCONST
+    if(toktype == SCONST) {
+      tok.erase(0, 1);
+      tok.pop_back();
+    }
+
+    switch(toktype) {
+      case IDENT:
+        cout << "IDENT(" << tok << ")" << endl; continue;
+      case ICONST:
+        cout << "ICONST(" << tok << ")" << endl; continue;
+      case SCONST:
+        cout << "SCONST(" << tok << ")" << endl; continue;
+      case SET:
+        cout << "SET" << endl; continue;
+      case VAR:
+        cout << "VAR" << endl; continue;
+      case PRINT:
+        cout << "PRINT" << endl; continue;
+      case REPEAT:
+        cout << "REPEAT" << endl; continue;
+      case PLUS:
+        cout << "PLUS" << endl; continue;
+      case MINUS:
+        cout << "MINUS" << endl; continue;
+      case STAR:
+        cout << "STAR" << endl; continue;
+      case COLON:
+        cout << "COLON" << endl; continue;
+      case LSQ:
+        cout << "LSQ" << endl; continue;
+      case RSQ:
+        cout << "RSQ" << endl; continue;
+      case LPAREN:
+        cout << "LPAREN" << endl; continue;
+      case RPAREN:
+        cout << "RPAREN" << endl; continue;
+      case SC:
+        cout << "SC" << endl; continue;
+      case ERR:
+        errorHandler(token); break;
+    }
+  }
 }
 
 // lexical analyzer class
@@ -201,12 +255,10 @@ class Lex {
 public:
   static void Lexer(istream* in, const set<string> flags) {
     int linenum = 1;
-    auto tokens = getAllTokens(in, &linenum);
+    auto tokens = getAllTokens(in, &linenum, flags);
 
-    for(auto token : tokens) {
-      // cout << "line num: " << token.GetLinenum();
-      // cout << "\ttype: " << token.GetTokenType();
-      cout << "lexeme: " << token.GetLexeme() << endl;
+    if(inSet(flags, "-v")) {
+      verboseMode(tokens, flags);
     }
   }
 };

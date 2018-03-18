@@ -11,7 +11,7 @@ public:
   // exposes the main functionality of the program
   static void Main(int argc, vector<string> argv) {
     // stores a set of flag args that will be used when parsing
-    set<string> userFlags, validFlags = { "-q", "-s", "-c", "-p", "-l"  };
+    set<string> userFlags, validFlags = { "-v", "-mci", "-sum"  };
     bool foundFile;
     string fileName;
 
