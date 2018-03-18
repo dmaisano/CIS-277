@@ -140,7 +140,7 @@ Token getNextToken(istream* in, int* linenum) {
         lexeme += c;
 
         if(c == '\n')
-          return Token(ERR, lexeme, *linenum);
+          return Token(ERR, lexeme, ++*linenum);
 
         if(c != '"')
           continue;
@@ -156,9 +156,14 @@ Token getNextToken(istream* in, int* linenum) {
         }
 
         // error detection
-        if(!isdigit(c) && !isspace(c)) {
+        if(isalpha(c)) {
           lexeme += c;
           return Token(ERR, lexeme, *linenum);
+        }
+
+        if(!isalpha(c) && !isdigit(c)) {
+          in->putback(c);
+          return Token(ICONST, lexeme, *linenum);
         }
 
         if(isspace(c)) {
@@ -260,7 +265,7 @@ void verboseMode(vector<Token> tokens, const set<string> flags) {
 class Lex {
 public:
   static void Lexer(istream* in, const set<string> flags) {
-    int linenum = 1;
+    int linenum = 0;
     auto tokens = getAllTokens(in, &linenum, flags);
 
     if(inSet(flags, "-v")) {
