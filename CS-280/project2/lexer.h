@@ -71,6 +71,12 @@ Token getNextToken(istream* in, int* linenum) {
           continue;
         }
 
+        // finds negtive integers
+        if(c == '-' && isdigit(in->peek())) {
+          state = foundINT;
+          continue;
+        }
+
         if(c == '#') {
           state = foundCOMMENT;
           continue;
@@ -89,6 +95,8 @@ Token getNextToken(istream* in, int* linenum) {
             return Token(MINUS, lexeme, *linenum);
           case '*':
             return Token(STAR, lexeme, *linenum);
+          case ':':
+            return Token(COLON, lexeme, *linenum);
           case '[':
             return Token(LSQ, lexeme, *linenum);
           case ']':
@@ -192,9 +200,9 @@ public:
     auto tokens = getAllTokens(in, &linenum);
 
     for(auto token : tokens) {
-      cout << "line num: " << token.GetLinenum();
-      cout << "\ttype: " << token.GetTokenType();
-      cout << "\t\tlexeme: " << token.GetLexeme() << endl;
+      // cout << "line num: " << token.GetLinenum();
+      // cout << "\ttype: " << token.GetTokenType();
+      cout << "lexeme: " << token.GetLexeme() << endl;
     }
   }
 };
