@@ -7,6 +7,7 @@
 #include <cctype>
 #include <map>
 #include <set>
+#include <tuple>
 #include "./token.h"
 using namespace std;
 
@@ -26,6 +27,7 @@ extern bool inSet(const set<TType> types, TType arg) {
   return false;
 }
 
+// returns a Token
 Token getNextToken(istream* in, int* linenum) {
   // used to manage what state we are in when lexing
   enum LexState {
@@ -110,13 +112,13 @@ Token getNextToken(istream* in, int* linenum) {
 
       // handle the IDENT found
       case foundINDENT:
-        if(isalpha(c)) {
+        if(isalpha(c) || isdigit(c)) {
           lexeme += c;
           // cout << lexeme << endl;
           continue;
         }
 
-        else if(!isalpha(c)) {
+        else if(!isalpha(c) || !isdigit(c)) {
           in->putback(c); // return the non-alpha char back to the strea
 
           // determine if the IDENT is actually a reserved keyword
@@ -139,8 +141,10 @@ Token getNextToken(istream* in, int* linenum) {
       case foundSTR:
         lexeme += c;
 
-        if(c == '\n')
-          return Token(ERR, lexeme, ++*linenum);
+        if(c == '\n') {
+          ++*linenum;
+          return Token(ERR, lexeme, *linenum);
+        }
 
         if(c != '"')
           continue;
@@ -175,6 +179,7 @@ Token getNextToken(istream* in, int* linenum) {
           continue;
 
         if(c == '\n') {
+          ++*linenum;
           state = BEGIN;
           break;
         }
@@ -187,80 +192,6 @@ Token getNextToken(istream* in, int* linenum) {
   return Token(ERR, lexeme, *linenum);
 }
 
-void errorHandler(Token tok) {
-  cout << "Error on line " << tok.GetLinenum() << " (" << tok.GetLexeme() << ")" << endl;
-}
-
-vector<Token> getAllTokens(istream* in, int* linenum, const set<string> flags = {}) {
-  vector<Token> tokens;
-  Token t;
-
-  while((t = getNextToken(in, linenum)).GetTokenType() != DONE) {
-    tokens.push_back(t);
-
-    if(t.GetTokenType() == ERR) {
-      // raise an error by default if not in verbose mode
-      if(!inSet(flags, "-v"))
-        errorHandler(t);
-      break;
-    }
-  }
-
-  return tokens;
-}
-
-void verboseMode(vector<Token> tokens, const set<string> flags) {
-  for(auto token : tokens) {
-    auto tok = token.GetLexeme();
-    auto toktype = token.GetTokenType();
-
-    // removes the quotes from the SCONST
-    if(toktype == SCONST) {
-      tok.erase(0, 1);
-      tok.pop_back();
-    }
-
-    switch(toktype) {
-      case IDENT:
-        cout << "IDENT(" << tok << ")" << endl; continue;
-      case ICONST:
-        cout << "ICONST(" << tok << ")" << endl; continue;
-      case SCONST:
-        cout << "SCONST(" << tok << ")" << endl; continue;
-      case SET:
-        cout << "SET" << endl; continue;
-      case VAR:
-        cout << "VAR" << endl; continue;
-      case PRINT:
-        cout << "PRINT" << endl; continue;
-      case REPEAT:
-        cout << "REPEAT" << endl; continue;
-      case PLUS:
-        cout << "PLUS" << endl; continue;
-      case MINUS:
-        cout << "MINUS" << endl; continue;
-      case STAR:
-        cout << "STAR" << endl; continue;
-      case COLON:
-        cout << "COLON" << endl; continue;
-      case LSQ:
-        cout << "LSQ" << endl; continue;
-      case RSQ:
-        cout << "RSQ" << endl; continue;
-      case LPAREN:
-        cout << "LPAREN" << endl; continue;
-      case RPAREN:
-        cout << "RPAREN" << endl; continue;
-      case SC:
-        cout << "SC" << endl; continue;
-      case ERR:
-        errorHandler(token); break;
-      case DONE:
-        cout << "I'm done /shrug" << endl; break;
-    }
-  }
-}
-
 // lexical analyzer class
 class Lex {
 public:
@@ -268,9 +199,159 @@ public:
     int linenum = 0;
     auto tokens = getAllTokens(in, &linenum, flags);
 
-    if(inSet(flags, "-v")) {
+    if(inSet(flags, "-v"))
       verboseMode(tokens, flags);
+
+    if(inSet(flags, "-mci"))
+      mciMode(tokens);
+
+    if(inSet(flags, "-sum"))
+      sumMode(in, tokens);
+  }
+
+  // parse the file and find all tokens
+  static vector<Token> getAllTokens(istream* in, int* linenum, const set<string> flags = {}) {
+    vector<Token> tokens;
+    Token t;
+
+    while((t = getNextToken(in, linenum)).GetTokenType() != DONE) {
+      tokens.push_back(t);
+
+      if(t.GetTokenType() == ERR) {
+        // raise an error by default if not in verbose mode
+        if(!inSet(flags, "-v"))
+          errorHandler(t);
+        break;
+      }
     }
+
+    return tokens;
+  }
+
+  // outputs the token error
+  static void errorHandler(Token tok) {
+    cout << "Error on line " << tok.GetLinenum() << " (" << tok.GetLexeme() << ")" << endl;
+  }
+
+  // print stats using verbose mode
+  static void verboseMode(vector<Token> tokens, const set<string> flags) {
+    for(auto token : tokens) {
+      auto tok = token.GetLexeme();
+      auto toktype = token.GetTokenType();
+
+      // removes the quotes from the SCONST
+      if(toktype == SCONST) {
+        tok.erase(0, 1);
+        tok.pop_back();
+      }
+
+      switch(toktype) {
+        case IDENT:
+          cout << "IDENT(" << tok << ")" << endl; continue;
+        case ICONST:
+          cout << "ICONST(" << tok << ")" << endl; continue;
+        case SCONST:
+          cout << "SCONST(" << tok << ")" << endl; continue;
+        case SET:
+          cout << "SET" << endl; continue;
+        case VAR:
+          cout << "VAR" << endl; continue;
+        case PRINT:
+          cout << "PRINT" << endl; continue;
+        case REPEAT:
+          cout << "REPEAT" << endl; continue;
+        case PLUS:
+          cout << "PLUS" << endl; continue;
+        case MINUS:
+          cout << "MINUS" << endl; continue;
+        case STAR:
+          cout << "STAR" << endl; continue;
+        case COLON:
+          cout << "COLON" << endl; continue;
+        case LSQ:
+          cout << "LSQ" << endl; continue;
+        case RSQ:
+          cout << "RSQ" << endl; continue;
+        case LPAREN:
+          cout << "LPAREN" << endl; continue;
+        case RPAREN:
+          cout << "RPAREN" << endl; continue;
+        case SC:
+          cout << "SC" << endl; continue;
+        case ERR:
+          errorHandler(token); break;
+        case DONE:
+          cout << "DONE" << endl; break;
+      }
+    }
+  }
+
+  // most common identifier statistic
+  static void mciMode(vector<Token> tokens) {
+    map<string, int> idents;
+    tuple<string, int> mci("", -1);
+    auto lexeme = get<0>(mci);
+
+    for(auto token : tokens) {
+      if(token.GetTokenType() == IDENT) {
+        if(tokens.back().GetTokenType() == ERR)
+          return;
+
+        auto lexeme = token.GetLexeme();
+
+        if(!idents[lexeme])
+          idents[lexeme] = 1;
+
+        else
+          idents[lexeme]++;
+      }
+    }
+
+    for(auto ident : idents) {
+      if(ident.second > 1) {
+        get<0>(mci) = ident.first;
+        get<1>(mci) = ident.second;
+      }
+    }
+
+    cout << "Most Common Identifier: " << get<0>(mci) << endl;
+  }
+
+  // sum statistic mode
+  static void sumMode(istream* in, vector<Token> tokens) {
+    if(tokens.back().GetTokenType() == ERR)
+      return;
+
+    int totalLines = 0, totalTokens = 0, totalStrings = 0, longestString = 0;
+    char c;
+
+    in->clear();
+    in->seekg(0, ios::beg);
+
+    while(in->get(c)) {
+      if(c == '\n')
+        totalLines++;
+    }
+
+    for(auto token : tokens) {
+      totalTokens++;
+
+      if(token.GetTokenType() == SCONST) {
+        int len = token.GetLexeme().length();
+        totalStrings++;
+
+        if(longestString == 0)
+          longestString = len;
+
+        if(len > longestString)
+          longestString = len;
+      }
+    }
+
+    cout << "Total lines: " << totalLines << endl;
+    cout << "Total tokens: " << totalTokens << endl;
+    cout << "Total strings: " << totalStrings << endl;
+    cout << "Length of longest string: " << (longestString - 2) << endl; // subtract two for quotes
   }
 };
 
