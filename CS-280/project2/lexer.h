@@ -26,6 +26,10 @@ extern bool inSet(const set<TType> types, TType arg) {
   return false;
 }
 
+void errorHandler(Token tok) {
+  cout << "Error on line " << tok.GetLinenum() << " (" << tok.GetLexeme() << ")" << endl;
+}
+
 Token getNextToken(istream* in, int* linenum) {
   // used to manage what state we are in when lexing
   enum LexState {
@@ -41,15 +45,16 @@ Token getNextToken(istream* in, int* linenum) {
   int count = 0;
 
   while(in->get(c)) {
-    // manage each
+    // manage each state
     switch(state) {
       case BEGIN:
-        // 
+        // increment the linenumber
         if(c == '\n') {
           ++*linenum;
           continue;
         }
 
+        // ignore WS
         if(isspace(c))
           continue;
 
@@ -59,6 +64,41 @@ Token getNextToken(istream* in, int* linenum) {
         if(isalpha(c)) {
           state = foundINDENT;
           continue;
+        }
+
+        if(isdigit(c)) {
+          state = foundINT;
+          continue;
+        }
+
+        if(c == '#') {
+          state = foundCOMMENT;
+          continue;
+        }
+
+        if(c == '"') {
+          state = foundSTR;
+          continue;
+        }
+        
+        // determine if the char is a valid operator
+        switch(c) {
+          case '+':
+            return Token(PLUS, lexeme, *linenum);
+          case '-':
+            return Token(MINUS, lexeme, *linenum);
+          case '*':
+            return Token(STAR, lexeme, *linenum);
+          case '[':
+            return Token(LSQ, lexeme, *linenum);
+          case ']':
+            return Token(RSQ, lexeme, *linenum);
+          case '(':
+            return Token(LPAREN, lexeme, *linenum);
+          case ')':
+            return Token(RPAREN, lexeme, *linenum);
+          case ';':
+            return Token(SC, lexeme, *linenum);
         }
 
       // handle the IDENT found
@@ -88,6 +128,39 @@ Token getNextToken(istream* in, int* linenum) {
           // returns the IDENT found if not matches found
           return Token(IDENT, lexeme, *linenum);
         }
+
+      case foundSTR:
+        lexeme += c;
+
+        if(c == '\n')
+          return Token(ERR, lexeme, *linenum);
+
+        if(c != '"')
+          continue;
+
+        // if the end of the string is found
+        if(c == '"')
+          return Token(SCONST, lexeme, *linenum);
+
+      case foundINT:
+        if(isdigit(c)) {
+          lexeme += c;
+          continue;
+        }
+
+        if(!isdigit(c)) {
+          in->putback(c);
+          return Token(ICONST, lexeme, *linenum);
+        }
+
+      case foundCOMMENT:
+        if(c != '\n')
+          continue;
+
+        if(c == '\n') {
+          state = BEGIN;
+          break;
+        }
     }
   }
 
@@ -101,13 +174,17 @@ vector<Token> getAllTokens(istream* in, int* linenum) {
   vector<Token> tokens;
   Token t;
 
-  while((t = getNextToken(in, linenum)).GetTokenType() != DONE && t.GetTokenType() != ERR)
+  while((t = getNextToken(in, linenum)).GetTokenType() != DONE) {
     tokens.push_back(t);
+
+    if(t.GetTokenType() == ERR)
+      break;
+  }
 
   return tokens;
 }
 
-// lexical analyzer class 
+// lexical analyzer class
 class Lex {
 public:
   static void Lexer(istream* in, const set<string> flags) {
