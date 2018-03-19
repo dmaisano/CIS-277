@@ -42,14 +42,16 @@ Token getNextToken(istream* in, int* linenum) {
   char c;
 
   while(in->get(c)) {
+    // increment the linenumber
+    if(c == '\n')
+      (*linenum)++;
+
     // manage each state
     switch(state) {
       case BEGIN:
-        // increment the linenumber
-        if(c == '\n') {
-          ++*linenum;
+        
+        if(c == '\n')
           continue;
-        }
 
         // ignore WS
         if(isspace(c))
@@ -114,12 +116,12 @@ Token getNextToken(istream* in, int* linenum) {
       case foundINDENT:
         if(isalpha(c) || isdigit(c)) {
           lexeme += c;
-          // cout << lexeme << endl;
           continue;
         }
 
         else if(!isalpha(c) || !isdigit(c)) {
-          in->putback(c); // return the non-alpha char back to the strea
+          if(c != '\n')
+            in->putback(c);
 
           // determine if the IDENT is actually a reserved keyword
           if(lexeme == "set")
@@ -139,15 +141,13 @@ Token getNextToken(istream* in, int* linenum) {
         }
 
       case foundSTR:
-        lexeme += c;
-
-        if(c == '\n') {
-          ++*linenum;
+        if(c == '\n')
           return Token(ERR, lexeme, *linenum);
-        }
 
-        if(c != '"')
+        if(c != '"') {
+          lexeme += c;
           continue;
+        }
 
         // if the end of the string is found
         if(c == '"')
@@ -166,7 +166,8 @@ Token getNextToken(istream* in, int* linenum) {
         }
 
         if(!isalpha(c) && !isdigit(c)) {
-          in->putback(c);
+          if(c != '\n')
+            in->putback(c);
           return Token(ICONST, lexeme, *linenum);
         }
 
@@ -179,17 +180,19 @@ Token getNextToken(istream* in, int* linenum) {
           continue;
 
         if(c == '\n') {
-          ++*linenum;
           state = BEGIN;
           break;
         }
     }
   }
 
+  if(in->eof())
+    return Token(DONE, "", *linenum);
+
   if(state == BEGIN)
     return Token(DONE, lexeme, *linenum);
 
-  return Token(ERR, lexeme, *linenum);
+  return Token(ERR, "something went horribly wrong", *linenum);
 }
 
 // lexical analyzer class
@@ -322,7 +325,7 @@ public:
     if(tokens.back().GetTokenType() == ERR)
       return;
 
-    int totalLines = 0, totalTokens = 0, totalStrings = 0, longestString = 0;
+    int totalLines, totalTokens, totalStrings, longestString;
     char c;
 
     in->clear();
