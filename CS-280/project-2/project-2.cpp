@@ -7,8 +7,8 @@
 #include <fstream>
 #include <vector>
 #include <map>
-#include "projlex.h"
-#include "lex.h"
+#include "./projlex.h"
+#include "./lexer.h"
 using namespace std;
 
 int main(int argc, char *argv[]) {
@@ -90,9 +90,11 @@ int main(int argc, char *argv[]) {
     for(auto it : identCount) {
 			if(it.second != maxcnt)
 				continue;
+
 			if(printed)
 				cout << ", ";
-         	printed = true;
+
+      printed = true;
 			cout << it.first;
 		}
 		cout << endl;

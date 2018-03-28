@@ -8,34 +8,36 @@
 #include "projlex.h"
 using std::map;
 
+// map that returns the string value for each ENUM type
 static map<TType,string> tokenPrint = {
   // Reserved Words
-	{ SET,    "SET"     },
-	{ PRINT,  "PRINT"   },
-	{ VAR,    "VAR"     },
-	{ REPEAT, "REPEAT"  },
+	{ SET,    "SET"    },
+	{ PRINT,  "PRINT"  },
+	{ VAR,    "VAR"    },
+	{ REPEAT, "REPEAT" },
   // Identifier
-	{ IDENT,  "IDENT"   },
+	{ IDENT,  "IDENT"  },
   // Int & String
-	{ ICONST, "ICONST"  },
-	{ SCONST, "SCONST"  },
+	{ ICONST, "ICONST" },
+	{ SCONST, "SCONST" },
   // Operands
-	{ PLUS,   "PLUS"    },
-	{ MINUS,  "MINUS"   },
-	{ STAR,   "STAR"    },
-	{ COLON,  "COLON"   },
-	{ LSQ,    "LSQ"     },
-	{ RSQ,    "RSQ"     },
-	{ LPAREN, "LPAREN"  },
-	{ RPAREN, "RPAREN"  },
-	{ SC,     "SC"      },
+	{ PLUS,   "PLUS"   },
+	{ MINUS,  "MINUS"  },
+	{ STAR,   "STAR"   },
+	{ COLON,  "COLON"  },
+	{ LSQ,    "LSQ"    },
+	{ RSQ,    "RSQ"    },
+	{ LPAREN, "LPAREN" },
+	{ RPAREN, "RPAREN" },
+	{ SC,     "SC"     },
   // Error & Done
-	{ ERR,    "ERR"     },
-	{ DONE,   "DONE"    }
+	{ ERR,    "ERR"    },
+	{ DONE,   "DONE"   }
 };
 
 
-ostream& operator << (ostream& out, const Token& tok) {
+// overload the operator to output information about our token
+ostream& operator<<(ostream& out, const Token& tok) {
 	TType tt = tok.GetTokenType();
 
 	out << tokenPrint[tt];
@@ -44,29 +46,35 @@ ostream& operator << (ostream& out, const Token& tok) {
 		out << "(" << tok.GetLexeme() << ")";
 
 	return out;
-}
+};
 
 
+// map that returns the enum type for each keyword
 static map<string,TType> keywordMap = {
-		{ "var", VAR },
-		{ "set", SET },
-		{ "print", PRINT },
+		{ "var",    VAR    },
+		{ "set",    SET    },
+		{ "print",  PRINT  },
 		{ "repeat", REPEAT },
 };
 
 
+// returns a token that is either an IDENT or possible keyword
 Token ident_or_keyword(const string& lexeme, int linenum) {
+  // ident by default
 	TType tt = IDENT;
 
-	auto kIt = keywordMap.find(lexeme);
+  // try to find a key using our keymap
+	auto key = keywordMap.find(lexeme);
   
-	if(kIt != keywordMap.end())
-		tt = kIt->second;
+  // if a key is found, set it as the token type
+	if(key != keywordMap.end())
+		tt = key->second;
 
 	return Token(tt, lexeme, linenum);
-}
+};
 
 
+// return a token from the stream
 Token getNextToken(istream *in, int *linenum) {
 	enum LexState {
     BEGIN,
@@ -76,15 +84,18 @@ Token getNextToken(istream *in, int *linenum) {
     ININT,
     INCOMMENT
   } lexstate = BEGIN;
+  // default state is BEGIN
 	string lexeme;
 	char ch;
 
 	while(in->get(ch)) {
+    // increment the linenum
 		if(ch == '\n')
 			(*linenum)++;
 
 		switch(lexstate) {
 		case BEGIN:
+      // ignore whitespace
 			if(isspace(ch))
 				continue;
 
@@ -93,16 +104,12 @@ Token getNextToken(istream *in, int *linenum) {
 
 			if(isalpha(ch))
 				lexstate = INID;
-
 			else if(ch == '"')
 				lexstate = INSTRING;
-
 			else if(ch == '-')
 				lexstate = SAWMINUS;
-
 			else if(isdigit(ch))
 				lexstate = ININT;
-
 			else if(ch == '#')
 				lexstate = INCOMMENT;
 
@@ -163,6 +170,7 @@ Token getNextToken(istream *in, int *linenum) {
 				return Token(ERR, lexeme, *linenum );
 
 			if(ch == '"') {
+        // remove the quotation marks from the string
 				lexeme = lexeme.substr(1, lexeme.length()-2);
 				return Token(SCONST, lexeme, *linenum );
       }
