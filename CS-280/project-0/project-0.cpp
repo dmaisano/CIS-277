@@ -1,5 +1,11 @@
-// Domenico Maisano
-// CS280 - 008
+/*
+* Domenico Maisano
+* CS280
+* Spring 2018
+* 
+* project-0.cpp
+*/
+
 
 #include <iostream>
 #include <string.h>
