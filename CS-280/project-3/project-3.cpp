@@ -10,12 +10,20 @@
 #include <fstream>
 #include <vector>
 #include <map>
-#include "./lexer.h"
-#include "./parser.h"
+#include "./cli.h"
 using namespace std;
+
+vector<Token> getAllTokens() {
+  Token tok;
+}
 
 int main(int argc, char *argv[]) {
   // argv vector
   vector<string> args(argv + 1, argv + argc);
 	int lineNumber = 0;
+  
+  istream *in = &cin;
+	ifstream file;
+
+  
 }

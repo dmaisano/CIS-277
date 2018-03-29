@@ -1,8 +1,8 @@
 /*
-* parse.h
+* parser.h
 */
 
-// #include "./parse.h"
+#include "./parse.h"
 #include "./parsetree.h"
 
 namespace Parser {
@@ -29,13 +29,11 @@ static void PushBackToken(Token& t) {
 
 static int error_count = 0;
 
-void
-ParseError(int line, string msg)
-{
+void ParseError(int line, string msg) {
+  
 }
 
-ParseTree *Prog(istream *in, int *line)
-{
+ParseTree *Prog(istream *in, int *line) {
 	ParseTree *sl = Slist(in, line);
 
 	if( sl == 0 )
@@ -115,7 +113,7 @@ ParseTree *Expr(istream *in, int *line) {
 		}
 
     // not yet defined
-		// if( t == PLUS )
+		// if(t == PLUS)
 		// 	t1 = new PlusExpr(t.GetLinenum(), t1, t2);
 		// else
 		// 	t1 = new MinusExpr(t.GetLinenum(), t1, t2);
