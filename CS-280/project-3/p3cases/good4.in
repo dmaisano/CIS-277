@@ -1,0 +1,9 @@
+print ((
+3 + 2 * 5));
+
+print "help"[2:5];
+
+var x 10;
+
+print x+x+x;
+var y x+x+x;

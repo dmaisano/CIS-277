@@ -1,0 +1,10 @@
+set x 5*2; # this is a semantic error but ought to parse
+
+var z "help;";
+
+print "hello" + " world";
+
+print z * 3;
+
+print "what are you doing?
+;

@@ -2,13 +2,31 @@
 * parser.h
 */
 
-#include "./parse.h"
+#include <iostream>
 #include "./parsetree.h"
+using namespace std;
+
+ParseTree *Prog(istream *in, int *line);
+ParseTree *Slist(istream *in, int *line);
+ParseTree *Stmt(istream *in, int *line);
+ParseTree *VarStmt(istream *in, int *line);
+ParseTree *SetStmt(istream *in, int *line);
+ParseTree *PrintStmt(istream *in, int *line);
+ParseTree *RepeatStmt(istream *in, int *line);
+ParseTree *Expr(istream *in, int *line);
+ParseTree *Term(istream *in, int *line);
+ParseTree *Factor(istream *in, int *line);
+ParseTree *Primary(istream *in, int *line);
+
 
 namespace Parser {
+
+
 bool pushed_back = false;
 Token	pushed_token;
 
+
+// extract a tiken
 static Token GetNextToken(istream *in, int *line) {
 	if(pushed_back) {
 		pushed_back = false;
@@ -17,6 +35,8 @@ static Token GetNextToken(istream *in, int *line) {
 	return getNextToken(in, line);
 }
 
+
+// token wrapper
 static void PushBackToken(Token& t) {
 	if(pushed_back) {
 		abort();
@@ -27,10 +47,14 @@ static void PushBackToken(Token& t) {
 
 }
 
+
+// error count for the program parsed
 static int error_count = 0;
 
+
+// error handling
 void ParseError(int line, string msg) {
-  
+  cout << "error on " << line << endl;
 }
 
 ParseTree *Prog(istream *in, int *line) {

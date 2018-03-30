@@ -16,10 +16,9 @@ extern bool inSet(set<string> args, string str) {
   return false;
 };
 
-class CLI {
-public:
+namespace CLI {
   // exposes the main functionality of the program
-  CLI(int argc, vector<string> argv) {
+  static void CLI(int argc, vector<string> argv) {
     // stores a set of flag args that will be used when parsing
     set<string> parserFlags, flags = {  };
     bool foundFile;
@@ -38,7 +37,7 @@ public:
           parserFlags.insert(arg);
 
         else {
-          cout << "INVALID FLAG " << arg << endl;
+          cout << "UNKNOWN FLAG " << arg << endl;
           exit(0);
         }
       }
@@ -51,7 +50,7 @@ public:
 
           // if file cannot be found
           if(ifstream(fileName).fail()) {
-            cout << "UNABLE TO OPEN " << fileName << endl;
+            cout << "COULD NOT OPEN " << fileName << endl;
             exit(0); 
           }
         }
@@ -67,7 +66,9 @@ public:
     istream* in = &file;
     // finally we can actually run the program
     // Parser::Parse(in);
+    cout << "I RAN!";
 
+    cout << endl;
     exit(0); // exit the program
   }
 };
