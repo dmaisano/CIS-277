@@ -1,4 +1,8 @@
 /*
+* Domenico Maisano
+* CS280
+* Spring 2018
+* 
 * parser.h
 */
 
@@ -6,22 +10,8 @@
 #include "./parsetree.h"
 using namespace std;
 
-ParseTree *Prog(istream *in, int *line);
-ParseTree *Slist(istream *in, int *line);
-ParseTree *Stmt(istream *in, int *line);
-ParseTree *VarStmt(istream *in, int *line);
-ParseTree *SetStmt(istream *in, int *line);
-ParseTree *PrintStmt(istream *in, int *line);
-ParseTree *RepeatStmt(istream *in, int *line);
-ParseTree *Expr(istream *in, int *line);
-ParseTree *Term(istream *in, int *line);
-ParseTree *Factor(istream *in, int *line);
-ParseTree *Primary(istream *in, int *line);
-
 
 namespace Parser {
-
-
 bool pushed_back = false;
 Token	pushed_token;
 

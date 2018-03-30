@@ -1,3 +1,11 @@
+/*
+* Domenico Maisano
+* CS280
+* Spring 2018
+* 
+* cli.h
+*/
+
 #ifndef CLI_H
 #define CLI_H
 
