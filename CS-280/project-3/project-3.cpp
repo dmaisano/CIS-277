@@ -23,7 +23,6 @@ vector<Token> getAllTokens() {
 int main(int argc, char *argv[]) {
   // argv vector
   vector<string> args(argv + 1, argv + argc);
-	int lineNumber = 0;
 
   CLI::CLI(argc, args);
 }

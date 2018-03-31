@@ -44,7 +44,7 @@ static int error_count = 0;
 
 // error handling
 void ParseError(int line, string msg) {
-  cout << "error on " << line << endl;
+  cout << "line: " << msg << endl;
 }
 
 ParseTree *Prog(istream *in, int *line) {

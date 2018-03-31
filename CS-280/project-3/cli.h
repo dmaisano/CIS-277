@@ -28,7 +28,7 @@ namespace CLI {
   // exposes the main functionality of the program
   static void CLI(int argc, vector<string> argv) {
     // stores a set of flag args that will be used when parsing
-    set<string> parserFlags, flags = {  };
+    set<string> parserFlags, flags = { "-t" };
     bool foundFile;
     string fileName;
 
