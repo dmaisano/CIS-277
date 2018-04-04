@@ -10,39 +10,27 @@
 #define CLI_H
 
 #include <iostream>
-#include <string>
 #include <fstream>
-#include <set>
 #include "./parser.h"
 using namespace std;
 
-extern bool inSet(set<string> args, string str) {
-  for(auto arg : args)
-    if(arg == str)
-      return true;
-    
-  return false;
-};
-
 namespace CLI {
   // exposes the main functionality of the program
-  static void CLI(int argc, vector<string> argv) {
+  static void Parser(int argc, vector<string> argv) {
     // stores a set of flag args that will be used when parsing
-    set<string> parserFlags, flags = { "-t" };
-    bool foundFile;
+    bool foundFile = false, traceMode = false;
     string fileName;
 
     // exit quietly if no args
-    if(argc == 1) {
+    if(argc == 1)
       exit(0);
-    }
 
     for(auto arg : argv) {
       // flag handler
       if(arg[0] == '-') {
         // executes if valid flag is found
-        if(inSet(flags, arg))
-          parserFlags.insert(arg);
+        if(arg == "-t")
+          traceMode = true;
 
         else {
           cout << "UNKNOWN FLAG " << arg << endl;
@@ -52,7 +40,7 @@ namespace CLI {
 
       // file handler
       else if(arg[0] != '-') {
-        if(foundFile == false) {
+        if(!foundFile) {
           fileName = arg;
           foundFile = true;
 
@@ -65,7 +53,8 @@ namespace CLI {
 
         // if a file is already found
         else if(foundFile == true) {
-          cout << "TOO MANY FILE NAMES" << endl; exit(0);
+          cout << "TOO MANY FILE NAMES" << endl;
+          exit(0);
         }
       }
     }
@@ -73,11 +62,11 @@ namespace CLI {
     ifstream file(fileName);
     istream* in = &file;
     // finally we can actually run the program
-    // Parser::Parse(in);
+    // Parser::Parse(in, traceMode);
     cout << "I RAN!";
 
     cout << endl;
-    exit(0); // exit the program
+    exit(0);
   }
 };
 
