@@ -32,9 +32,11 @@ static void PushBackToken(Token& t) {
 
 
 static int error_count = 0;
+
+// error handler
 void ParseError(int line, string msg) {
   cout << line << ": " << msg << endl;
-  // ++error_count;
+  ++error_count;
 }
 
 
@@ -83,7 +85,6 @@ ParseTree *Stmt(istream *in, int *line) {
   }
 
   if(stmt.GetTokenType() == VAR) {
-    // vardecl
     return 0;
   }
     
@@ -92,7 +93,8 @@ ParseTree *Stmt(istream *in, int *line) {
   }
 
   if(stmt.GetTokenType() == PRINT) {
-    return 0;
+    // process the expression inside the PRINT stmt
+    ParseTree *expr = Expr(in, line);
   }
 
   if(stmt.GetTokenType() == REPEAT) {
