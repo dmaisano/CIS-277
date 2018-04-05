@@ -6,17 +6,12 @@
 * parser.h
 */
 
-#include <iostream>
-#include "./parsetree.h"
-using namespace std;
-
+#include "./parse.h"
 
 namespace Parser {
 bool pushed_back = false;
 Token	pushed_token;
 
-
-// extract a tiken
 static Token GetNextToken(istream *in, int *line) {
 	if(pushed_back) {
 		pushed_back = false;
@@ -25,12 +20,10 @@ static Token GetNextToken(istream *in, int *line) {
 	return getNextToken(in, line);
 }
 
-
-// token wrapper
 static void PushBackToken(Token& t) {
-	if(pushed_back) {
+	if(pushed_back)
 		abort();
-	}
+
 	pushed_back = true;
 	pushed_token = t;
 }
@@ -38,26 +31,25 @@ static void PushBackToken(Token& t) {
 }
 
 
-// error count for the program parsed
 static int error_count = 0;
-
-
-// error handling
 void ParseError(int line, string msg) {
-  cout << "line: " << msg << endl;
+  cout << line << ": " << msg << endl;
+  // ++error_count;
 }
+
 
 ParseTree *Prog(istream *in, int *line) {
 	ParseTree *sl = Slist(in, line);
 
-	if( sl == 0 )
+	if(sl == 0)
 		ParseError(*line, "No statements in program");
 
-	if( error_count )
+	if(error_count)
 		return 0;
 
 	return sl;
 }
+
 
 // Slist is a Statement followed by a Statement List
 ParseTree *Slist(istream *in, int *line) {
@@ -65,30 +57,59 @@ ParseTree *Slist(istream *in, int *line) {
 	if( s == 0 )
 		return 0;
  
-        Token sc = Parser::GetNextToken(in, line);
-	if( sc != SC ) {
+  Token sc = Parser::GetNextToken(in, line);
+
+	if(sc != SC) {
 		ParseError(*line, "Missing semicolon");
 		delete s;
 		return 0;
 	}
 
 	ParseTree *sl = Slist(in, line);
-        if( sl == 0 )
-            return s;
+  
+  if(sl == 0)
+    return s;
+          
 	return new StmtList(s, sl);
 }
 
+
 ParseTree *Stmt(istream *in, int *line) {
-	return 0;
+  Token stmt = Parser::GetNextToken(in, line);
+
+  if(stmt.GetTokenType() == ERR) {
+    cerr << "BAD TOKEN" << endl;
+    return 0;
+  }
+
+  if(stmt.GetTokenType() == VAR) {
+    // vardecl
+    return 0;
+  }
+    
+  if(stmt.GetTokenType() == SET) {
+    return 0;
+  }
+
+  if(stmt.GetTokenType() == PRINT) {
+    return 0;
+  }
+
+  if(stmt.GetTokenType() == REPEAT) {
+    return 0;
+  }
 }
+
 
 ParseTree *VarStmt(istream *in, int *line) {
 	return 0;
 }
 
+
 ParseTree *SetStmt(istream *in, int *line) {
 	return 0;
 }
+
 
 ParseTree *PrintStmt(istream *in, int *line) {
 	int l = *line;
@@ -102,9 +123,11 @@ ParseTree *PrintStmt(istream *in, int *line) {
 	return new Print(l, ex);
 }
 
+
 ParseTree *RepeatStmt(istream *in, int *line) {
 	return 0;
 }
+
 
 ParseTree *Expr(istream *in, int *line) {
 	ParseTree *t1 = Term(in, line);
@@ -126,22 +149,25 @@ ParseTree *Expr(istream *in, int *line) {
 			return 0;
 		}
 
-    // not yet defined
-		// if(t == PLUS)
+		// if( t == PLUS )
 		// 	t1 = new PlusExpr(t.GetLinenum(), t1, t2);
 		// else
 		// 	t1 = new MinusExpr(t.GetLinenum(), t1, t2);
 	}
 }
 
+
 ParseTree *Term(istream *in, int *line) {
 	return 0;
 }
+
 
 ParseTree *Factor(istream *in, int *line) {
 	return 0;
 }
 
+
 ParseTree *Primary(istream *in, int *line) {
 	return 0;
 }
+
