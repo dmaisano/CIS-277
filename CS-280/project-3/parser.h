@@ -6,7 +6,23 @@
 * parser.h
 */
 
-#include "./parse.h"
+#include <iostream>
+#include "./lexer.h"
+#include "./parsetree.h"
+using namespace std;
+
+// prototypes
+extern ParseTree *Prog(istream *in, int *line);
+extern ParseTree *Slist(istream *in, int *line);
+extern ParseTree *Stmt(istream *in, int *line);
+extern ParseTree *VarStmt(istream *in, int *line);
+extern ParseTree *SetStmt(istream *in, int *line);
+extern ParseTree *PrintStmt(istream *in, int *line);
+extern ParseTree *RepeatStmt(istream *in, int *line);
+extern ParseTree *Expr(istream *in, int *line);
+extern ParseTree *Term(istream *in, int *line);
+extern ParseTree *Factor(istream *in, int *line);
+extern ParseTree *Primary(istream *in, int *line);
 
 namespace Parser {
 bool pushed_back = false;
@@ -41,48 +57,50 @@ void ParseError(int line, string msg) {
 
 
 ParseTree *Prog(istream *in, int *line) {
+  // the program is essentially a statement list
 	ParseTree *sl = Slist(in, line);
 
 	if(sl == 0)
 		ParseError(*line, "No statements in program");
 
+  // stop if we find any errors
 	if(error_count)
 		return 0;
 
+  // if not return the statement list
 	return sl;
 }
 
 
 // Slist is a Statement followed by a Statement List
 ParseTree *Slist(istream *in, int *line) {
+  // statement
 	ParseTree *s = Stmt(in, line);
-	if( s == 0 )
+
+	if(s == 0)
 		return 0;
  
-  Token sc = Parser::GetNextToken(in, line);
+  Token nextToken = Parser::GetNextToken(in, line);
 
-	if(sc != SC) {
+	if(nextToken != SC) {
 		ParseError(*line, "Missing semicolon");
 		delete s;
 		return 0;
 	}
 
+  // now grab the statement list
 	ParseTree *sl = Slist(in, line);
   
   if(sl == 0)
     return s;
-          
+
+  // and return it
 	return new StmtList(s, sl);
 }
 
 
 ParseTree *Stmt(istream *in, int *line) {
   Token stmt = Parser::GetNextToken(in, line);
-
-  if(stmt.GetTokenType() == ERR) {
-    cerr << "BAD TOKEN" << endl;
-    return 0;
-  }
 
   if(stmt.GetTokenType() == VAR) {
     return 0;
@@ -95,6 +113,20 @@ ParseTree *Stmt(istream *in, int *line) {
   if(stmt.GetTokenType() == PRINT) {
     // process the expression inside the PRINT stmt
     ParseTree *expr = Expr(in, line);
+
+    if(expr == 0) {
+      ParseError(*line, "Expecting expression after print");
+      return 0;
+    }
+
+    Token nextToken = Parser::GetNextToken(in, line);
+    if(nextToken.GetTokenType() != SC) {
+      ParseError(*line, "Missing semicolon");
+      delete expr;
+      return 0;
+    }
+
+    // return new PrintStmt();
   }
 
   if(stmt.GetTokenType() == REPEAT) {
@@ -104,6 +136,12 @@ ParseTree *Stmt(istream *in, int *line) {
 
 
 ParseTree *VarStmt(istream *in, int *line) {
+  Token tok = Parser::GetNextToken(in, line);
+
+  if(tok.GetTokenType() == IDENT) {
+
+  }
+
 	return 0;
 }
 

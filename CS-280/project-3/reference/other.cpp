@@ -5,6 +5,25 @@
 #include <map>
 using namespace std;
 
+/*
+enum TokenType {
+    ID,		    // identifier
+    STR,		  // string
+    INT,		  // integer constant
+    PLUS,		  // the + operator
+    STAR,		  // the * operator
+    LEFTSQ,		// the [
+    RIGHTSQ,	// the ]
+    PRINT,		// print keyword
+    SET,		  // set keyword
+    SC,		    // semicolon
+    LPAREN,		// The (
+    RPAREN,		// the )
+    DONE,		  // finished!
+    ERR,		  // an unrecoverable error
+};
+*/
+
 /// Token Wrapper
 Token saved;
 bool isSaved = false;
