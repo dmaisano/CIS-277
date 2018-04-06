@@ -9,7 +9,7 @@ Contains C++ Projects / Files from various CS courses
 **Caveats 😬**
 - C++ lacks a practical modular library / package system
   - Downloading libraries or packages is annoying and is not intuitive.
-  - What I found simpled is I've had to download files and import/source them in my projects as necessary.
+  - What I tend to do is just download files manually and import them in my projects as necessary.
 
 ***
 
