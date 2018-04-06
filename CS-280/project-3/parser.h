@@ -6,23 +6,26 @@
 * parser.h
 */
 
+#ifndef PARSER_H_
+#define PARSER_H_
+
 #include <iostream>
-#include "./lexer.h"
 #include "./parsetree.h"
 using namespace std;
 
 // prototypes
-extern ParseTree *Prog(istream *in, int *line);
-extern ParseTree *Slist(istream *in, int *line);
-extern ParseTree *Stmt(istream *in, int *line);
-extern ParseTree *VarStmt(istream *in, int *line);
-extern ParseTree *SetStmt(istream *in, int *line);
-extern ParseTree *PrintStmt(istream *in, int *line);
-extern ParseTree *RepeatStmt(istream *in, int *line);
-extern ParseTree *Expr(istream *in, int *line);
-extern ParseTree *Term(istream *in, int *line);
-extern ParseTree *Factor(istream *in, int *line);
-extern ParseTree *Primary(istream *in, int *line);
+ParseTree *Prog(istream *in, int *line);
+ParseTree *Slist(istream *in, int *line);
+ParseTree *Stmt(istream *in, int *line);
+ParseTree *VarStmt(istream *in, int *line);
+ParseTree *SetStmt(istream *in, int *line);
+ParseTree *PrintStmt(istream *in, int *line);
+ParseTree *RepeatStmt(istream *in, int *line);
+ParseTree *Expr(istream *in, int *line);
+ParseTree *Term(istream *in, int *line);
+ParseTree *Factor(istream *in, int *line);
+ParseTree *Primary(istream *in, int *line);
+
 
 namespace Parser {
 bool pushed_back = false;
@@ -36,12 +39,14 @@ static Token GetNextToken(istream *in, int *line) {
 	return getNextToken(in, line);
 }
 
-static void PushBackToken(Token& t) {
+// return the token that is not needed
+// pretty much like in->putback()
+static void PushBackToken(Token& tok) {
 	if(pushed_back)
 		abort();
 
 	pushed_back = true;
-	pushed_token = t;
+	pushed_token = tok;
 }
 
 }
@@ -74,7 +79,7 @@ ParseTree *Prog(istream *in, int *line) {
 
 // Slist is a Statement followed by a Statement List
 ParseTree *Slist(istream *in, int *line) {
-  // statement
+  // grab the statement
 	ParseTree *s = Stmt(in, line);
 
 	if(s == 0)
@@ -112,9 +117,9 @@ ParseTree *Stmt(istream *in, int *line) {
 
   if(stmt.GetTokenType() == PRINT) {
     // process the expression inside the PRINT stmt
-    ParseTree *expr = Expr(in, line);
+    ParseTree *exp = Expr(in, line);
 
-    if(expr == 0) {
+    if(exp == 0) {
       ParseError(*line, "Expecting expression after print");
       return 0;
     }
@@ -122,7 +127,7 @@ ParseTree *Stmt(istream *in, int *line) {
     Token nextToken = Parser::GetNextToken(in, line);
     if(nextToken.GetTokenType() != SC) {
       ParseError(*line, "Missing semicolon");
-      delete expr;
+      delete exp;
       return 0;
     }
 
@@ -136,18 +141,40 @@ ParseTree *Stmt(istream *in, int *line) {
 
 
 ParseTree *VarStmt(istream *in, int *line) {
-  Token tok = Parser::GetNextToken(in, line);
+  Token identToken = Parser::GetNextToken(in, line);
 
-  if(tok.GetTokenType() == IDENT) {
-
+  // error handling
+  if(identToken.GetTokenType() != IDENT) {
+      ParseError(*line, "IDENT expected in var, got " + identToken.GetLexeme());
+      return 0;
   }
 
-	return 0;
+  // get the expression
+  // ParseTree *exp = Expr(in, *line);
+
+  // if(exp == 0)
+  //   return 0;
+
+  // if it is a valid var statement
+  // return a VarDecl with the IDENT and the expression
+	// return new VarDecl(*line, new Ident(identToken), exp)
 }
 
 
 ParseTree *SetStmt(istream *in, int *line) {
-	return 0;
+  Token tok = Parser::GetNextToken(in, line);
+
+  if(tok == IDENT) {
+    ParseTree *exp = Expr(in, line);
+
+    if(exp == 0)
+      return 0;
+
+    return new Assignment(*line, new Ident(tok), exp);
+  }
+
+  ParseError(*line, "Syntax error, expected IDENT");
+  return 0;
 }
 
 
@@ -207,7 +234,126 @@ ParseTree *Factor(istream *in, int *line) {
 }
 
 
-ParseTree *Primary(istream *in, int *line) {
-	return 0;
+// ParseTree *Primary(istream *in, int *line) {
+//   Token tok = Parser::GetNextToken(in, line);
+
+//   if(tok.GetTokenType() == IDENT)
+//     return new IDENT(tok, *line);
+
+//   else if(tok.GetTokenType() == ICONST)
+//     return new IConst(tok, *line);
+
+//   else if(tok.GetTokenType() == SCONST)
+//     return new SConst(tok, *line);
+
+//   else if(tok.GetTokenType() == LPAREN) {
+//     ParseTree *exp = Expr(in, *line);
+
+//     if(exp == 0)
+//       return 0;
+
+//     Token nextTok = Parser::GetNextToken(in, line);
+//     if(nextTok.GetTokenType() != RPAREN) {
+//       ParseError("expected right parens");
+//       return 0;
+//     }
+//   }
+
+//   return 0;
+// }
+
+ParseTree *Expr(istream *in, int *line) {
+  ParseTree *exp = Term(in, line);
+  
+  if(exp == 0)
+    return 0;
+  
+  while(true) {
+    Token tok = Parser::GetNextToken(in, line);
+    auto tt = tok.GetTokenType();
+    
+    if(tt != PLUS && tt != MINUS) {
+      Parser::PushBackToken(tok);
+      return exp;
+    }
+    
+    ParseTree *exp2 = Term(in, line);
+
+    if(exp2 == 0) {
+      ParseError(*line, "Missing expression after operator");
+      return 0;
+    }
+
+    if(tt == PLUS)
+      return new PlusExpr(*line, exp, exp2);
+    
+    if(tt == MINUS)
+      return new MinusExpr(*line, exp, exp2);
+  }
+  
+  return exp;
 }
 
+ParseTree *Term(istream *in, int *line) {
+  ParseTree *primary = Primary(in, line);
+  
+  if(primary == 0)
+    return 0;
+  
+  while(true) {
+    Token tok = Parser::GetNextToken(in, line);
+    auto tt = tok.GetTokenType();
+    
+    if(tt != STAR) {
+      Parser::PushBackToken(tok);
+      // break; or return 0; ??
+      // assuming return 0;
+      return 0;
+    }
+    
+    ParseTree *primary2 = Primary(in, line);
+    if(primary2 == 0) {
+      ParseError(*line, "missing operand after *");
+      return 0;
+    }
+    
+    return new TimesExpr(*line, primary, primary2);
+  }
+  
+  return 0;
+}
+
+ParseTree *Primary(istream *in, int *line) {
+  Token tok = Parser::GetNextToken(in, line);
+  auto tt = tok.GetTokenType();
+  
+  if(tt == IDENT)
+      return new Ident(tok);
+
+  else if(tt == ICONST)
+      return new IConst(tok);
+
+  else if(tt == SCONST) {
+      Parser::PushBackToken(tok);
+      // return SConst(in); ???
+  }
+
+  else if(tt == LPAREN) {
+    ParseTree *exp = Expr(in, line);
+
+    if(exp == 0)
+      return 0;
+
+    auto nextTok = Parser::GetNextToken(in, line);
+    if(nextTok.GetTokenType() != RPAREN) {
+      ParseError(*line, "expected right parens");
+      return 0;
+    }
+    
+    return exp;
+  }
+  
+  return 0;
+}
+
+#endif

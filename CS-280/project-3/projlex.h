@@ -1,8 +1,9 @@
 /*
-* projlex.h
-*
+* Domenico Maisano
 * CS280
 * Spring 2018
+* 
+* projlex.h
 */
 
 #ifndef PROJLEX_H_
@@ -20,14 +21,11 @@ enum TType {
 	PRINT,
 	VAR,
 	REPEAT,
-
   // an identifier
 	IDENT,
-
   // an integer and string constant
 	ICONST,
 	SCONST,
-
   // the operators, parens and semicolon
 	PLUS,
 	MINUS,
@@ -38,10 +36,8 @@ enum TType {
 	LPAREN,
 	RPAREN,
 	SC,
-
   // any error returns this token
 	ERR,
-
   // when completed (EOF), return this token
 	DONE
 };
@@ -75,4 +71,4 @@ extern ostream& operator<<(ostream& out, const Token& tok);
 extern Token getNextToken(istream *in, int *linenum);
 
 
-#endif /* PROJLEX_H_ */
+#endif
