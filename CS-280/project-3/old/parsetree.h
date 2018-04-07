@@ -16,7 +16,7 @@
 using namespace std;
 
 // NodeType represents all possible types
-enum NodeType { ERRTYPE, INTTYPE, STRTYPE, IDENTTYPE, PLUSTYPE, MINUSTYPE, TIMESTYPE };
+enum NodeType { ERRTYPE, INTTYPE, STRTYPE, PLUSTYPE, MINUSTYPE, TIMESTYPE, BRACKTYPE, NULLSTRTYPE };
 
 class ParseTree {
 	int			linenum;
@@ -58,8 +58,6 @@ public:
 
 class Assignment : public ParseTree {
 public:
-  // Assignment(Token& tok, ParseTree* exp) : ParseTree(tok.GetLinenum(), exp) {}
-
   Assignment(int line, ParseTree *ident, ParseTree *exp) : ParseTree(line, ident, exp) {}
 };
 
@@ -97,14 +95,12 @@ public:
 
 
 class SliceExpr : public ParseTree {
-public:
-  SliceExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line, l, r) {}
+
 };
 
 
 class SliceOperand : public ParseTree {
-public:
-  SliceOperand(int line, ParseTree *l, ParseTree *r) : ParseTree(line, l, r) {}
+
 };
 
 
@@ -112,8 +108,8 @@ class IConst : public ParseTree {
 private:
 	int val;
 public:
-	IConst(Token& tok) : ParseTree(tok.GetLinenum()) {
-		val = stoi(tok.GetLexeme());
+	IConst(Token& t) : ParseTree(t.GetLinenum()) {
+		val = stoi(t.GetLexeme());
 	}
 	NodeType GetType() const { return INTTYPE; }
 };
@@ -123,8 +119,8 @@ class SConst : public ParseTree {
 private:
   string str;
 public:
-  SConst(Token& tok) : ParseTree(tok.GetLinenum()) {
-    str = tok.GetLexeme();
+  SConst(Token& t) : ParseTree(t.GetLinenum()) {
+    str = t.GetLexeme();
   }
   NodeType GetType() const { return STRTYPE; }
 };
@@ -132,12 +128,9 @@ public:
 
 class Ident : public ParseTree {
 private:
-  string ident;
+  Token identTok;
 public:
-  Ident(Token& tok) : ParseTree(tok.GetLinenum()) {
-    ident = tok.GetLexeme();
-  }
-  NodeType GetType() const { return IDENTTYPE; }
+  Ident(const Token& identTok) : ParseTree(0), identTok(identTok) {}
 };
 
-#endif
+#endif /* PARSETREE_H_ */
