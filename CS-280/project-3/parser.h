@@ -76,11 +76,9 @@ ParseTree *Prog(istream *in, int *line) {
 	if(sl == 0)
 		ParseError(*line, "No statements in program");
 
-  // stop if we find any errors
 	if(error_count)
 		return 0;
 
-  // if not return the statement list
 	return sl;
 }
 
@@ -93,9 +91,9 @@ ParseTree *Slist(istream *in, int *line) {
 	if(s == 0)
 		return 0;
  
-  Token nextToken = Parser::GetNextToken(in, line);
+  Token tok = Parser::GetNextToken(in, line);
 
-	if(nextToken != SC) {
+	if(tok != SC) {
 		ParseError(*line, "Missing semicolon");
 		delete s;
 		return 0;
@@ -189,20 +187,22 @@ ParseTree *SetStmt(istream *in, int *line) {
 
 
 ParseTree *PrintStmt(istream *in, int *line) {
-	int l = *line;
+	ParseTree *exp = Expr(in, line);
 
-	ParseTree *ex = Expr(in, line);
-	if( ex == 0 ) {
+	if(exp == 0) {
 		ParseError(*line, "Missing expression after print");
 		return 0;
 	}
 
-	return new Print(l, ex);
+	return new Print(*line, exp);
 }
 
 
 ParseTree *RepeatStmt(istream *in, int *line) {
-	return 0;
+  ParseTree *exp = Expr(in, line);
+
+  if(exp == 0)
+    return 0;
 }
 
 ParseTree *Expr(istream *in, int *line) {

@@ -6,9 +6,9 @@
 * parsetree.h
 */
 
+
 #ifndef PARSETREE_H_
 #define PARSETREE_H_
-
 #include <iostream>
 #include <vector>
 #include <map>
@@ -16,7 +16,7 @@
 using namespace std;
 
 // NodeType represents all possible types
-enum NodeType { ERRTYPE, INTTYPE, STRTYPE, IDENTTYPE, PLUSTYPE, MINUSTYPE, TIMESTYPE };
+enum NodeType { ERRTYPE, INTTYPE, STRTYPE };
 
 class ParseTree {
 	int			linenum;
@@ -69,28 +69,26 @@ public:
 
 
 class Repeat : public ParseTree {
-  
+public:
+  Repeat(int line, int times, ParseTree *exp) : ParseTree(line, exp) {}
 };
 
 
 class PlusExpr : public ParseTree {
 public:
   PlusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line, l, r) {}
-  NodeType GetType() const { return PLUSTYPE; }
 };
 
 
 class MinusExpr : public ParseTree {
 public:
   MinusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line, l, r) {}
-  NodeType GetType() const { return MINUSTYPE; }
 };
 
 
 class TimesExpr : public ParseTree {
 public:
   TimesExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line, l, r) {}
-  NodeType GetType() const { return TIMESTYPE; }
 };
 
 
@@ -134,8 +132,7 @@ private:
 public:
   Ident(Token& tok) : ParseTree(tok.GetLinenum()) {
     ident = tok.GetLexeme();
-  }
-  NodeType GetType() const { return IDENTTYPE; }
+  }   
 };
 
 #endif
