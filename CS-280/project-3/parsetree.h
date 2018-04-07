@@ -58,8 +58,6 @@ public:
 
 class Assignment : public ParseTree {
 public:
-  // Assignment(Token& tok, ParseTree* exp) : ParseTree(tok.GetLinenum(), exp) {}
-
   Assignment(int line, ParseTree *ident, ParseTree *exp) : ParseTree(line, ident, exp) {}
 };
 

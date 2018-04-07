@@ -53,7 +53,7 @@ namespace CLI {
 
         // if a file is already found
         else if(foundFile == true) {
-          cout << "TOO MANY FILE NAMES" << endl;
+          cout << "TOO MANY FILENAMES" << endl;
           exit(0);
         }
       }
@@ -62,7 +62,7 @@ namespace CLI {
     ifstream file(fileName);
     istream* in = &file;
     // finally we can actually run the program
-    // Parser::Parse(in, traceMode);
+    Parser::Parse(in, traceMode);
     cout << "I RAN!";
 
     cout << endl;

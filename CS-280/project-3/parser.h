@@ -26,6 +26,7 @@ ParseTree *Term(istream *in, int *line);
 ParseTree *Factor(istream *in, int *line);
 ParseTree *Primary(istream *in, int *line);
 
+static int error_count = 0;
 
 namespace Parser {
 bool pushed_back = false;
@@ -49,10 +50,17 @@ static void PushBackToken(Token& tok) {
 	pushed_token = tok;
 }
 
+static void Parse(istream *in, bool traceMode) {
+  int line = 0;
+
+  ParseTree *prog = Prog(in, &line);
+
+  // not a valid program
+  if(prog == 0 || error_count != 0)
+    exit(0);
 }
 
-
-static int error_count = 0;
+}
 
 // error handler
 void ParseError(int line, string msg) {
@@ -93,7 +101,7 @@ ParseTree *Slist(istream *in, int *line) {
 		return 0;
 	}
 
-  // now grab the statement list
+  // now grab another statement list, if there is one
 	ParseTree *sl = Slist(in, line);
   
   if(sl == 0)
@@ -141,6 +149,8 @@ ParseTree *Stmt(istream *in, int *line) {
   if(stmt == REPEAT) {
     return 0;
   }
+
+  return 0;
 }
 
 
@@ -195,38 +205,10 @@ ParseTree *RepeatStmt(istream *in, int *line) {
 	return 0;
 }
 
-
 ParseTree *Expr(istream *in, int *line) {
-	ParseTree *term = Term(in, line);
-	if(term == 0)
-		return 0;
-
-	while(true) {
-		Token tok = Parser::GetNextToken(in, line);
-
-		if(tok != PLUS && tok != MINUS) {
-			Parser::PushBackToken(tok);
-			return term;
-		}
-
-		ParseTree *term2 = Term(in, line);
-		if(term2 == 0) {
-			ParseError(*line, "Expected expression after operator");
-			return 0;
-		}
-
-		if(tok == PLUS)
-			term = new PlusExpr(tok.GetLinenum(), term, term2);
-
-		else if(tok == MINUS)
-			term2 = new MinusExpr(tok.GetLinenum(), term, term2);
-	}
-}
-
-ParseTree *Expr(istream *in, int *line) {
-  ParseTree *exp = Term(in, line);
+  ParseTree *term = Term(in, line);
   
-  if(exp == 0)
+  if(term == 0)
     return 0;
   
   while(true) {
@@ -234,24 +216,24 @@ ParseTree *Expr(istream *in, int *line) {
     
     if(tok != PLUS && tok != MINUS) {
       Parser::PushBackToken(tok);
-      return exp;
+      return term;
     }
     
-    ParseTree *exp2 = Term(in, line);
+    ParseTree *term2 = Term(in, line);
 
-    if(exp2 == 0) {
+    if(term2 == 0) {
       ParseError(*line, "Missing expression after operator");
       return 0;
     }
 
     if(tok == PLUS)
-      return new PlusExpr(*line, exp, exp2);
+      return new PlusExpr(*line, term, term2);
     
     if(tok == MINUS)
-      return new MinusExpr(*line, exp, exp2);
+      return new MinusExpr(*line, term, term2);
   }
   
-  return exp;
+  return term;
 }
 
 ParseTree *Term(istream *in, int *line) {
