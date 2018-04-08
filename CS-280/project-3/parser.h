@@ -41,7 +41,7 @@ static Token GetNextToken(istream *in, int *line) {
 	return getNextToken(in, line);
 }
 
-// return the token that is not needed
+// 'pushback' the token that will be needed
 // pretty much like in->putback()
 static void PushBackToken(Token& tok) {
 	if(pushed_back)
@@ -57,12 +57,11 @@ static void Parse(istream *in, bool traceMode) {
   ParseTree *prog = Prog(in, &line);
 
   // not a valid program
-  // if(prog == 0 || error_count != 0)
-  //   exit(0);
+  if(prog == 0 || error_count != 0)
+    exit(0);
 }
 
 }
-// Parser::Parse(in, traceMode)
 
 // error handler
 void ParseError(int line, string msg) {
@@ -120,6 +119,11 @@ ParseTree *Stmt(istream *in, int *line) {
     return 0;
   }
 
+  if(stmt == IDENT) {
+    ParseError(*line, "Cannot use a variable, before declaring it");
+    return 0;
+  }
+
   if(stmt == DONE)
     return 0;
 
@@ -129,15 +133,11 @@ ParseTree *Stmt(istream *in, int *line) {
   if(stmt == SET)
     return SetStmt(in, line);
 
-  if(stmt == PRINT) {
-    cout << "Creating print stmt" << endl;
+  if(stmt == PRINT)
     return PrintStmt(in, line);
-  }
-    
 
-  if(stmt == REPEAT) {
+  if(stmt == REPEAT)
     return RepeatStmt(in, line);
-  }
 
   return 0;
 }
@@ -210,8 +210,6 @@ ParseTree *RepeatStmt(istream *in, int *line) {
 }
 
 ParseTree *Expr(istream *in, int *line) {
-  cout << "creating expression" << endl;
-
   ParseTree *term = Term(in, line);
   
   if(term == 0)
@@ -222,6 +220,7 @@ ParseTree *Expr(istream *in, int *line) {
     
     if(tok != PLUS && tok != MINUS) {
       Parser::PushBackToken(tok);
+      // cout << "Returning EXPR" << endl;
       return term;
     }
     
@@ -233,19 +232,21 @@ ParseTree *Expr(istream *in, int *line) {
       return 0;
     }
 
-    if(tok == PLUS)
+    if(tok == PLUS) {
+      // cout << "Returning PLUS EXPR" << endl;
       return new PlusExpr(*line, term, term2);
+    }
     
-    if(tok == MINUS)
+    if(tok == MINUS) {
+      // cout << "Returning MINUS EXPR" << endl;
       return new MinusExpr(*line, term, term2);
+    }
   }
   
   return term;
 }
 
 ParseTree *Term(istream *in, int *line) {
-  cout << "creating term" << endl;
-
   ParseTree *factor = Factor(in, line);
   
   if(factor == 0)
@@ -256,7 +257,8 @@ ParseTree *Term(istream *in, int *line) {
     
     if(tok != STAR) {
       Parser::PushBackToken(tok);
-      return 0;
+      // cout << "Returning TERM" << endl;
+      return factor;
     }
     
     ParseTree *factor2 = Factor(in, line);
@@ -265,15 +267,12 @@ ParseTree *Term(istream *in, int *line) {
       return 0;
     }
     
+    // cout << "Returning TIMES EXPR" << endl;
     return new TimesExpr(*line, factor, factor2);
   }
-  
-  return factor;
 }
 
 ParseTree *Factor(istream *in, int *line) {
-  cout << "creating factor" << endl;
-
   ParseTree *prim = Primary(in, line);
 
   if(prim == 0) {
@@ -286,6 +285,7 @@ ParseTree *Factor(istream *in, int *line) {
 
     if(tok != LSQ) {
       Parser::PushBackToken(tok);
+      // cout << "Returning FACTOR" << endl;
       return prim;
     }
 
@@ -316,27 +316,32 @@ ParseTree *Factor(istream *in, int *line) {
 
     // left node is the original primary
     // rigt node is the 'slice expr'
+    // cout << "Returning SLICE EXPR" << endl;
     return new SliceExpr(*line, prim, new SliceOperand(*line, expr1, expr2));
   }
-
-  return prim;
 }
 
 ParseTree *Primary(istream *in, int *line) {
-  cout << "creating primary" << endl;
-
   Token tok = Parser::GetNextToken(in, line);
 
-  cout << "token: " << tok.GetLexeme() << endl << "type: " << tok.GetTokenType() << endl;
+  // cout << "token: " << tok.GetLexeme() << endl << "type: " << tok.GetTokenType() << endl;
   
-  if(tok == IDENT)
-      return new Ident(tok);
+  if(tok == IDENT) {
+    tok = Parser::GetNextToken(in, line);
 
-  else if(tok == ICONST) 
+    // cout << "Returning IDENT" << endl;
+    return new Ident(tok);
+  }
+
+  else if(tok == ICONST) {
+    // cout << "Returning ICONST" << endl;
     return new IConst(tok);
+  }
 
-  else if(tok == SCONST)
+  else if(tok == SCONST) {
+    // cout << "Returning SCONST" << endl;
     return new SConst(tok);
+  }
 
   else if(tok == LPAREN) {
     ParseTree *exp = Expr(in, line);
@@ -350,6 +355,7 @@ ParseTree *Primary(istream *in, int *line) {
       return 0;
     }
     
+    // cout << "Returning PARENS EXPR" << endl;
     return exp;
   }
 
