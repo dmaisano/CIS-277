@@ -6,7 +6,6 @@
 * parsetree.h
 */
 
-
 #ifndef PARSETREE_H_
 #define PARSETREE_H_
 #include <iostream>
@@ -70,7 +69,7 @@ public:
 
 class Repeat : public ParseTree {
 public:
-  Repeat(int line, int times, ParseTree *exp) : ParseTree(line, exp) {}
+  Repeat(int line, ParseTree *times, ParseTree *exp) : ParseTree(line, times, exp) {}
 };
 
 
@@ -111,7 +110,10 @@ public:
 	IConst(Token& tok) : ParseTree(tok.GetLinenum()) {
 		val = stoi(tok.GetLexeme());
 	}
+
 	NodeType GetType() const { return INTTYPE; }
+
+  int getVal() const { return val; }
 };
 
 
@@ -122,7 +124,10 @@ public:
   SConst(Token& tok) : ParseTree(tok.GetLinenum()) {
     str = tok.GetLexeme();
   }
+  
   NodeType GetType() const { return STRTYPE; }
+
+  string getVal() const { return str; }
 };
 
 
@@ -132,7 +137,9 @@ private:
 public:
   Ident(Token& tok) : ParseTree(tok.GetLinenum()) {
     ident = tok.GetLexeme();
-  }   
+  }
+
+  string getVal() const { return ident; } 
 };
 
 #endif

@@ -63,7 +63,6 @@ namespace CLI {
     istream* in = &file;
     // finally we can actually run the program
     Parser::Parse(in, traceMode);
-    cout << "I RAN!";
 
     cout << endl;
     exit(0);

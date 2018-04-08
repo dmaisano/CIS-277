@@ -4,6 +4,7 @@
 * Spring 2018
 * 
 * parser.h
+* (modified parse.cpp)
 */
 
 #ifndef PARSER_H_
@@ -51,16 +52,17 @@ static void PushBackToken(Token& tok) {
 }
 
 static void Parse(istream *in, bool traceMode) {
-  int line = 0;
+  int line = 1;
 
   ParseTree *prog = Prog(in, &line);
 
   // not a valid program
-  if(prog == 0 || error_count != 0)
-    exit(0);
+  // if(prog == 0 || error_count != 0)
+  //   exit(0);
 }
 
 }
+// Parser::Parse(in, traceMode)
 
 // error handler
 void ParseError(int line, string msg) {
@@ -89,7 +91,7 @@ ParseTree *Slist(istream *in, int *line) {
 	ParseTree *s = Stmt(in, line);
 
 	if(s == 0)
-		return 0;
+    return 0;
  
   Token tok = Parser::GetNextToken(in, line);
 
@@ -128,24 +130,13 @@ ParseTree *Stmt(istream *in, int *line) {
     return SetStmt(in, line);
 
   if(stmt == PRINT) {
-    // process the expression inside the PRINT stmt
-    ParseTree *exp = Expr(in, line);
-
-    if(exp == 0) {
-      ParseError(*line, "Expecting expression after print");
-      return 0;
-    }
-
-    Token nextToken = Parser::GetNextToken(in, line);
-    if(nextToken != SC) {
-      ParseError(*line, "Missing semicolon");
-      delete exp;
-      return 0;
-    }
+    cout << "Creating print stmt" << endl;
+    return PrintStmt(in, line);
   }
+    
 
   if(stmt == REPEAT) {
-    return 0;
+    return RepeatStmt(in, line);
   }
 
   return 0;
@@ -162,8 +153,10 @@ ParseTree *VarStmt(istream *in, int *line) {
 
   // get the expression
   ParseTree *exp = Expr(in, line);
-  if(exp == 0)
+  if(exp == 0) {
+    ParseError(*line, "Expected expression after identifier");
     return 0;
+  }
 
   return new VarDecl(*line, new Ident(identToken), exp);
 }
@@ -172,17 +165,19 @@ ParseTree *VarStmt(istream *in, int *line) {
 ParseTree *SetStmt(istream *in, int *line) {
   Token tok = Parser::GetNextToken(in, line);
 
-  if(tok == IDENT) {
-    ParseTree *exp = Expr(in, line);
-
-    if(exp == 0)
-      return 0;
-
-    return new Assignment(*line, new Ident(tok), exp);
+  if(tok != IDENT) {
+    ParseError(*line, "Expected identifier in set statement");
+    return 0;
   }
 
-  ParseError(*line, "Syntax error, expected IDENT");
-  return 0;
+  // we found an IDENT, continue
+  ParseTree *exp = Expr(in, line);
+  if(exp == 0) {
+    ParseError(*line, "Expected expression after identifier");
+    return 0;
+  }
+
+  return new Assignment(*line, new Ident(tok), exp);
 }
 
 
@@ -203,9 +198,20 @@ ParseTree *RepeatStmt(istream *in, int *line) {
 
   if(exp == 0)
     return 0;
+
+  ParseTree *s = Stmt(in, line);
+
+  if(s == 0) {
+    ParseError(*line, "Expected statement");
+    return 0;
+  }
+
+  return new Repeat(*line, exp, s);
 }
 
 ParseTree *Expr(istream *in, int *line) {
+  cout << "creating expression" << endl;
+
   ParseTree *term = Term(in, line);
   
   if(term == 0)
@@ -219,6 +225,7 @@ ParseTree *Expr(istream *in, int *line) {
       return term;
     }
     
+    // we found a PLUS or MINUS token
     ParseTree *term2 = Term(in, line);
 
     if(term2 == 0) {
@@ -237,9 +244,11 @@ ParseTree *Expr(istream *in, int *line) {
 }
 
 ParseTree *Term(istream *in, int *line) {
-  ParseTree *primary = Primary(in, line);
+  cout << "creating term" << endl;
+
+  ParseTree *factor = Factor(in, line);
   
-  if(primary == 0)
+  if(factor == 0)
     return 0;
   
   while(true) {
@@ -247,24 +256,24 @@ ParseTree *Term(istream *in, int *line) {
     
     if(tok != STAR) {
       Parser::PushBackToken(tok);
-      // break; or return 0; ??
-      // assuming return 0;
       return 0;
     }
     
-    ParseTree *primary2 = Primary(in, line);
-    if(primary2 == 0) {
-      ParseError(*line, "missing operand after *");
+    ParseTree *factor2 = Factor(in, line);
+    if(factor2 == 0) {
+      ParseError(*line, "missing factor after times");
       return 0;
     }
     
-    return new TimesExpr(*line, primary, primary2);
+    return new TimesExpr(*line, factor, factor2);
   }
   
-  return 0;
+  return factor;
 }
 
 ParseTree *Factor(istream *in, int *line) {
+  cout << "creating factor" << endl;
+
   ParseTree *prim = Primary(in, line);
 
   if(prim == 0) {
@@ -281,20 +290,21 @@ ParseTree *Factor(istream *in, int *line) {
     }
 
     // a bracket was found, so continue
-    ParseTree *prim2 = Expr(in, line);
-    if(prim2 == 0) {
-      ParseError(*line, "Expected primary after operator");
+    ParseTree *expr1 = Expr(in, line);
+    if(expr1 == 0) {
+      ParseError(*line, "Expected expression after bracket");
+      return 0;
     }
 
     tok = Parser::GetNextToken(in, line);
     if(tok != COLON) {
-      ParseError(*line, "Missing semicolon");
+      ParseError(*line, "Expected colon in slice");
       return 0;
     }
 
-    ParseTree *prim3 = Expr(in, line);
-    if(prim3 == 0) {
-      ParseError(*line, "Expected Primary after operator");
+    ParseTree *expr2 = Expr(in, line);
+    if(expr2 == 0) {
+      ParseError(*line, "Expected expression after colon in 'slice'");
       return 0;
     }
 
@@ -304,23 +314,29 @@ ParseTree *Factor(istream *in, int *line) {
       return 0;
     }
 
-    prim = new SliceExpr(*line, prim, new SliceOperand(*line, prim2, prim3));
+    // left node is the original primary
+    // rigt node is the 'slice expr'
+    return new SliceExpr(*line, prim, new SliceOperand(*line, expr1, expr2));
   }
+
+  return prim;
 }
 
 ParseTree *Primary(istream *in, int *line) {
+  cout << "creating primary" << endl;
+
   Token tok = Parser::GetNextToken(in, line);
+
+  cout << "token: " << tok.GetLexeme() << endl << "type: " << tok.GetTokenType() << endl;
   
   if(tok == IDENT)
       return new Ident(tok);
 
-  else if(tok == ICONST)
-      return new IConst(tok);
+  else if(tok == ICONST) 
+    return new IConst(tok);
 
-  else if(tok == SCONST) {
-      Parser::PushBackToken(tok);
-      return new SConst(tok); // ???
-  }
+  else if(tok == SCONST)
+    return new SConst(tok);
 
   else if(tok == LPAREN) {
     ParseTree *exp = Expr(in, line);
@@ -336,7 +352,7 @@ ParseTree *Primary(istream *in, int *line) {
     
     return exp;
   }
-  
+
   return 0;
 }
 
