@@ -27,6 +27,9 @@ ParseTree *Term(istream *in, int *line);
 ParseTree *Factor(istream *in, int *line);
 ParseTree *Primary(istream *in, int *line);
 
+// traversals
+ParseTree *postTraversalStats(ParseTree *tree, bool trace);
+
 static int error_count = 0;
 
 namespace Parser {
@@ -56,11 +59,31 @@ static void Parse(istream *in, bool traceMode) {
 
   ParseTree *prog = Prog(in, &line);
 
-  // not a valid program
-  if(prog == 0 || error_count != 0)
-    exit(0);
+  postTraversal(prog, traceMode);
 }
 
+}
+
+ParseTree *postTraversalStats(ParseTree *node, bool trace) {
+  auto left = node->GetLeftChild();
+  auto right = node->GetRightChild();
+
+  // node that has left && right child
+  if(&left != NULL && &right != NULL && trace)
+    cout << "N";
+
+  // node that has a left child
+  else if(&left != NULL) {
+    cout << "l";
+
+    auto new_left  = left.GetLeftChild();
+    auto new_right = left.GetRightChild();
+
+    node = new StmtList(&new_left, &new_right);
+
+    cout << "L";
+    postTraversal(node, trace);
+  }
 }
 
 // error handler
@@ -170,7 +193,7 @@ ParseTree *SetStmt(istream *in, int *line) {
     return 0;
   }
 
-  // we found an IDENT, continue
+  // found an IDENT, continue
   ParseTree *exp = Expr(in, line);
   if(exp == 0) {
     ParseError(*line, "Expected expression after identifier");
@@ -323,8 +346,6 @@ ParseTree *Factor(istream *in, int *line) {
 
 ParseTree *Primary(istream *in, int *line) {
   Token tok = Parser::GetNextToken(in, line);
-
-  // cout << "token: " << tok.GetLexeme() << endl << "type: " << tok.GetTokenType() << endl;
   
   if(tok == IDENT) {
     tok = Parser::GetNextToken(in, line);

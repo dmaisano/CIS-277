@@ -35,9 +35,9 @@ public:
 
 	int GetLineNumber() const { return linenum; }
 
-  ParseTree GetLeftChild() const { return *left; }
+  ParseTree GetLeftChild() { return *left; }
 
-  ParseTree GetRightChild() const { return *right; }
+  ParseTree GetRightChild() { return *right; }
 
 	virtual NodeType GetType() const { return ERRTYPE; }
 };
