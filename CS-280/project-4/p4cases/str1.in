@@ -1,0 +1,15 @@
+var x "hello";
+var sp " ";
+var y "world";
+
+print x + sp + y;
+
+var other " xxxxx " ; 
+set other x + sp + y;
+set x x + sp + y;
+print x;
+print other;
+
+
+set x x + sp + y;
+print x;

@@ -1,0 +1,10 @@
+var str "This is quite a very long string";
+
+var x 7;
+var y 18;
+
+print str[ 0 : 1 ] ;
+
+print str[ x : x*2 ];
+print str[ x : y ];
+print str[ 0: 93731 ];

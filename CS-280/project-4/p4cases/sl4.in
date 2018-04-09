@@ -1,0 +1,14 @@
+var x 6;
+
+print "I.... wanna be a lifeguard!";
+repeat 4 print "help";
+print "I.... wanna guard your life";
+
+var m 3;
+repeat x set m m * m;
+
+print m;
+
+var s "abcdefghijklmnopqrstuvwxyz";
+
+print s[0:4][1:2];

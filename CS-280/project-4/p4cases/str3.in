@@ -1,0 +1,10 @@
+var msg "help ";
+
+print "I wanna be a lifeguard!";
+print msg * 4;
+
+print " ";
+
+var help "help";
+
+print help + " me Rhonda, " + ( (help + " ") * 2 ) + " me Rhonda";

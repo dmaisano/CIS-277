@@ -1,0 +1,6 @@
+var str "This is quite a very long string";
+
+var ix 5;
+
+print ix[2:3];
+print str[str:str];

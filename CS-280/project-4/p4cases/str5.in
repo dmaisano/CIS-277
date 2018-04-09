@@ -1,0 +1,42 @@
+var x 3;
+var y "little pigs ";
+
+print x * y;
+
+var z x * y;
+
+set z z - "pigs";
+print z;
+set z z - "pigs";
+print z;
+set z z - "pigs";
+print z;
+set z z - "pigs";
+print z;
+set z z - "little";
+print z;
+set z z - "little";
+print z;
+
+print ":" + z + ":";
+set z z - "little";
+set z z - "little";
+set z z - "little";
+
+print ":" + z + ":";
+set z z - " ";
+print ":" + z + ":";
+set z z - " ";
+print ":" + z + ":";
+set z z - " ";
+print ":" + z + ":";
+set z z - " ";
+print ":" + z + ":";
+set z z - " ";
+print ":" + z + ":";
+set z z - " ";
+print ":" + z + ":";
+set z z - " ";
+print ":" + z + ":";
+set z z - " ";
+print ":" + z + ":";

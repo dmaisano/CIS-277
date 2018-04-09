@@ -1,0 +1,11 @@
+var x 3*5;
+var y 0;
+var foo "foo, I say!";
+
+set x x * x * (y+1) *4;
+set x x - 5;
+set y x * x;
+
+print x;
+print y;
+print foo;
