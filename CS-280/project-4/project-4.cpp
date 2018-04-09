@@ -17,5 +17,5 @@ int main(int argc, char *argv[]) {
   // argv vector
   vector<string> args(argv + 1, argv + argc);
 
-  CLI::Parser(argc, args);
+  CLI::Main(argc, args);
 }

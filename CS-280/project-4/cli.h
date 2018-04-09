@@ -12,12 +12,12 @@
   #include <iostream>
   #include <cctype>
   #include <fstream>
-  #include "./parser.h"
+  #include "./interpreter.h"
   using namespace std;
 
   namespace CLI {
     // exposes the main functionality of the program
-    static void Parser(int argc, vector<string> argv) {
+    static void Main(int argc, vector<string> argv) {
       istream *in = &cin;
       ifstream file;
       bool traceMode = false;
@@ -51,8 +51,7 @@
         in = &file;
       }
       // finally we can actually run the program
-      Parser::Parse(in, traceMode);
-      // Interpreter::Interpret(in);
+      Interpreter::Interpret(in, traceMode);
       cout << endl;
       exit(0);
     }
