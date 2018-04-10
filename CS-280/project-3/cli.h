@@ -6,8 +6,8 @@
   * cli.h
   */
 
-  #ifndef CLI_H
-  #define CLI_H
+  #ifndef CLI_H_
+  #define CLI_H_
 
   #include <iostream>
   #include <cctype>
@@ -17,7 +17,7 @@
 
   namespace CLI {
     // exposes the main functionality of the program
-    static void Parser(int argc, vector<string> argv) {
+    static void Main(int argc, vector<string> argv) {
       istream *in = &cin;
       ifstream file;
       bool traceMode = false;

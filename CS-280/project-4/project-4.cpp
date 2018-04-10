@@ -3,7 +3,7 @@
 * CS280
 * Spring 2018
 * 
-* project-3.cpp
+* project-4.cpp
 */
 
 #include <iostream>

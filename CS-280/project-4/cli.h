@@ -6,8 +6,8 @@
   * cli.h
   */
 
-  #ifndef CLI_H
-  #define CLI_H
+  #ifndef CLI_H_
+  #define CLI_H_
 
   #include <iostream>
   #include <cctype>
