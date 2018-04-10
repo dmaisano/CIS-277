@@ -47,7 +47,6 @@
             exit(0);
           }
         }
-
         in = &file;
       }
       // finally we can actually run the program
