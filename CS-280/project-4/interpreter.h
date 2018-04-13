@@ -1,3 +1,11 @@
+/*
+* Domenico Maisano
+* CS280
+* Spring 2018
+* 
+* interpreter.h
+*/
+
 #ifndef INTERPRETER_H_
 #define INTERPRETER_H_
 
