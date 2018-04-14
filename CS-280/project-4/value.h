@@ -39,30 +39,47 @@ public:
 	}
 
   Value *Add(Value *right) {
-    // if adding two strings
-    if(this->GetType() == STRTYPE && right->GetType() == STRTYPE)
-      return new Value(this->GetStrValue() + right->GetStrValue());
-
-    // if adding two ints
-    else if(this->GetType() == INTTYPE && right->GetType() == INTTYPE)
+    if(this->GetType() == INTTYPE && right->GetType() == INTTYPE)
       return new Value(this->GetIntValue() + right->GetIntValue());
 
+    else if(this->GetType() == STRTYPE && right->GetType() == STRTYPE)
+      return new Value(this->GetStrValue() + right->GetStrValue());
+
     // error
-    else {
-      throw runtime_error("addition type error! please make sure types are the same");
-      return new Value();
+    throw runtime_error("RUNTIME ERROR: Addition type error! please make sure types are the same");
+    return new Value();
+  }
+
+  Value *Subtract(Value *right) {
+    if(this->GetType() == INTTYPE && right->GetType() == INTTYPE)
+      return new Value(this->GetIntValue() - right->GetIntValue());
+
+    else if(this->GetType() == STRTYPE && right->GetType() == STRTYPE) {
+      string str = this->GetStrValue(), substr = right->GetStrValue();
+      auto pos = str.find(substr);
+
+      // replace the first occurence of the found substring
+      if(pos != string::npos)
+        str.replace(pos, substr.length(), "");
+
+      return new Value(str);
     }
+
+    // error
+    throw runtime_error("RUNTIME ERROR: Subtraction type error! please make sure types are the same");
+    return new Value();
   }
 
   Value *Multiply(Value *right) {
-    // int multiplication
     if(this->GetType() == INTTYPE && right->GetType() == INTTYPE)
       return new Value(this->GetIntValue() * right->GetIntValue());
+
     // error
     else if(this->GetType() == STRTYPE && right->GetType() == STRTYPE) {
-      throw runtime_error("Cannot multiply " + this->GetStrValue() + " and " + right->GetStrValue());
+      throw runtime_error("RUNTIME ERROR: Cannot multiply " + this->GetStrValue() + " and " + right->GetStrValue());
       return new Value();
     }
+
     // string int multiplication
     int times = this->GetType() == INTTYPE ? this->GetIntValue() : right->GetIntValue();
     string str = "", res = "";
@@ -79,11 +96,21 @@ public:
     return new Value(res);
   }
 
-  Value *Bracket(Value *left, Value *right) {
+  Value *Slice(Value *left, Value *right) {
     int beginBracket, endBracket;
     string res;
+  }
 
-    
+  Value PrintValue() {
+    // return nothing if there is no object
+    if(!this)
+      return;
+
+    if(this->GetType == STRTYPE)
+      cout << this->GetStrValue();
+
+    else
+      cout << this->GetIntValue();
   }
 };
 

@@ -48,7 +48,7 @@ static void PushBackToken(Token& tok) {
 	pushed_token = tok;
 }
 
-static void Parse(istream *in, bool trace) {
+static ParseTree *Parse(istream *in, bool trace) {
   int linenum = 0;
 
   ParseTree *prog = Prog(in, &linenum);
@@ -56,31 +56,33 @@ static void Parse(istream *in, bool trace) {
   if(!prog)
     exit(0);
 
-  int identCNT = prog->IdentCount();
-	cout << "LEAF COUNT: " << prog->LeafCount() << endl;
-	cout << "IDENT COUNT: " << identCNT << endl;
+  return prog;
 
-	if(identCNT) {
-		map<string,bool> idents;
-		prog->GetVars(idents);
+  // int identCNT = prog->IdentCount();
+	// cout << "LEAF COUNT: " << prog->LeafCount() << endl;
+	// cout << "IDENT COUNT: " << identCNT << endl;
 
-		cout << "UNIQUE IDENT COUNT: " << idents.size() << endl;
+	// if(identCNT) {
+	// 	map<string,bool> idents;
+	// 	prog->GetVars(idents);
 
-		bool printed = false;
-		for(auto ident : idents) {
-			if(printed)
-				cout << ", ";
-			cout << ident.first;
-			printed = true;
-		}
-		cout << endl;
+  // cout << "UNIQUE IDENT COUNT: " << idents.size() << endl;
+
+	// 	bool printed = false;
+	// 	for(auto ident : idents) {
+	// 		if(printed)
+	// 			cout << ", ";
+	// 		cout << ident.first;
+	// 		printed = true;
+	// 	}
+	// 	cout << endl;
 	}
 
-  if(trace) {
-    prog->trace();
-    cout << endl;
-  }
-}
+  // if(trace) {
+  //   prog->trace();
+  //   cout << endl;
+  // }
+// }
 
 }
 

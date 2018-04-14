@@ -138,6 +138,8 @@ public:
 class PlusExpr : public ParseTree {
 public:
 	PlusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
+
+  // Value *
 };
 
 class MinusExpr : public ParseTree {
