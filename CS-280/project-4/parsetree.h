@@ -9,6 +9,7 @@
 #include <vector>
 #include <map>
 #include "./lexer.h"
+#include "./value.h"
 using std::vector;
 using std::map;
 
@@ -137,9 +138,9 @@ public:
 
 class PlusExpr : public ParseTree {
 public:
-	PlusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
-
-  // Value *
+	PlusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {
+    return new Add(new Value(*l), new Value(*r));
+  }
 };
 
 class MinusExpr : public ParseTree {

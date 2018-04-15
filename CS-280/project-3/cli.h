@@ -52,8 +52,6 @@
       }
       // finally we can actually run the program
       Parser::Parse(in, traceMode);
-      cout << endl;
-      exit(0);
     }
   };
 
