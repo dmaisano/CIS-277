@@ -33,11 +33,17 @@ public:
 		delete right;
 	}
 
+  ParseTree *getLeftChild() const { return left; }
+
+  ParseTree *getRightChild() const { return right; }
+
 	int GetLineNumber() const { return linenum; }
 
 	int Traverse(int input, int (ParseTree::*func)(void)) {
-		if(left) input += left->Traverse(input, func);
-		if(right) input += right->Traverse(input, func);
+		if(left)
+      input += left->Traverse(input, func);
+		if(right)
+      input += right->Traverse(input, func);
 		return Visit(input, func);
 	}
 
@@ -49,49 +55,53 @@ public:
 
 	int LeafCount() const {
 		int lc = 0;
-		if(left) lc += left->LeafCount();
-		if(right) lc += right->LeafCount();
+		if(left)
+      lc += left->LeafCount();
+		if(right)
+      lc += right->LeafCount();
 		if(left == 0 && right == 0)
 			lc++;
 		return lc;
 	}
 
-	virtual bool IsIdent() const { return false; }
-	virtual bool IsVar() const { return false; }
-	virtual string GetId() const { return ""; }
+	virtual bool   IsIdent() const { return false; }
+	virtual bool   IsVar()   const { return false; }
+	virtual string GetId()   const { return "";    }
 
 	int IdentCount() const {
 		int cnt = 0;
-		if(left) cnt += left->IdentCount();
-		if(right) cnt += right->IdentCount();
+		if(left)
+      cnt += left->IdentCount();
+		if(right)
+      cnt += right->IdentCount();
 		if(IsIdent())
 			cnt++;
 		return cnt;
 	}
 
 	void GetVars(map<string,bool>& var) {
-		if(left) left->GetVars(var);
-		if(right) right->GetVars(var);
+		if(left)
+      left->GetVars(var);
+		if(right)
+      right->GetVars(var);
 		if(IsVar())
 			var[this->GetId()] = true;
 	}
 
-    void trace() {
-      if(left) {
-        cout << "l";
-        left->trace();
-        cout << "L";
-      }
-      if(right) {
-        cout << "r";
-        right->trace();
-        cout << "R";
-      }
-      cout << "N";
-      return;
-    } 
- 
-	//virtual Value Eval();
+  void trace() {
+    if(left) {
+      cout << "l";
+      left->trace();
+      cout << "L";
+    }
+    if(right) {
+      cout << "r";
+      right->trace();
+      cout << "R";
+    }
+    cout << "N";
+    return;
+  }
 };
 
 class StmtList : public ParseTree {
@@ -138,9 +148,7 @@ public:
 
 class PlusExpr : public ParseTree {
 public:
-	PlusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {
-    return new Add(new Value(*l), new Value(*r));
-  }
+	PlusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
 };
 
 class MinusExpr : public ParseTree {
