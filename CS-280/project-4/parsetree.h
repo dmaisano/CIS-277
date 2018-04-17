@@ -9,14 +9,12 @@
 #include <vector>
 #include <map>
 #include "./lexer.h"
-#include "./value.h"
-using std::vector;
-using std::map;
+using namespace std;
 
 // NodeType represents all possible types
 enum NodeType { ERRTYPE, INTTYPE, STRTYPE };
 
-// a "forward declaration" for a class to hold values
+// prototype
 class Value;
 
 class ParseTree {
@@ -26,24 +24,18 @@ class ParseTree {
 
 public:
 	ParseTree(int linenum, ParseTree *l = 0, ParseTree *r = 0)
-		: linenum(linenum), left(l), right(r) {}
+    : linenum(linenum), left(l), right(r) {}
 
 	virtual ~ParseTree() {
 		delete left;
 		delete right;
 	}
 
-  ParseTree *getLeftChild() const { return left; }
-
-  ParseTree *getRightChild() const { return right; }
-
 	int GetLineNumber() const { return linenum; }
 
 	int Traverse(int input, int (ParseTree::*func)(void)) {
-		if(left)
-      input += left->Traverse(input, func);
-		if(right)
-      input += right->Traverse(input, func);
+		if(left)  input += left->Traverse(input, func);
+		if(right) input += right->Traverse(input, func);
 		return Visit(input, func);
 	}
 
@@ -55,35 +47,27 @@ public:
 
 	int LeafCount() const {
 		int lc = 0;
-		if(left)
-      lc += left->LeafCount();
-		if(right)
-      lc += right->LeafCount();
-		if(left == 0 && right == 0)
-			lc++;
+		if(left)  lc += left->LeafCount();
+		if(right) lc += right->LeafCount();
+		if(left == 0 && right == 0) lc++;
 		return lc;
 	}
 
-	virtual bool   IsIdent() const { return false; }
-	virtual bool   IsVar()   const { return false; }
-	virtual string GetId()   const { return "";    }
+	virtual bool IsIdent() const { return false; }
+	virtual bool IsVar() const { return false; }
+	virtual string GetId() const { return ""; }
 
 	int IdentCount() const {
 		int cnt = 0;
-		if(left)
-      cnt += left->IdentCount();
-		if(right)
-      cnt += right->IdentCount();
-		if(IsIdent())
-			cnt++;
+		if(left) cnt += left->IdentCount();
+		if(right) cnt += right->IdentCount();
+		if(IsIdent()) cnt++;
 		return cnt;
 	}
 
 	void GetVars(map<string,bool>& var) {
-		if(left)
-      left->GetVars(var);
-		if(right)
-      right->GetVars(var);
+		if(left) left->GetVars(var);
+		if(right) right->GetVars(var);
 		if(IsVar())
 			var[this->GetId()] = true;
 	}
@@ -101,19 +85,21 @@ public:
     }
     cout << "N";
     return;
-  }
+  } 
+ 
+	//virtual Value Eval();
 };
 
 class StmtList : public ParseTree {
 public:
 	StmtList(ParseTree *l, ParseTree *r) : ParseTree(0, l, r) {}
 
-//	int Visit(int input, int (ParseTree::*func)(void)) {
-//		for( auto s : statements ) {
-//			input += s->Visit(input, func);
-//		}
-//		return input;
-//	}
+	// int Visit(int input, int (ParseTree::*func)(void)) {
+	// 	for( auto s : statements ) {
+	// 		input += s->Visit(input, func);
+	// 	}
+	// 	return input;
+	// }
 };
 
 class VarDecl : public ParseTree {

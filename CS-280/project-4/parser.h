@@ -1,7 +1,5 @@
 /*
-*  parser.h
-*
-*  (modified parse.cpp)
+*  parser.h (modified parse.cpp)
 *
 *  Created on: Mar 8, 2018
 *  Author: gerardryan
@@ -48,7 +46,7 @@ static void PushBackToken(Token& tok) {
 	pushed_token = tok;
 }
 
-static ParseTree *Parse(istream *in, bool trace) {
+static void Parse(istream *in, bool trace) {
   int linenum = 0;
 
   ParseTree *prog = Prog(in, &linenum);
@@ -56,33 +54,24 @@ static ParseTree *Parse(istream *in, bool trace) {
   if(!prog)
     exit(0);
 
-  return prog;
+  int identCNT = prog->IdentCount();
 
-  // int identCNT = prog->IdentCount();
-	// cout << "LEAF COUNT: " << prog->LeafCount() << endl;
-	// cout << "IDENT COUNT: " << identCNT << endl;
+	if(identCNT) {
+		map<string,bool> idents;
+		prog->GetVars(idents);
 
-	// if(identCNT) {
-	// 	map<string,bool> idents;
-	// 	prog->GetVars(idents);
+		cout << "UNIQUE IDENT COUNT: " << idents.size() << endl;
 
-  // cout << "UNIQUE IDENT COUNT: " << idents.size() << endl;
-
-	// 	bool printed = false;
-	// 	for(auto ident : idents) {
-	// 		if(printed)
-	// 			cout << ", ";
-	// 		cout << ident.first;
-	// 		printed = true;
-	// 	}
-	// 	cout << endl;
+		bool printed = false;
+		for(auto ident : idents) {
+			if(printed)
+				cout << ", ";
+			cout << ident.first;
+			printed = true;
+		}
+		cout << endl;
 	}
-
-  // if(trace) {
-  //   prog->trace();
-  //   cout << endl;
-  // }
-// }
+}
 
 }
 

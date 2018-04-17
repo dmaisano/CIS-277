@@ -12,7 +12,7 @@
   #include <iostream>
   #include <cctype>
   #include <fstream>
-  #include "./interpreter.h"
+  #include "./parser.h"
   using namespace std;
 
   namespace CLI {
@@ -47,12 +47,11 @@
             exit(0);
           }
         }
+
         in = &file;
       }
       // finally we can actually run the program
-      Interpreter::Interpret(in, traceMode);
-      cout << endl;
-      exit(0);
+      Parser::Parse(in, traceMode);
     }
   };
 

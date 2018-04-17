@@ -11,7 +11,6 @@ using namespace std;
 * projlex.h
 */
 
-// token type enum
 enum TType {
   // keywords
 	SET,
@@ -39,12 +38,11 @@ enum TType {
 	DONE
 };
 
-// token class
 class Token {
 private:
-	TType	 tt;
-	string lexeme;
-	int		 lnum;
+	TType	tt;
+	string		lexeme;
+	int			lnum;
 
 public:
 	Token() {
@@ -60,9 +58,9 @@ public:
 	bool operator==(const TType tt) const { return this->tt == tt; }
 	bool operator!=(const TType tt) const { return this->tt != tt; }
 
-	TType	GetTokenType() const { return tt; }
-	string GetLexeme() const { return lexeme; }
-	int GetLinenum() const { return lnum; }
+	TType		GetTokenType() const { return tt; }
+	string		GetLexeme() const { return lexeme; }
+	int			GetLinenum() const { return lnum; }
 };
 
 extern ostream& operator<<(ostream& out, const Token& tok);
@@ -100,6 +98,7 @@ static map<TType,string> tokenPrint = {
 	{ DONE,   "DONE"   }
 };
 
+
 // overload the operator to output information about our token
 ostream& operator<<(ostream& out, const Token& tok) {
 	TType tt = tok.GetTokenType();
@@ -112,13 +111,15 @@ ostream& operator<<(ostream& out, const Token& tok) {
 	return out;
 };
 
+
 // map that returns the enum type for each keyword
 static map<string,TType> keywordMap = {
-  { "var",    VAR    },
-  { "set",    SET    },
-  { "print",  PRINT  },
-  { "repeat", REPEAT },
+		{ "var",    VAR    },
+		{ "set",    SET    },
+		{ "print",  PRINT  },
+		{ "repeat", REPEAT },
 };
+
 
 // returns a token that is either an IDENT or possible keyword
 Token ident_or_keyword(const string& lexeme, int linenum) {
@@ -134,6 +135,7 @@ Token ident_or_keyword(const string& lexeme, int linenum) {
 
 	return Token(tt, lexeme, linenum);
 };
+
 
 // return a token from the stream
 Token getNextToken(istream *in, int *linenum) {
@@ -280,7 +282,6 @@ Token getNextToken(istream *in, int *linenum) {
 
 	if(in->eof())
 		return Token(DONE, "", *linenum);
-    
 	return Token(ERR, "some strange I/O error", *linenum);
 }
 

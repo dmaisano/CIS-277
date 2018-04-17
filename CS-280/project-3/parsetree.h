@@ -15,7 +15,7 @@ using std::map;
 // NodeType represents all possible types
 enum NodeType { ERRTYPE, INTTYPE, STRTYPE };
 
-// a "forward declaration" for a class to hold values
+// prototype
 class Value;
 
 class ParseTree {
@@ -25,7 +25,7 @@ class ParseTree {
 
 public:
 	ParseTree(int linenum, ParseTree *l = 0, ParseTree *r = 0)
-		: linenum(linenum), left(l), right(r) {}
+    : linenum(linenum), left(l), right(r) {}
 
 	virtual ~ParseTree() {
 		delete left;
@@ -35,7 +35,7 @@ public:
 	int GetLineNumber() const { return linenum; }
 
 	int Traverse(int input, int (ParseTree::*func)(void)) {
-		if(left) input += left->Traverse(input, func);
+		if(left)  input += left->Traverse(input, func);
 		if(right) input += right->Traverse(input, func);
 		return Visit(input, func);
 	}
@@ -48,10 +48,9 @@ public:
 
 	int LeafCount() const {
 		int lc = 0;
-		if(left) lc += left->LeafCount();
+		if(left)  lc += left->LeafCount();
 		if(right) lc += right->LeafCount();
-		if(left == 0 && right == 0)
-			lc++;
+		if(left == 0 && right == 0) lc++;
 		return lc;
 	}
 
@@ -63,8 +62,7 @@ public:
 		int cnt = 0;
 		if(left) cnt += left->IdentCount();
 		if(right) cnt += right->IdentCount();
-		if(IsIdent())
-			cnt++;
+		if(IsIdent()) cnt++;
 		return cnt;
 	}
 
@@ -75,20 +73,20 @@ public:
 			var[this->GetId()] = true;
 	}
 
-    void trace() {
-      if(left) {
-        cout << "l";
-        left->trace();
-        cout << "L";
-      }
-      if(right) {
-        cout << "r";
-        right->trace();
-        cout << "R";
-      }
-      cout << "N";
-      return;
-    } 
+  void trace() {
+    if(left) {
+      cout << "l";
+      left->trace();
+      cout << "L";
+    }
+    if(right) {
+      cout << "r";
+      right->trace();
+      cout << "R";
+    }
+    cout << "N";
+    return;
+  } 
  
 	//virtual Value Eval();
 };
@@ -97,12 +95,12 @@ class StmtList : public ParseTree {
 public:
 	StmtList(ParseTree *l, ParseTree *r) : ParseTree(0, l, r) {}
 
-//	int Visit(int input, int (ParseTree::*func)(void)) {
-//		for( auto s : statements ) {
-//			input += s->Visit(input, func);
-//		}
-//		return input;
-//	}
+	// int Visit(int input, int (ParseTree::*func)(void)) {
+	// 	for( auto s : statements ) {
+	// 		input += s->Visit(input, func);
+	// 	}
+	// 	return input;
+	// }
 };
 
 class VarDecl : public ParseTree {
