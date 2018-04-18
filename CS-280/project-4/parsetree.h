@@ -9,13 +9,11 @@
 #include <vector>
 #include <map>
 #include "./lexer.h"
+#include "./value.h"
 using namespace std;
 
 // NodeType represents all possible types
-enum NodeType { ERRTYPE, INTTYPE, STRTYPE };
-
-// prototype
-class Value;
+// enum NodeType { ERRTYPE, INTTYPE, STRTYPE };
 
 class ParseTree {
 	int			  linenum;
@@ -30,6 +28,9 @@ public:
 		delete left;
 		delete right;
 	}
+
+  ParseTree *getLeftChild()  const { return left;  }
+  ParseTree *getRightChild() const { return right; }
 
 	int GetLineNumber() const { return linenum; }
 
@@ -72,22 +73,31 @@ public:
 			var[this->GetId()] = true;
 	}
 
-  void trace() {
-    if(left) {
-      cout << "l";
-      left->trace();
-      cout << "L";
-    }
-    if(right) {
-      cout << "r";
-      right->trace();
-      cout << "R";
-    }
-    cout << "N";
-    return;
-  } 
+  // void trace() {
+  //   if(left) {
+  //     cout << "l";
+  //     left->trace();
+  //     cout << "L";
+  //   }
+  //   if(right) {
+  //     cout << "r";
+  //     right->trace();
+  //     cout << "R";
+  //   }
+  //   cout << "N";
+  //   return;
+  // }
+
+  virtual void Interpret(map<string,Value*> &state) {
+    if(left)
+      left->Eval(state);
+    if(right)
+      right->Eval(state);
+  }
  
-	//virtual Value Eval();
+	virtual Value *Eval(map<string,Value*> &state) {
+    return new Value();
+  }
 };
 
 class StmtList : public ParseTree {
@@ -95,7 +105,7 @@ public:
 	StmtList(ParseTree *l, ParseTree *r) : ParseTree(0, l, r) {}
 
 	// int Visit(int input, int (ParseTree::*func)(void)) {
-	// 	for( auto s : statements ) {
+	// 	for(auto s : statements  {
 	// 		input += s->Visit(input, func);
 	// 	}
 	// 	return input;
@@ -109,8 +119,12 @@ private:
 public:
 	VarDecl(Token& t, ParseTree *ex) : ParseTree(t.GetLinenum(), ex), id(t.GetLexeme()) {}
 
-	bool IsVar() const { return true; }
-	string GetId() const { return id; }
+	bool  IsVar()  const { return true; }
+	string GetId() const { return id;   }
+
+  Value *Eval(map<string,Value*> &state) {
+    state[id] = this->getRightChild()->Eval(state);
+  }
 };
 
 class Assignment : public ParseTree {
@@ -134,7 +148,21 @@ public:
 
 class PlusExpr : public ParseTree {
 public:
-	PlusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
+	PlusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {
+    if(this->getLeftChild() && this->getRightChild())
+      cout << "got left & right children\n";
+  }
+
+  Value *Add() {
+    ParseTree *left = this->getLeftChild();
+    ParseTree *right = this->getRightChild();
+
+    if(left.GetType() == STRTYPE)
+  }
+
+  Value *Eval(map<string,Value*> &state) {
+
+  }
 };
 
 class MinusExpr : public ParseTree {
@@ -167,6 +195,10 @@ public:
 	}
 
 	NodeType GetType() const { return INTTYPE; }
+
+  Value *Eval(map<string,Value*> Eval) {
+    return new Value(val);
+  }
 };
 
 class SConst : public ParseTree {
@@ -179,6 +211,10 @@ public:
 	}
 
 	NodeType GetType() const { return STRTYPE; }
+
+  Value *Eval(map<string,Value*> Eval) {
+    return new Value(val);
+  }
 };
 
 class Ident : public ParseTree {

@@ -24,7 +24,12 @@ static void Interpret(istream *in, bool trace) {
   // stores a map of variables with their respective values
   map<string,Value*> symbols;
 
-  Parser::Parse(in, trace);
+  auto prog = Parser::Parse(in, trace);
+
+  if(prog)
+    cout << "valid program" << endl;
+
+  prog->Interpret(symbols);
 };
 
 }

@@ -12,7 +12,7 @@
   #include <iostream>
   #include <cctype>
   #include <fstream>
-  #include "./parser.h"
+  #include "./interpreter.h"
   using namespace std;
 
   namespace CLI {
@@ -51,7 +51,7 @@
         in = &file;
       }
       // finally we can actually run the program
-      Parser::Parse(in, traceMode);
+      Interpreter::Interpret(in, traceMode);
     }
   };
 

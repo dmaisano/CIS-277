@@ -46,31 +46,15 @@ static void PushBackToken(Token& tok) {
 	pushed_token = tok;
 }
 
-static void Parse(istream *in, bool trace) {
+static ParseTree *Parse(istream *in, bool trace) {
   int linenum = 0;
 
   ParseTree *prog = Prog(in, &linenum);
 
   if(!prog)
-    exit(0);
+    return 0;
 
-  int identCNT = prog->IdentCount();
-
-	if(identCNT) {
-		map<string,bool> idents;
-		prog->GetVars(idents);
-
-		cout << "UNIQUE IDENT COUNT: " << idents.size() << endl;
-
-		bool printed = false;
-		for(auto ident : idents) {
-			if(printed)
-				cout << ", ";
-			cout << ident.first;
-			printed = true;
-		}
-		cout << endl;
-	}
+  return prog;
 }
 
 }

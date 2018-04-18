@@ -9,7 +9,7 @@
 #include <string> 
 using namespace std;
 
-// manually re-defining NodeType allows for
+// manually defining NodeType here allows for
 // 'value.h' to be included in 'parsetree.h'
 // and avoid cyclic dependency issues
 enum NodeType { ERRTYPE, INTTYPE, STRTYPE };
