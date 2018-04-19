@@ -64,7 +64,9 @@ public:
       right->Eval(state);
   }
 
-  virtual Value *GetValue() { return 0; }
+  // overloaded functions
+  virtual Value *GetValue(map<string,Value*> &state) { return 0; }
+  // virtual Value *GetValue() { return 0; }
 };
 
 class StmtList : public ParseTree {
@@ -86,8 +88,12 @@ private:
 public:
 	VarDecl(Token& t, ParseTree *ex) : ParseTree(t.GetLinenum(), ex), id(t.GetLexeme()) {}
 
-	bool IsVar() const { return true; }
+	bool   IsVar() const { return true; }
 	string GetId() const { return id; }
+
+  void Eval(map<string,Value*> &state) {
+    state[id] = left->GetValue(state);
+  }
 };
 
 class Assignment : public ParseTree {
@@ -95,6 +101,10 @@ class Assignment : public ParseTree {
 
 public:
 	Assignment(Token& t, ParseTree *e) : ParseTree(t.GetLinenum(), e), id(t.GetLexeme()) {}
+
+  void Eval(map<string,Value*> &state) {
+    state[id] = left->GetValue(state);
+  }
 };
 
 class Print : public ParseTree {
@@ -102,7 +112,7 @@ public:
 	Print(int line, ParseTree *e) : ParseTree(line, e) {}
 
   void Eval(map<string,Value*> &state) {
-    auto val = left->GetValue();
+    auto val = left->GetValue(state);
 
     if(val->GetType() == INTTYPE)
       cout << val->GetIntValue() << endl;
@@ -136,8 +146,8 @@ public:
     return new Value();
   }
 
-  Value *GetValue() {
-    return Add(left->GetValue(), right->GetValue());
+  Value *GetValue(map<string,Value*> &state) {
+    return Add(left->GetValue(state), right->GetValue(state));
   }
 };
 
@@ -165,8 +175,8 @@ public:
     return new Value();
   }
 
-  Value *GetValue() {
-    return Subtract(left->GetValue(), right->GetValue());
+  Value *GetValue(map<string,Value*> &state) {
+    return Subtract(left->GetValue(state), right->GetValue(state));
   }
 };
 
@@ -200,8 +210,8 @@ public:
     return new Value(res);
   }
 
-  Value *GetValue() {
-    return Multiply(left->GetValue(), right->GetValue());
+  Value *GetValue(map<string,Value*> &state) {
+    return Multiply(left->GetValue(state), right->GetValue(state));
   }
 };
 
@@ -226,7 +236,7 @@ public:
 
 	NodeType GetType() const { return INTTYPE; }
 
-  Value *GetValue() {
+  Value *GetValue(map<string,Value*> &state) {
     return new Value(val);
   }
 };
@@ -242,7 +252,7 @@ public:
 
 	NodeType GetType() const { return STRTYPE; }
 
-  Value *GetValue() {
+  Value *GetValue(map<string,Value*> &state) {
     return new Value(val);
   }
 };
@@ -256,6 +266,12 @@ public:
 
 	bool IsIdent() const { return true; }
 	string GetId() const { return id; }
+
+  Value *GetValue(map<string,Value*> &state) {
+    // get the value;
+    auto val = state[id];
+    return val;
+  }
 };
 
 #endif
