@@ -26,10 +26,11 @@ static void Interpret(istream *in, bool trace) {
 
   auto prog = Parser::Parse(in, trace);
 
-  if(prog)
-    cout << "valid program" << endl;
+  // if(prog)
+  //   cout << "valid program" << endl;
 
-  prog->Interpret(symbols);
+  // evaluate the program
+  prog->Eval(symbols);
 };
 
 }

@@ -16,6 +16,7 @@ using namespace std;
 // enum NodeType { ERRTYPE, INTTYPE, STRTYPE };
 
 class ParseTree {
+protected:
 	int			  linenum;
 	ParseTree	*left;
 	ParseTree	*right;
@@ -28,9 +29,6 @@ public:
 		delete left;
 		delete right;
 	}
-
-  ParseTree *getLeftChild()  const { return left;  }
-  ParseTree *getRightChild() const { return right; }
 
 	int GetLineNumber() const { return linenum; }
 
@@ -46,58 +44,27 @@ public:
 		return input;
 	}
 
-	int LeafCount() const {
-		int lc = 0;
-		if(left)  lc += left->LeafCount();
-		if(right) lc += right->LeafCount();
-		if(left == 0 && right == 0) lc++;
-		return lc;
-	}
-
-	virtual bool IsIdent() const { return false; }
-	virtual bool IsVar() const { return false; }
-	virtual string GetId() const { return ""; }
-
-	int IdentCount() const {
-		int cnt = 0;
-		if(left) cnt += left->IdentCount();
-		if(right) cnt += right->IdentCount();
-		if(IsIdent()) cnt++;
-		return cnt;
-	}
+	virtual bool   IsIdent() const { return false; }
+	virtual bool   IsVar()   const { return false; }
+	virtual string GetId()   const { return "";    }
 
 	void GetVars(map<string,bool>& var) {
-		if(left) left->GetVars(var);
-		if(right) right->GetVars(var);
+		if(left)
+      left->GetVars(var);
+		if(right)
+      right->GetVars(var);
 		if(IsVar())
 			var[this->GetId()] = true;
 	}
 
-  // void trace() {
-  //   if(left) {
-  //     cout << "l";
-  //     left->trace();
-  //     cout << "L";
-  //   }
-  //   if(right) {
-  //     cout << "r";
-  //     right->trace();
-  //     cout << "R";
-  //   }
-  //   cout << "N";
-  //   return;
-  // }
-
-  virtual void Interpret(map<string,Value*> &state) {
+	virtual void Eval(map<string,Value*> &state) {
     if(left)
       left->Eval(state);
     if(right)
       right->Eval(state);
   }
- 
-	virtual Value *Eval(map<string,Value*> &state) {
-    return new Value();
-  }
+
+  virtual Value *GetValue() { return 0; }
 };
 
 class StmtList : public ParseTree {
@@ -105,7 +72,7 @@ public:
 	StmtList(ParseTree *l, ParseTree *r) : ParseTree(0, l, r) {}
 
 	// int Visit(int input, int (ParseTree::*func)(void)) {
-	// 	for(auto s : statements  {
+	// 	for( auto s : statements ) {
 	// 		input += s->Visit(input, func);
 	// 	}
 	// 	return input;
@@ -119,12 +86,8 @@ private:
 public:
 	VarDecl(Token& t, ParseTree *ex) : ParseTree(t.GetLinenum(), ex), id(t.GetLexeme()) {}
 
-	bool  IsVar()  const { return true; }
-	string GetId() const { return id;   }
-
-  Value *Eval(map<string,Value*> &state) {
-    state[id] = this->getRightChild()->Eval(state);
-  }
+	bool IsVar() const { return true; }
+	string GetId() const { return id; }
 };
 
 class Assignment : public ParseTree {
@@ -137,6 +100,16 @@ public:
 class Print : public ParseTree {
 public:
 	Print(int line, ParseTree *e) : ParseTree(line, e) {}
+
+  void Eval(map<string,Value*> &state) {
+    auto val = left->GetValue();
+
+    if(val->GetType() == INTTYPE)
+      cout << val->GetIntValue() << endl;
+
+    else if(val->GetType() == STRTYPE)
+      cout << val->GetStrValue() << endl;
+  }
 };
 
 class Repeat : public ParseTree {
@@ -148,31 +121,88 @@ public:
 
 class PlusExpr : public ParseTree {
 public:
-	PlusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {
-    if(this->getLeftChild() && this->getRightChild())
-      cout << "got left & right children\n";
+	PlusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
+
+  Value *Add(Value *left, Value *right) {
+
+    if(left->GetType() == INTTYPE && right->GetType() == INTTYPE)
+      return new Value(left->GetIntValue() + right->GetIntValue());
+
+    else if(left->GetType() == STRTYPE && right->GetType() == STRTYPE)
+      return new Value(left->GetStrValue() + right->GetStrValue());
+
+    // error
+    throw runtime_error("RUNTIME ERROR: Addition type error! please make sure types are the same");
+    return new Value();
   }
 
-  Value *Add() {
-    ParseTree *left = this->getLeftChild();
-    ParseTree *right = this->getRightChild();
-
-    if(left.GetType() == STRTYPE)
-  }
-
-  Value *Eval(map<string,Value*> &state) {
-
+  Value *GetValue() {
+    return Add(left->GetValue(), right->GetValue());
   }
 };
 
 class MinusExpr : public ParseTree {
 public:
 	MinusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
+
+  Value *Subtract(Value *left, Value *right) {
+    if(left->GetType() == INTTYPE && right->GetType() == INTTYPE)
+      return new Value(left->GetIntValue() - right->GetIntValue());
+
+    else if(left->GetType() == STRTYPE && right->GetType() == STRTYPE) {
+      string str = left->GetStrValue(), substr = right->GetStrValue();
+      auto pos = str.find(substr);
+
+      // replace the first occurence of the found substring
+      if(pos != string::npos)
+        str.replace(pos, substr.length(), "");
+
+      return new Value(str);
+    }
+
+    // error
+    throw runtime_error("RUNTIME ERROR: Subtraction type error! please make sure types are the same");
+    return new Value();
+  }
+
+  Value *GetValue() {
+    return Subtract(left->GetValue(), right->GetValue());
+  }
 };
 
 class TimesExpr : public ParseTree {
 public:
 	TimesExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
+
+  Value *Multiply(Value *left, Value *right) {
+    if(left->GetType() == INTTYPE && right->GetType() == INTTYPE)
+      return new Value(left->GetIntValue() * right->GetIntValue());
+
+    // error
+    else if(left->GetType() == STRTYPE && right->GetType() == STRTYPE) {
+      throw runtime_error("RUNTIME ERROR: Cannot multiply " + left->GetStrValue() + " and " + right->GetStrValue());
+      return new Value();
+    }
+
+    // string int multiplication
+    int times = left->GetType() == INTTYPE ? left->GetIntValue() : right->GetIntValue();
+    string str = "", res = "";
+
+    // determine if the left or right node contains the string
+    if(left->GetType() == STRTYPE)
+      str = left->GetStrValue();
+    else
+      str = right->GetStrValue();
+    
+    for(int i = 0; i < times; i++)
+      res += str;
+
+    return new Value(res);
+  }
+
+  Value *GetValue() {
+    return Multiply(left->GetValue(), right->GetValue());
+  }
 };
 
 class SliceExpr : public ParseTree {
@@ -196,7 +226,7 @@ public:
 
 	NodeType GetType() const { return INTTYPE; }
 
-  Value *Eval(map<string,Value*> Eval) {
+  Value *GetValue() {
     return new Value(val);
   }
 };
@@ -212,7 +242,7 @@ public:
 
 	NodeType GetType() const { return STRTYPE; }
 
-  Value *Eval(map<string,Value*> Eval) {
+  Value *GetValue() {
     return new Value(val);
   }
 };

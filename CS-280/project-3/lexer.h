@@ -154,7 +154,7 @@ Token getNextToken(istream *in, int *linenum) {
 	while(in->get(ch)) {
     // increment the linenum
 		if(ch == '\n')
-			(*linenum);
+			(*linenum)++;
 
 		switch(lexstate) {
 		case BEGIN:

@@ -37,17 +37,6 @@ public:
 			throw runtime_error("using GetStrValue on a Value that is not a STRING");
 		return sval;
 	}
-
-  void PrintValue() const {
-    if(!this)
-      return;
-      
-    if(type == STRTYPE)
-      cout << this->sval;
-
-    else
-      cout << this->ival;
-  }
 };
 
 #endif

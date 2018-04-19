@@ -1,12 +1,75 @@
-/*
-* lex.h
-* CS280 - Spring 2018
-*/
+#ifndef LEXER_H_
+#define LEXER_H_
 
+#include <iostream>
+#include <string>
 #include <cctype>
 #include <map>
-#include "projlex.h"
-using std::map;
+using namespace std;
+
+/*
+* projlex.h
+*/
+
+enum TType {
+  // keywords
+	SET,
+	PRINT,
+	VAR,
+	REPEAT,
+  // an identifier
+	IDENT,
+  // an integer and string constant
+	ICONST,
+	SCONST,
+  // the operators, parens and semicolon
+	PLUS,
+	MINUS,
+	STAR,
+	COLON,
+	LSQ,
+	RSQ,
+	LPAREN,
+	RPAREN,
+	SC,
+  // any error returns this token
+	ERR,
+  // when completed (EOF), return this token
+	DONE
+};
+
+class Token {
+private:
+	TType	tt;
+	string		lexeme;
+	int			lnum;
+
+public:
+	Token() {
+		tt = ERR;
+		lnum = -1;
+	}
+	Token(TType tt, string lexeme, int line) {
+		this->tt = tt;
+		this->lexeme = lexeme;
+		this->lnum = line;
+	}
+
+	bool operator==(const TType tt) const { return this->tt == tt; }
+	bool operator!=(const TType tt) const { return this->tt != tt; }
+
+	TType		GetTokenType() const { return tt; }
+	string		GetLexeme() const { return lexeme; }
+	int			GetLinenum() const { return lnum; }
+};
+
+extern ostream& operator<<(ostream& out, const Token& tok);
+
+extern Token getNextToken(istream *in, int *linenum);
+
+/*
+* lexer.h
+*/
 
 // map that returns the string value for each ENUM type
 static map<TType,string> tokenPrint = {
@@ -44,7 +107,7 @@ ostream& operator<<(ostream& out, const Token& tok) {
 
 	if(tt == IDENT || tt == ICONST || tt == SCONST || tt == ERR)
 		out << "(" << tok.GetLexeme() << ")";
-
+  
 	return out;
 };
 
@@ -222,4 +285,4 @@ Token getNextToken(istream *in, int *linenum) {
 	return Token(ERR, "some strange I/O error", *linenum);
 }
 
-
+#endif

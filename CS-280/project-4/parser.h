@@ -100,7 +100,7 @@ ParseTree *Slist(istream *in, int *line) {
 	return new StmtList(s, sl);
 }
 
-// statement tree/node
+// statement node
 ParseTree *Stmt(istream *in, int *line) {
 	ParseTree *s;
 
@@ -133,7 +133,7 @@ ParseTree *Stmt(istream *in, int *line) {
 	return s;
 }
 
-// variable tree/node
+// variable node
 ParseTree *VarStmt(istream *in, int *line) {
 	Token tok = Parser::GetNextToken(in, line);
 
@@ -151,7 +151,7 @@ ParseTree *VarStmt(istream *in, int *line) {
 	return new VarDecl(tok, expr);
 }
 
-// SET statement tree/node
+// SET statement node
 ParseTree *SetStmt(istream *in, int *line) {
 	Token tok = Parser::GetNextToken(in, line);
 
@@ -169,7 +169,7 @@ ParseTree *SetStmt(istream *in, int *line) {
 	return new Assignment(tok, expr);
 }
 
-// PRINT statement tree/node
+// PRINT statement node
 ParseTree *PrintStmt(istream *in, int *line) {
 	ParseTree *expr = Expr(in, line);
 
