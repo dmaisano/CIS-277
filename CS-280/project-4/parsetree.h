@@ -92,6 +92,12 @@ public:
 	string GetId() const { return id; }
 
   void Eval(map<string,Value*> &state) {
+    // error, var is already declared
+    if(state[id]) {
+      throw runtime_error("RUNTIME ERROR: Cannot redefine var " + id + " use SET stmt");
+      exit(0);
+    }
+
     state[id] = left->GetValue(state);
   }
 };
@@ -126,6 +132,8 @@ class Repeat : public ParseTree {
 
 public:
 	Repeat(int line, ParseTree *e, ParseTree *s) : ParseTree(line, e, s) {}
+
+  // num to repeat must be non-negative
 };
 
 
