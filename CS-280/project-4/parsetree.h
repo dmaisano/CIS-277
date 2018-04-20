@@ -6,6 +6,7 @@
 #define PARSETREE_H_
 
 #include <iostream>
+#include <string>
 #include <vector>
 #include <map>
 #include "./lexer.h"
@@ -94,7 +95,7 @@ public:
   void Eval(map<string,Value*> &state) {
     // error, var is already declared
     if(state[id]) {
-      throw runtime_error("RUNTIME ERROR: Cannot redefine var " + id + " use SET stmt");
+      throw runtime_error(to_string(linenum) + ": Cannot redefine var " + id + " use SET stmt");
       exit(0);
     }
 
@@ -109,6 +110,13 @@ public:
 	Assignment(Token& t, ParseTree *e) : ParseTree(t.GetLinenum(), e), id(t.GetLexeme()) {}
 
   void Eval(map<string,Value*> &state) {
+    auto type = state[id]->GetType();
+    auto exprType = left->GetValue(state)->GetType();
+
+    // type checking
+    if(type != exprType)
+      throw runtime_error(to_string(linenum) + ": Type error");
+
     state[id] = left->GetValue(state);
   }
 };

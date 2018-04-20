@@ -1,0 +1,91 @@
+ex=~/prog4
+
+cd $LIB/public/p4
+
+[ ! -e $ex ] && echo Cannot find the program, please build it! && exit 1
+
+printonly=no
+[ "$1" = "-v" ] && printonly=yes && shift
+
+declare -A cases
+cases[badfile]="noSuchFile"
+cases[manyfiles]="bad1.in bad2.in"
+cases[bad1]="bad1.in"
+cases[bad2]="bad2.in"
+cases[gp1]="gp1.in"
+cases[gp2]="gp2.in"
+cases[gp3]="gp3.in"
+cases[gp4]="gp4.in"
+cases[gp5]="gp5.in"
+
+# part 2: var, set, strings
+cases[varsdup]="varsdup.in"
+cases[varsgood]="varsgood.in"
+cases[setbad]="setbad.in"
+cases[setsimple]="setsimple.in"
+cases[setexpr]="setexpr.in"
+cases[str1]="str1.in"
+cases[str2]="str2.in"
+cases[str3]="< str3.in"
+cases[str4]="str4.in"
+cases[str5]="str5.in"
+
+cases[sl1]="< sl1.in"
+cases[sl2]="sl2.in"
+cases[sl3]="sl3.in"
+cases[sl4]="sl4.in"
+cases[sl5]="sl5.in"
+
+args=""
+if [ $# -eq 1 ];
+then
+	if [ ${cases[$1]+_} ];
+	then
+		args=${cases[$1]}
+	fi
+fi
+
+if [ "$args" = "" ];
+then
+	echo Case $1 not found
+	echo
+	echo Test cases are:
+	for v in "${!cases[@]}" ;
+	do
+		echo $v: prog3 ${cases[$v]}
+	done
+	exit 0
+fi
+
+ofile=`mktemp`
+
+[ $printonly = "yes" ] && echo prog3 $args && exit
+
+echo RUNNING prog4 $args
+
+score=0
+
+eval $ex $args 2>&1 | tee $ofile
+
+ofile2=`mktemp`
+
+cat $ofile | sed 's/RUNTIME ERROR:.*$/RUNTIME ERROR:/' > $ofile2
+mv $ofile2 $ofile
+
+if [ "$1" = "bad1" -o "$1" = "bad2" -o "$1" = "varsdup" -o "$1" = "setbad" -o "$1" = "sl1" ];
+then
+	rc=`egrep '[0-9]+: [a-zA-Z]+' $ofile | wc -l`
+	[ $rc -gt 0 ] && score=1
+else
+	diff $ofile ${1}.correct
+	[ $? -eq 0 ] && score=1
+fi
+
+
+echo RESULT: $1 "[ " $score " / 1 ]"
+
+rm $ofile
+
+exit $rc
+
+
