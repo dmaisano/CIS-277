@@ -1,6 +1,2 @@
-var x 3;
-var y "help";
-var x 12;
-
-print "I need";
-print y;
+var s "lemon fudge bars";
+print s[3:5];

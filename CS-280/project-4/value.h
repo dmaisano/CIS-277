@@ -37,6 +37,64 @@ public:
 			throw runtime_error("using GetStrValue on a Value that is not a STRING");
 		return sval;
 	}
+
+  static Value *Add(Value *left, Value *right) {
+    if(left->GetType() == INTTYPE && right->GetType() == INTTYPE)
+      return new Value(left->GetIntValue() + right->GetIntValue());
+
+    else if(left->GetType() == STRTYPE && right->GetType() == STRTYPE)
+      return new Value(left->GetStrValue() + right->GetStrValue());
+
+    // error
+    throw runtime_error("RUNTIME ERROR: Addition type error! please make sure types are the same");
+    return new Value();
+  }
+
+  static Value *Subtract(Value *left, Value *right) {
+    if(left->GetType() == INTTYPE && right->GetType() == INTTYPE)
+      return new Value(left->GetIntValue() - right->GetIntValue());
+
+    else if(left->GetType() == STRTYPE && right->GetType() == STRTYPE) {
+      string str = left->GetStrValue(), substr = right->GetStrValue();
+      auto pos = str.find(substr);
+
+      // replace the first occurence of the found substring
+      if(pos != string::npos)
+        str.replace(pos, substr.length(), "");
+
+      return new Value(str);
+    }
+
+    // error
+    throw runtime_error("RUNTIME ERROR: Subtraction type error! please make sure types are the same");
+    return new Value();
+  }
+
+  static Value *Multiply(Value *left, Value *right) {
+    if(left->GetType() == INTTYPE && right->GetType() == INTTYPE)
+      return new Value(left->GetIntValue() * right->GetIntValue());
+
+    // error
+    else if(left->GetType() == STRTYPE && right->GetType() == STRTYPE) {
+      throw runtime_error("RUNTIME ERROR: Cannot multiply " + left->GetStrValue() + " and " + right->GetStrValue());
+      return new Value();
+    }
+
+    // string int multiplication
+    int times = left->GetType() == INTTYPE ? left->GetIntValue() : right->GetIntValue();
+    string str = "", res = "";
+
+    // determine if the left or right node contains the string
+    if(left->GetType() == STRTYPE)
+      str = left->GetStrValue();
+    else
+      str = right->GetStrValue();
+    
+    for(int i = 0; i < times; i++)
+      res += str;
+
+    return new Value(res);
+  }
 };
 
 #endif

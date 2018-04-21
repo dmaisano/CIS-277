@@ -281,6 +281,8 @@ ParseTree *Factor(istream *in, int *line) {
 			return 0;
 		}
 
+    // string [int]
+    // string[int:int]
 		primary = new SliceExpr(tok.GetLinenum(), primary, new SliceOperand(*line,expr1,expr2));
 	}
 }

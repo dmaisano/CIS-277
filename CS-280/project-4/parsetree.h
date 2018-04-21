@@ -64,10 +64,18 @@ public:
     if(right)
       right->Eval(state);
   }
-
-  // overloaded functions
+  
   virtual Value *GetValue(map<string,Value*> &state) { return 0; }
-  // virtual Value *GetValue() { return 0; }
+
+  // useful when slicing
+  virtual void SliceEval(map<string,Value*> &state, Value* &begin, Value* &end) {}
+  
+  // virtual void SliceEval(map<string,Value*> &state, Value* &begin, Value* &end) {
+  //   if(left)
+  //     left->SliceEval(state, begin, end);
+  //   if(right)
+  //     right->SliceEval(state, begin, end);
+  // }
 };
 
 class StmtList : public ParseTree {
@@ -149,21 +157,8 @@ class PlusExpr : public ParseTree {
 public:
 	PlusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
 
-  Value *Add(Value *left, Value *right) {
-
-    if(left->GetType() == INTTYPE && right->GetType() == INTTYPE)
-      return new Value(left->GetIntValue() + right->GetIntValue());
-
-    else if(left->GetType() == STRTYPE && right->GetType() == STRTYPE)
-      return new Value(left->GetStrValue() + right->GetStrValue());
-
-    // error
-    throw runtime_error("RUNTIME ERROR: Addition type error! please make sure types are the same");
-    return new Value();
-  }
-
   Value *GetValue(map<string,Value*> &state) {
-    return Add(left->GetValue(state), right->GetValue(state));
+    return Value::Add(left->GetValue(state), right->GetValue(state));
   }
 };
 
@@ -171,28 +166,8 @@ class MinusExpr : public ParseTree {
 public:
 	MinusExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
 
-  Value *Subtract(Value *left, Value *right) {
-    if(left->GetType() == INTTYPE && right->GetType() == INTTYPE)
-      return new Value(left->GetIntValue() - right->GetIntValue());
-
-    else if(left->GetType() == STRTYPE && right->GetType() == STRTYPE) {
-      string str = left->GetStrValue(), substr = right->GetStrValue();
-      auto pos = str.find(substr);
-
-      // replace the first occurence of the found substring
-      if(pos != string::npos)
-        str.replace(pos, substr.length(), "");
-
-      return new Value(str);
-    }
-
-    // error
-    throw runtime_error("RUNTIME ERROR: Subtraction type error! please make sure types are the same");
-    return new Value();
-  }
-
   Value *GetValue(map<string,Value*> &state) {
-    return Subtract(left->GetValue(state), right->GetValue(state));
+    return Value::Subtract(left->GetValue(state), right->GetValue(state));
   }
 };
 
@@ -200,45 +175,100 @@ class TimesExpr : public ParseTree {
 public:
 	TimesExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
 
-  Value *Multiply(Value *left, Value *right) {
-    if(left->GetType() == INTTYPE && right->GetType() == INTTYPE)
-      return new Value(left->GetIntValue() * right->GetIntValue());
-
-    // error
-    else if(left->GetType() == STRTYPE && right->GetType() == STRTYPE) {
-      throw runtime_error("RUNTIME ERROR: Cannot multiply " + left->GetStrValue() + " and " + right->GetStrValue());
-      return new Value();
-    }
-
-    // string int multiplication
-    int times = left->GetType() == INTTYPE ? left->GetIntValue() : right->GetIntValue();
-    string str = "", res = "";
-
-    // determine if the left or right node contains the string
-    if(left->GetType() == STRTYPE)
-      str = left->GetStrValue();
-    else
-      str = right->GetStrValue();
-    
-    for(int i = 0; i < times; i++)
-      res += str;
-
-    return new Value(res);
-  }
-
   Value *GetValue(map<string,Value*> &state) {
-    return Multiply(left->GetValue(state), right->GetValue(state));
+    return Value::Multiply(left->GetValue(state), right->GetValue(state));
   }
 };
 
 class SliceExpr : public ParseTree {
+int size[2];
+
 public:
 	SliceExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
+
+  void SliceEval(map<string,Value*> &state, Value* &begin, Value* &end) {
+    if(right)
+      right->SliceEval(state, begin, end);
+  }
+
+  Value* GetValue(map<string,Value*> &state) {
+    Value* begin;
+    Value* end;
+
+    SliceEval(state, begin, end);
+  } 
+
+  // void SliceEval(map<string,Value*> &state, Value* &begin, Value* &end) {
+  //   if(right)
+  //     right->SliceEval(state, begin, end);
+  // }
+
+  // Value* GetValue(map<string,Value*> &state) {
+  //   if(left->GetValue(state)->GetType() != STRTYPE)
+  //     throw runtime_error(to_string(linenum) + ": Can only slice a string");
+
+  //   string str = left->GetValue(state)->GetStrValue(), res = "";
+  //   Value* begin;
+  //   Value* end;
+  //   int b = -1, e = -1;
+
+  //   // syntactic sugar
+  //   SliceEval(state, begin, end);
+
+  //   b = begin->GetIntValue();
+  //   e = end->GetIntValue();
+
+  //   cout << b << endl;
+  //   cout << e << endl;
+
+  //   if(b > str.length() || e > str.length())
+  //     throw runtime_error("RUNTIME ERROR: Cannot slice larger than the string's length");
+
+  //   // ie. "hello world"[2]
+  //   if(b != -1 && e == -1) {
+  //     res = str.substr(b);
+  //   }
+
+  //   // ie. "hello world"[2:6]
+  //   if(b != -1 && e != -1) {
+  //     res = str.substr(b, e);
+  //   }
+
+  //   return new Value(res);
+  // }
 };
 
 class SliceOperand : public ParseTree {
 public:
 	SliceOperand(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
+
+  void errormsg() {
+    throw runtime_error(to_string(linenum) + ": Slice value(s) cannot be negative!");
+  }
+
+  void SliceEval(map<string,Value*> &state, Value* &begin, Value* &end) {
+    cout << "OwO" << endl;
+  }
+
+  // returns two int values to determine where in the string to slice
+  // void SliceEval(map<string,Value*> &state, Value* &begin, Value* &end) {
+  //   if(left) {
+  //     if(left->GetType() != INTTYPE)
+  //       errormsg();
+
+  //     begin = left->GetValue(state);
+  //   }
+
+  //   if(right) {
+  //     if(right->GetType() != INTTYPE)
+  //       errormsg();
+
+  //     end = left->GetValue(state);
+  //   }
+
+  //   if(!left && !right)
+  //     throw runtime_error(to_string(linenum) + ": Slice error");
+  // }
 };
 
 class IConst : public ParseTree {
