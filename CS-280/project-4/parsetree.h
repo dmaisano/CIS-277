@@ -67,15 +67,8 @@ public:
   
   virtual Value *GetValue(map<string,Value*> &state) { return 0; }
 
-  // useful when slicing
+  // called when slicing
   virtual void SliceEval(map<string,Value*> &state, Value* &begin, Value* &end) {}
-  
-  // virtual void SliceEval(map<string,Value*> &state, Value* &begin, Value* &end) {
-  //   if(left)
-  //     left->SliceEval(state, begin, end);
-  //   if(right)
-  //     right->SliceEval(state, begin, end);
-  // }
 };
 
 class StmtList : public ParseTree {
@@ -150,6 +143,23 @@ public:
 	Repeat(int line, ParseTree *e, ParseTree *s) : ParseTree(line, e, s) {}
 
   // num to repeat must be non-negative
+  void Eval(map<string,Value*> &state) {
+    auto expr = left->GetValue(state);
+
+    if(expr->GetType() != INTTYPE)
+      throw runtime_error(to_string(linenum) + ": REPEAT must contain integer expression to evaluate");
+
+    int times = expr->GetIntValue();
+
+    if(times < 0) {
+      cout << "RUNTIME ERROR: Cannot contain negative integer expression in Repeat stmt";
+      exit(0);
+      // throw runtime_error("RUNTIME ERROR: Cannot contain negative integer expression in Repeat stmt");
+    }
+
+    for(int i = 0; i < times; i++)
+      right->Eval(state);
+  }
 };
 
 
@@ -181,8 +191,6 @@ public:
 };
 
 class SliceExpr : public ParseTree {
-int size[2];
-
 public:
 	SliceExpr(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
 
@@ -192,83 +200,60 @@ public:
   }
 
   Value* GetValue(map<string,Value*> &state) {
-    Value* begin;
-    Value* end;
+    Value* s = left->GetValue(state);
+    Value* begin = new Value();
+    Value* end = new Value();
 
+    if(s->GetType() != STRTYPE)
+      throw runtime_error(to_string(linenum) + ": Can only slice string");
+
+    // syntactic sugar
     SliceEval(state, begin, end);
-  } 
 
-  // void SliceEval(map<string,Value*> &state, Value* &begin, Value* &end) {
-  //   if(right)
-  //     right->SliceEval(state, begin, end);
-  // }
+    string str = s->GetStrValue(), res;
+    int b = begin->GetIntValue();
+    int e =  (end->GetIntValue() - b) + 1;
+    int size = str.length();
 
-  // Value* GetValue(map<string,Value*> &state) {
-  //   if(left->GetValue(state)->GetType() != STRTYPE)
-  //     throw runtime_error(to_string(linenum) + ": Can only slice a string");
+    if(b < 0 || b < 0) {
+      cout << "RUNTIME ERROR: Slice length cannot be negative";
+      exit(0);
+    }
 
-  //   string str = left->GetValue(state)->GetStrValue(), res = "";
-  //   Value* begin;
-  //   Value* end;
-  //   int b = -1, e = -1;
+    if(b > size || e > size)
+      throw runtime_error("RUNTIME ERROR: Slice length cannot exceed string length");
 
-  //   // syntactic sugar
-  //   SliceEval(state, begin, end);
+    res = str.substr(b,e);
 
-  //   b = begin->GetIntValue();
-  //   e = end->GetIntValue();
-
-  //   cout << b << endl;
-  //   cout << e << endl;
-
-  //   if(b > str.length() || e > str.length())
-  //     throw runtime_error("RUNTIME ERROR: Cannot slice larger than the string's length");
-
-  //   // ie. "hello world"[2]
-  //   if(b != -1 && e == -1) {
-  //     res = str.substr(b);
-  //   }
-
-  //   // ie. "hello world"[2:6]
-  //   if(b != -1 && e != -1) {
-  //     res = str.substr(b, e);
-  //   }
-
-  //   return new Value(res);
-  // }
+    return new Value(res);
+  }
 };
 
 class SliceOperand : public ParseTree {
 public:
 	SliceOperand(int line, ParseTree *l, ParseTree *r) : ParseTree(line,l,r) {}
 
-  void errormsg() {
-    throw runtime_error(to_string(linenum) + ": Slice value(s) cannot be negative!");
-  }
-
   void SliceEval(map<string,Value*> &state, Value* &begin, Value* &end) {
-    cout << "OwO" << endl;
+    string errmsg = to_string(linenum) + ": Slice value(s) cannot be negative";
+
+    if(left) {
+      if(left->GetValue(state)->GetType() != INTTYPE)
+        throw runtime_error(errmsg);
+
+      begin = left->GetValue(state);
+    }
+
+    if(right) {
+      if(right->GetValue(state)->GetType() != INTTYPE)
+        throw runtime_error(errmsg);
+
+      end = right->GetValue(state);
+    }
+
+    if(!left && !right ) {
+      throw runtime_error(to_string(linenum) + ": Slice Error");
+    }
   }
-
-  // returns two int values to determine where in the string to slice
-  // void SliceEval(map<string,Value*> &state, Value* &begin, Value* &end) {
-  //   if(left) {
-  //     if(left->GetType() != INTTYPE)
-  //       errormsg();
-
-  //     begin = left->GetValue(state);
-  //   }
-
-  //   if(right) {
-  //     if(right->GetType() != INTTYPE)
-  //       errormsg();
-
-  //     end = left->GetValue(state);
-  //   }
-
-  //   if(!left && !right)
-  //     throw runtime_error(to_string(linenum) + ": Slice error");
-  // }
 };
 
 class IConst : public ParseTree {

@@ -1,2 +1,5 @@
-var s "lemon fudge bars";
-print s[3:5];
+var x -7;
+
+repeat 3 print "****";
+repeat x print "what?";
+print "***";
