@@ -14,8 +14,8 @@ Contains C++ Projects / Files from various CS courses
 ***
 
 **Newfound Wisdom 💭**
-- Although I have known this for some time I'm just going to share a few good things about **C++**
-  - C like performance
+- Some good stuff about **c++**
+  - **c** like performance
   - Pointers and References 🔍📋
   - Decent backwards compatibility with **c**
 - A redeeming quality of using **.h** for header files vs **.hpp** is the option for backwards compatibility with **c**.
