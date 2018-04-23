@@ -152,7 +152,7 @@ public:
     int times = expr->GetIntValue();
 
     if(times < 0) {
-      cout << "RUNTIME ERROR: Cannot contain negative integer expression in Repeat stmt";
+      cout << "RUNTIME ERROR: Cannot contain negative integer expression in Repeat stmt" << endl;
       exit(0);
       // throw runtime_error("RUNTIME ERROR: Cannot contain negative integer expression in Repeat stmt");
     }
@@ -216,12 +216,14 @@ public:
     int size = str.length();
 
     if(b < 0 || b < 0) {
-      cout << "RUNTIME ERROR: Slice length cannot be negative";
+      cout << "RUNTIME ERROR: Slice length cannot be negative" << endl;
       exit(0);
     }
 
-    if(b > size || e > size)
-      throw runtime_error("RUNTIME ERROR: Slice length cannot exceed string length");
+    if(b > size || e > size) {
+      cout << ("RUNTIME ERROR: Slice length cannot exceed string length") << endl;
+      exit(0);
+    }
 
     res = str.substr(b,e);
 
