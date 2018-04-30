@@ -1,65 +1,63 @@
-#ifndef CLI_H
-#define CLI_H
+/*
+* Domenico Maisano
+* CS280
+* Spring 2018
+* 
+* cli.h
+*/
+
+#ifndef CLI_H_
+#define CLI_H_
 
 #include <iostream>
-#include <string>
-#include <set>
+#include <cctype>
+#include <fstream>
+#include <vector>
+#include <map>
 #include "./pattern-matcher.h"
 using namespace std;
 
-class CLI {
-public:
+namespace CLI {
   // exposes the main functionality of the program
-  CLI(int argc, vector<string> argv) {
-    // stores a set of flag args that will be used when parsing
-    set<string> parserFlags, flags = { "-q", "-s", "-c", "-p", "-l"  };
-    bool foundFile;
-    string fileName;
+  static void Main(int argc, vector<string> argv) {
+    map<string,bool> parserFlags = {
+      {"-q", 0},
+      {"-s", 0},
+      {"-c", 0},
+      {"-p", 0},
+      {"-l", 0}
+    };
 
-    // exit quietly if no args
-    if(argc == 1) {
-      exit(0);
-    }
+    istream *in = &cin;
+    ifstream file;
+    bool foundFile = false;
 
     for(auto arg : argv) {
       // flag handler
-      if(arg[0] == '-') {
-        // executes if valid flag is found
-        if(inFlags(flags, arg))
-          parserFlags.insert(arg);
+      if(arg[0] == '-')
+        findFlags(parserFlags, arg);
 
-        else {
-          cout << "INVALID FLAG " << arg << endl;
+      // error handler
+      else if(foundFile) {
+        cerr << "TOO MANY FILENAMES" << endl;
+        exit(0);
+      }
+
+      // file handler
+      else {
+        file.open(arg);
+        foundFile = true;
+
+        if(file.is_open() == false) {
+          cerr << "COULD NOT OPEN " << arg << endl;
           exit(0);
         }
       }
 
-      // file handler
-      else if(arg[0] != '-') {
-        if(foundFile == false) {
-          fileName = arg;
-          foundFile = true;
-
-          // if file cannot be found
-          if(ifstream(fileName).fail()) {
-            cout << "UNABLE TO OPEN " << fileName << endl;
-            exit(0); 
-          }
-        }
-
-        // if a file is already found
-        else if(foundFile == true) {
-          cout << "TOO MANY FILE NAMES" << endl; exit(0);
-        }
-      }
+      in = &file;
     }
-
-    ifstream file(fileName);
-    istream* in = &file;
-    // finally we can actually run the program
-    PatternMatcher::Parse(in);
-
-    exit(0); // exit the program
+    // run the program
+    PatternMatcher::match(in, parserFlags);
   }
 };
 
