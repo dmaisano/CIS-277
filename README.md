@@ -1,19 +1,17 @@
 # C++ Projects
 
-***
+> Contains Projects & Files from various CS courses from Bergen and NJIT
 
-Contains C++ Projects / Files from various CS courses
+### C++ Caveats 😬
 
-***
-
-**Caveats 😬**
 - C++ lacks a practical modular library / package system
   - Downloading libraries or packages is annoying and is not intuitive.
   - I tend to just download files manually and include them in my projects as necessary.
 
-***
+---
 
-**Newfound Wisdom 💭**
+### C++ Newfound Wisdom 💭
+
 - Some good stuff about **c++**
   - **c** like performance
   - Pointers and References 🔍📋
