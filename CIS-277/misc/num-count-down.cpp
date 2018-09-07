@@ -3,17 +3,19 @@ using namespace std;
 
 void countDown(int);
 
-int main() {
-  countDown(10);
+int main()
+{
+	countDown(10);
 
-  return 0;
+	return 0;
 }
 
-void countDown(int n) {
-  cout << n << "\n";
+void countDown(int n)
+{
+	cout << n << "\n";
 
-  if(n == 0)
-    return;
+	if (n == 0)
+		return;
 
-  countDown(n-1);
+	countDown(n - 1);
 }

@@ -4,17 +4,18 @@
 #include <map>
 using namespace std;
 
-int main () {
-  // token == some word
-  map<string, vector<string>> token;
-  
-  token["abc"] = {"Hello", "World"};
-  token["123"] = {"Foo", "Bar"};
+int main()
+{
+	// token == some word
+	map<string, vector<string>> token;
 
-  // works as such
-  // token["abc"][0] = "Hello"
+	token["abc"] = {"Hello", "World"};
+	token["123"] = {"Foo", "Bar"};
 
-  for(auto it : token)
-    for(auto value : it.second)
-      cout << "key: " << it.first << "\tvalue: " << value << endl;
+	// works as such
+	// token["abc"][0] = "Hello"
+
+	for (auto it : token)
+		for (auto value : it.second)
+			cout << "key: " << it.first << "\tvalue: " << value << endl;
 }

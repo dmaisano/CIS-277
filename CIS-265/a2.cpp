@@ -22,15 +22,14 @@ Steps
 #include <iomanip> // used for setprecision to remove the trailing decimal places
 using namespace std;
 
-int main() {
-    double east_coast_sales = 4.6E6, // $4.6 million
-           percentage = 0.62,
-           total = 0;
+int main()
+{
+	double east_coast_sales = 4.6E6, percentage = 0.62, total = 0;
 
-    total = east_coast_sales * percentage;
+	total = east_coast_sales * percentage;
 
-    cout << "Total sales generated from East Coast sales division: $" << fixed << setprecision(0) << total;
-    // fixed removes scientific notation from the double value, setprecision(0) removes decimal places from the output
-        
-    return 0;
+	cout << "Total sales generated from East Coast sales division: $" << fixed << setprecision(0) << total;
+	// fixed removes scientific notation from the double value, setprecision(0) removes decimal places from the output
+
+	return 0;
 }

@@ -10,9 +10,10 @@ const int IN = 0;
 const int OUT = 1;
 const int NSTATS = 2;
 
-int main(int argc, char *argv[]) {
-  // argv vector
-  vector<string> args(argv + 1, argv + argc);
+int main(int argc, char *argv[])
+{
+	// argv vector
+	vector<string> args(argv + 1, argv + argc);
 
-  CLI::Main(argc, args);
+	CLI::Main(argc, args);
 }

@@ -22,14 +22,14 @@ Steps
 #include <iostream>
 using namespace std;
 
-int main() {
-    int num1 = 62,
-        num2 = 99,
-        total = 0; // variables declared and initialized with values
+int main()
+{
+	int num1 = 62, num2 = 99,
+			total = 0; // variables declared and initialized with values
 
-    total = num1 + num2; // sum is added and stored in the total variable
+	total = num1 + num2; // sum is added and stored in the total variable
 
-    cout << "Total: " << total; // total is logged to the console
+	cout << "Total: " << total; // total is logged to the console
 
-    return 0;
+	return 0;
 }

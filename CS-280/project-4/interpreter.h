@@ -18,18 +18,20 @@
 #include "./value.h"
 using namespace std;
 
-namespace Interpreter {
+namespace Interpreter
+{
 
-static void Interpret(istream *in, bool trace) {
-  // stores a map of variables with their respective values
-  map<string,Value*> symbols;
+static void Interpret(istream *in, bool trace)
+{
+	// stores a map of variables with their respective values
+	map<string, Value *> symbols;
 
-  auto prog = Parser::Parse(in, trace);
+	auto prog = Parser::Parse(in, trace);
 
-  // evaluate the program
-  prog->Eval(symbols);
+	// evaluate the program
+	prog->Eval(symbols);
 };
 
-}
+} // namespace Interpreter
 
 #endif

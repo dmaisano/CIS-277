@@ -1,145 +1,166 @@
 #include <iostream>
 using namespace std;
 
-class Queue {
+class Queue
+{
 
 private:
-  int *data, front, rear;
-  string name;
+	int *data, front, rear;
+	string name;
 
 public:
-  int size, max;
+	int size, max;
 
-  Queue(int num = NULL, string qname ="") {
-    if(num == NULL) {
-      cout << "Enter the size for the Queue: ";
-      cin >> num;
-    }
+	Queue(int num = NULL, string qname = "")
+	{
+		if (num == NULL)
+		{
+			cout << "Enter the size for the Queue: ";
+			cin >> num;
+		}
 
-    front = rear = -1;
-    size = num;
-    max = size - 1;
-    data = new int[size];
-    
-    if(qname == "") {
-      cout << "Enter a name for the Queue: ";
-      cin >> qname;
-    }
+		front = rear = -1;
+		size = num;
+		max = size - 1;
+		data = new int[size];
 
-    name = qname;
-  }
+		if (qname == "")
+		{
+			cout << "Enter a name for the Queue: ";
+			cin >> qname;
+		}
 
-  void print() {
-    if(front == -1) {
-      cout << "Queue is empty! Please add items to queue!";
-    }
+		name = qname;
+	}
 
-    cout << "Items in Queue '" << name << "'...\n";
+	void print()
+	{
+		if (front == -1)
+		{
+			cout << "Queue is empty! Please add items to queue!";
+		}
 
-    // Executes if the rear is larger than the front (this executes in most cases)
-    if(rear >= front) {
-      for(int i = front; i <= rear; i++) {
-        cout << "Item: " << i << "\tValue: " << data[i] << "\n";
-      }
-    }
+		cout << "Items in Queue '" << name << "'...\n";
 
-    // Executes if the array is circular and wraps around
-    // Example: size = 10, front = 7, rear = 3
-    else {
-      for(int i = front; i < size; i++) {
-        cout << "Item: " << i << "\tValue: " << data[i] << "\n";;
-      }
+		// Executes if the rear is larger than the front (this executes in most cases)
+		if (rear >= front)
+		{
+			for (int i = front; i <= rear; i++)
+			{
+				cout << "Item: " << i << "\tValue: " << data[i] << "\n";
+			}
+		}
 
-      for(int i = 0; i <= rear; i++) {
-        cout << "Item: " << i << "\tValue: " << data[i] << "\n";
-      }
-    }
+		// Executes if the array is circular and wraps around
+		// Example: size = 10, front = 7, rear = 3
+		else
+		{
+			for (int i = front; i < size; i++)
+			{
+				cout << "Item: " << i << "\tValue: " << data[i] << "\n";
+				;
+			}
 
-    cout << "\n";
-  }
+			for (int i = 0; i <= rear; i++)
+			{
+				cout << "Item: " << i << "\tValue: " << data[i] << "\n";
+			}
+		}
 
-  void enqueue(int num) {
-    // Displays an error message if the queue is full
-    if( (front == 0 && rear == max) || rear == front - 1) {
-      cout << "Queue is full! Please remove items before adding to the queue!\n";
-    }
+		cout << "\n";
+	}
 
-    // Initializes front/rear and inserts first item
-    else if(front == -1 && rear == -1) {
-      front = rear = 0;
-      data[rear] = num;
-    }
+	void enqueue(int num)
+	{
+		// Displays an error message if the queue is full
+		if ((front == 0 && rear == max) || rear == front - 1)
+		{
+			cout << "Queue is full! Please remove items before adding to the queue!\n";
+		}
 
-    // If rear becomes the last item in the Queue and the front is not zero, set the rear as the front
-    else if(front != 0 && rear == max) {
-      rear = 0;
-      data[rear] = num;
-    }
+		// Initializes front/rear and inserts first item
+		else if (front == -1 && rear == -1)
+		{
+			front = rear = 0;
+			data[rear] = num;
+		}
 
-    // Increments the rear and adds the num to the end (rear) of the Queue
-    else {
-      rear++;
-      data[rear] = num;
-    }
-  }
+		// If rear becomes the last item in the Queue and the front is not zero, set the rear as the front
+		else if (front != 0 && rear == max)
+		{
+			rear = 0;
+			data[rear] = num;
+		}
 
-  int dequeue() {
-    int num;
+		// Increments the rear and adds the num to the end (rear) of the Queue
+		else
+		{
+			rear++;
+			data[rear] = num;
+		}
+	}
 
-    if(front == -1) {
-      cout << "Queue is empty! Please add items to queue before removing!";
-      num = NULL; // returns null if the Queue is empty
-      // NULL == 0
-    }
+	int dequeue()
+	{
+		int num;
 
-    num = data[front];
-    data[front] = -1;
+		if (front == -1)
+		{
+			cout << "Queue is empty! Please add items to queue before removing!";
+			num = NULL; // returns null if the Queue is empty
+			// NULL == 0
+		}
 
-    // Executes if there is only one item in the Queue
-    if(front == rear) {
-      front = rear = -1;
-    }
+		num = data[front];
+		data[front] = -1;
 
-    // Wraps the Queue around itself (circular)
-    else if(front == max)
-      front = 0;
+		// Executes if there is only one item in the Queue
+		if (front == rear)
+		{
+			front = rear = -1;
+		}
 
-    // Increments the front if none of two conditions are met
-    else
-      front++;
+		// Wraps the Queue around itself (circular)
+		else if (front == max)
+			front = 0;
 
-    return num;
-  }
+		// Increments the front if none of two conditions are met
+		else
+			front++;
+
+		return num;
+	}
 };
 
-int main() {
-  Queue q(5, "Toast");
-  
-  // Inserting elements in Circular Queue
-  q.enqueue(14);
-  q.enqueue(22);
-  q.enqueue(13);
-  q.enqueue(-6);
+int main()
+{
+	Queue q(5, "Toast");
 
-  // Display elements present in Circular Queue
-  q.print();
+	// Inserting elements in Circular Queue
+	q.enqueue(14);
+	q.enqueue(22);
+	q.enqueue(13);
+	q.enqueue(-6);
 
-  // Deleting elements from Circular Queue
-  q.dequeue();
-  q.dequeue();
+	// Display elements present in Circular Queue
+	q.print();
 
-  q.print();
+	// Deleting elements from Circular Queue
+	q.dequeue();
+	q.dequeue();
 
-  q.enqueue(9);
-  q.enqueue(20);
-  q.enqueue(5);
+	q.print();
 
-  q.print();
-  q.enqueue(20);
+	q.enqueue(9);
+	q.enqueue(20);
+	q.enqueue(5);
 
-  q.dequeue();
+	q.print();
+	q.enqueue(20);
 
-  cout << "\n";
+	q.dequeue();
 
-  return 0;
+	cout << "\n";
+
+	return 0;
 }

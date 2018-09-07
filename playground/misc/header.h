@@ -5,47 +5,56 @@
 #include <string>
 using namespace std;
 
-class Foo {
+class Foo
+{
 private:
-  static void doSomething() {
-    cout << "foo bar baz";
-  }
+	static void doSomething()
+	{
+		cout << "foo bar baz";
+	}
+
 public:
-  static void bar();
+	static void bar();
 };
 
-void Foo::bar() {
-  doSomething();
+void Foo::bar()
+{
+	doSomething();
 }
 
-class Dog {
+class Dog
+{
 private:
-  string name, breed;
-  int age;
+	string name, breed;
+	int age;
 
 public:
-  Dog() {
-    cout << "Enter the name for the dog: ";
-    cin >> this->name;
+	Dog()
+	{
+		cout << "Enter the name for the dog: ";
+		cin >> this->name;
 
-    cout << "How old is " << this->name << ": ";
-    cin >> this->age;
+		cout << "How old is " << this->name << ": ";
+		cin >> this->age;
 
-    cout << "What breed is " << this->name << ": ";
-    cin >> this->breed;
-  }
+		cout << "What breed is " << this->name << ": ";
+		cin >> this->breed;
+	}
 
-  string getName() {
-    return this->name;
-  }
+	string getName()
+	{
+		return this->name;
+	}
 
-  int getAge() {
-    return this->age;
-  }
+	int getAge()
+	{
+		return this->age;
+	}
 
-  string getBreed() {
-    return this->breed;
-  }
+	string getBreed()
+	{
+		return this->breed;
+	}
 };
 
-#endif 
+#endif
