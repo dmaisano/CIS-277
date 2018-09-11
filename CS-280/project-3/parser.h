@@ -1,17 +1,17 @@
 /*
-*  parser.h
-*
-*  (modified parse.cpp)
-*
-*  Created on: Mar 8, 2018
-*  Author: gerardryan
-*/
+ *  parser.h
+ *
+ *  (modified parse.cpp)
+ *
+ *  Created on: Mar 8, 2018
+ *  Author: gerardryan
+ */
 
 #ifndef PARSER_H_
 #define PARSER_H_
 
-#include <iostream>
 #include "./parsetree.h"
+#include <iostream>
 using namespace std;
 
 // prototypes
@@ -28,67 +28,58 @@ ParseTree *Factor(istream *in, int *line);
 ParseTree *Primary(istream *in, int *line);
 
 // parser wrapper
-namespace Parser
-{
+namespace Parser {
 bool pushed_back = false;
 Token pushed_token;
 
-static Token GetNextToken(istream *in, int *line)
-{
-	if (pushed_back)
-	{
-		pushed_back = false;
-		return pushed_token;
-	}
-	return getNextToken(in, line);
+static Token GetNextToken(istream *in, int *line) {
+  if (pushed_back) {
+    pushed_back = false;
+    return pushed_token;
+  }
+  return getNextToken(in, line);
 }
 
-static void PushBackToken(Token &tok)
-{
-	if (pushed_back)
-	{
-		abort();
-	}
-	pushed_back = true;
-	pushed_token = tok;
+static void PushBackToken(Token &tok) {
+  if (pushed_back) {
+    abort();
+  }
+  pushed_back = true;
+  pushed_token = tok;
 }
 
-static void Parse(istream *in, bool trace)
-{
-	int linenum = 0;
+static void Parse(istream *in, bool trace) {
+  int linenum = 0;
 
-	ParseTree *prog = Prog(in, &linenum);
+  ParseTree *prog = Prog(in, &linenum);
 
-	if (!prog)
-		exit(0);
+  if (!prog)
+    exit(0);
 
-	int identCNT = prog->IdentCount();
-	cout << "LEAF COUNT: " << prog->LeafCount() << endl;
-	cout << "IDENT COUNT: " << identCNT << endl;
+  int identCNT = prog->IdentCount();
+  cout << "LEAF COUNT: " << prog->LeafCount() << endl;
+  cout << "IDENT COUNT: " << identCNT << endl;
 
-	if (identCNT)
-	{
-		map<string, bool> idents;
-		prog->GetVars(idents);
+  if (identCNT) {
+    map<string, bool> idents;
+    prog->GetVars(idents);
 
-		cout << "UNIQUE IDENT COUNT: " << idents.size() << endl;
+    cout << "UNIQUE IDENT COUNT: " << idents.size() << endl;
 
-		bool printed = false;
-		for (auto ident : idents)
-		{
-			if (printed)
-				cout << ", ";
-			cout << ident.first;
-			printed = true;
-		}
-		cout << endl;
-	}
+    bool printed = false;
+    for (auto ident : idents) {
+      if (printed)
+        cout << ", ";
+      cout << ident.first;
+      printed = true;
+    }
+    cout << endl;
+  }
 
-	if (trace)
-	{
-		prog->trace();
-		cout << endl;
-	}
+  if (trace) {
+    prog->trace();
+    cout << endl;
+  }
 }
 
 } // namespace Parser
@@ -97,287 +88,253 @@ static void Parse(istream *in, bool trace)
 static int error_count = 0;
 
 // error handler
-void ParseError(int line, string msg)
-{
-	++error_count;
-	cout << line << ": " << msg << endl;
+void ParseError(int line, string msg) {
+  ++error_count;
+  cout << line << ": " << msg << endl;
 }
 
 // parse tree that contains the entire program
-ParseTree *Prog(istream *in, int *line)
-{
-	ParseTree *sl = Slist(in, line);
+ParseTree *Prog(istream *in, int *line) {
+  ParseTree *sl = Slist(in, line);
 
-	if (!sl)
-		ParseError(*line, "No statements in program");
+  if (!sl)
+    ParseError(*line, "No statements in program");
 
-	if (error_count)
-		return 0;
+  if (error_count)
+    return 0;
 
-	return sl;
+  return sl;
 }
 
 // Slist is a Statement followed by a Statement List
-ParseTree *Slist(istream *in, int *line)
-{
-	ParseTree *s = Stmt(in, line);
-	if (!s)
-		return 0;
+ParseTree *Slist(istream *in, int *line) {
+  ParseTree *s = Stmt(in, line);
+  if (!s)
+    return 0;
 
-	if (Parser::GetNextToken(in, line) != SC)
-	{
-		ParseError(*line, "Missing semicolon");
-		delete s;
-		return 0;
-	}
+  if (Parser::GetNextToken(in, line) != SC) {
+    ParseError(*line, "Missing semicolon");
+    delete s;
+    return 0;
+  }
 
-	ParseTree *sl = Slist(in, line);
-	if (!sl)
-		return s;
+  ParseTree *sl = Slist(in, line);
+  if (!sl)
+    return s;
 
-	return new StmtList(s, sl);
+  return new StmtList(s, sl);
 }
 
 // statement tree/node
-ParseTree *Stmt(istream *in, int *line)
-{
-	ParseTree *s;
+ParseTree *Stmt(istream *in, int *line) {
+  ParseTree *s;
 
-	Token tok = Parser::GetNextToken(in, line);
-	switch (tok.GetTokenType())
-	{
-	case VAR:
-		s = VarStmt(in, line);
-		break;
+  Token tok = Parser::GetNextToken(in, line);
+  switch (tok.GetTokenType()) {
+  case VAR:
+    s = VarStmt(in, line);
+    break;
 
-	case SET:
-		s = SetStmt(in, line);
-		break;
+  case SET:
+    s = SetStmt(in, line);
+    break;
 
-	case PRINT:
-		s = PrintStmt(in, line);
-		break;
+  case PRINT:
+    s = PrintStmt(in, line);
+    break;
 
-	case REPEAT:
-		s = RepeatStmt(in, line);
-		break;
+  case REPEAT:
+    s = RepeatStmt(in, line);
+    break;
 
-	case DONE:
-		return 0;
+  case DONE:
+    return 0;
 
-	default:
-		ParseError(*line, "Invalid statement");
-		return 0;
-	}
+  default:
+    ParseError(*line, "Invalid statement");
+    return 0;
+  }
 
-	return s;
+  return s;
 }
 
 // variable tree/node
-ParseTree *VarStmt(istream *in, int *line)
-{
-	Token tok = Parser::GetNextToken(in, line);
+ParseTree *VarStmt(istream *in, int *line) {
+  Token tok = Parser::GetNextToken(in, line);
 
-	if (tok != IDENT)
-	{
-		ParseError(*line, "Missing identifier after var");
-		return 0;
-	}
+  if (tok != IDENT) {
+    ParseError(*line, "Missing identifier after var");
+    return 0;
+  }
 
-	ParseTree *expr = Expr(in, line);
-	if (!expr)
-	{
-		ParseError(*line, "Missing expression after identifier");
-		return 0;
-	}
+  ParseTree *expr = Expr(in, line);
+  if (!expr) {
+    ParseError(*line, "Missing expression after identifier");
+    return 0;
+  }
 
-	return new VarDecl(tok, expr);
+  return new VarDecl(tok, expr);
 }
 
 // SET statement tree/node
-ParseTree *SetStmt(istream *in, int *line)
-{
-	Token tok = Parser::GetNextToken(in, line);
+ParseTree *SetStmt(istream *in, int *line) {
+  Token tok = Parser::GetNextToken(in, line);
 
-	if (tok != IDENT)
-	{
-		ParseError(*line, "Missing identifier after set");
-		return 0;
-	}
+  if (tok != IDENT) {
+    ParseError(*line, "Missing identifier after set");
+    return 0;
+  }
 
-	ParseTree *expr = Expr(in, line);
-	if (!expr)
-	{
-		ParseError(*line, "Missing expression after identifier");
-		return 0;
-	}
+  ParseTree *expr = Expr(in, line);
+  if (!expr) {
+    ParseError(*line, "Missing expression after identifier");
+    return 0;
+  }
 
-	return new Assignment(tok, expr);
+  return new Assignment(tok, expr);
 }
 
 // PRINT statement tree/node
-ParseTree *PrintStmt(istream *in, int *line)
-{
-	ParseTree *expr = Expr(in, line);
+ParseTree *PrintStmt(istream *in, int *line) {
+  ParseTree *expr = Expr(in, line);
 
-	if (!expr)
-	{
-		ParseError(*line, "Missing expression after print");
-		return 0;
-	}
+  if (!expr) {
+    ParseError(*line, "Missing expression after print");
+    return 0;
+  }
 
-	return new Print(*line, expr);
+  return new Print(*line, expr);
 }
 
-ParseTree *RepeatStmt(istream *in, int *line)
-{
-	ParseTree *expr = Expr(in, line);
+ParseTree *RepeatStmt(istream *in, int *line) {
+  ParseTree *expr = Expr(in, line);
 
-	if (!expr)
-	{
-		ParseError(*line, "Missing expression after repeat");
-		return 0;
-	}
+  if (!expr) {
+    ParseError(*line, "Missing expression after repeat");
+    return 0;
+  }
 
-	ParseTree *stmt = Stmt(in, line);
-	if (!stmt)
-	{
-		ParseError(*line, "Missing statement for repeat");
-		return 0;
-	}
-	return new Repeat(*line, expr, stmt);
+  ParseTree *stmt = Stmt(in, line);
+  if (!stmt) {
+    ParseError(*line, "Missing statement for repeat");
+    return 0;
+  }
+  return new Repeat(*line, expr, stmt);
 }
 
-ParseTree *Expr(istream *in, int *line)
-{
-	ParseTree *t1 = Term(in, line);
+ParseTree *Expr(istream *in, int *line) {
+  ParseTree *t1 = Term(in, line);
 
-	if (!t1)
-		return 0;
+  if (!t1)
+    return 0;
 
-	while (true)
-	{
-		Token tok = Parser::GetNextToken(in, line);
+  while (true) {
+    Token tok = Parser::GetNextToken(in, line);
 
-		if (tok != PLUS && tok != MINUS)
-		{
-			Parser::PushBackToken(tok);
-			return t1;
-		}
+    if (tok != PLUS && tok != MINUS) {
+      Parser::PushBackToken(tok);
+      return t1;
+    }
 
-		ParseTree *t2 = Term(in, line);
-		if (!t2)
-		{
-			ParseError(*line, "Missing expression after operator");
-			return 0;
-		}
+    ParseTree *t2 = Term(in, line);
+    if (!t2) {
+      ParseError(*line, "Missing expression after operator");
+      return 0;
+    }
 
-		if (tok == PLUS)
-			t1 = new PlusExpr(tok.GetLinenum(), t1, t2);
-		else if (tok == MINUS)
-			t1 = new MinusExpr(tok.GetLinenum(), t1, t2);
-	}
+    if (tok == PLUS)
+      t1 = new PlusExpr(tok.GetLinenum(), t1, t2);
+    else if (tok == MINUS)
+      t1 = new MinusExpr(tok.GetLinenum(), t1, t2);
+  }
 }
 
-ParseTree *Term(istream *in, int *line)
-{
-	ParseTree *t1 = Factor(in, line);
+ParseTree *Term(istream *in, int *line) {
+  ParseTree *t1 = Factor(in, line);
 
-	if (!t1)
-		return 0;
+  if (!t1)
+    return 0;
 
-	while (true)
-	{
-		Token tok = Parser::GetNextToken(in, line);
+  while (true) {
+    Token tok = Parser::GetNextToken(in, line);
 
-		if (tok != STAR)
-		{
-			Parser::PushBackToken(tok);
-			return t1;
-		}
+    if (tok != STAR) {
+      Parser::PushBackToken(tok);
+      return t1;
+    }
 
-		ParseTree *t2 = Factor(in, line);
-		if (!t2)
-		{
-			ParseError(*line, "Missing expression after operator");
-			return 0;
-		}
+    ParseTree *t2 = Factor(in, line);
+    if (!t2) {
+      ParseError(*line, "Missing expression after operator");
+      return 0;
+    }
 
-		t1 = new TimesExpr(tok.GetLinenum(), t1, t2);
-	}
+    t1 = new TimesExpr(tok.GetLinenum(), t1, t2);
+  }
 }
 
-ParseTree *Factor(istream *in, int *line)
-{
-	ParseTree *primary = Primary(in, line);
+ParseTree *Factor(istream *in, int *line) {
+  ParseTree *primary = Primary(in, line);
 
-	while (true)
-	{
-		Token tok = Parser::GetNextToken(in, line);
+  while (true) {
+    Token tok = Parser::GetNextToken(in, line);
 
-		if (tok != LSQ)
-		{
-			Parser::PushBackToken(tok);
-			return primary;
-		}
+    if (tok != LSQ) {
+      Parser::PushBackToken(tok);
+      return primary;
+    }
 
-		ParseTree *expr1 = Expr(in, line);
-		if (!expr1)
-		{
-			ParseError(*line, "Missing expression after [");
-			return 0;
-		}
+    ParseTree *expr1 = Expr(in, line);
+    if (!expr1) {
+      ParseError(*line, "Missing expression after [");
+      return 0;
+    }
 
-		if (Parser::GetNextToken(in, line) != COLON)
-		{
-			ParseError(*line, "Missing colon after expression");
-			return 0;
-		}
+    if (Parser::GetNextToken(in, line) != COLON) {
+      ParseError(*line, "Missing colon after expression");
+      return 0;
+    }
 
-		ParseTree *expr2 = Expr(in, line);
-		if (!expr2)
-		{
-			ParseError(*line, "Missing expression after :");
-			return 0;
-		}
+    ParseTree *expr2 = Expr(in, line);
+    if (!expr2) {
+      ParseError(*line, "Missing expression after :");
+      return 0;
+    }
 
-		if (Parser::GetNextToken(in, line) != RSQ)
-		{
-			ParseError(*line, "Missing ] after expression");
-			return 0;
-		}
+    if (Parser::GetNextToken(in, line) != RSQ) {
+      ParseError(*line, "Missing ] after expression");
+      return 0;
+    }
 
-		primary = new SliceExpr(tok.GetLinenum(), primary, new SliceOperand(*line, expr1, expr2));
-	}
+    primary = new SliceExpr(tok.GetLinenum(), primary,
+                            new SliceOperand(*line, expr1, expr2));
+  }
 }
 
-ParseTree *Primary(istream *in, int *line)
-{
-	Token tok = Parser::GetNextToken(in, line);
+ParseTree *Primary(istream *in, int *line) {
+  Token tok = Parser::GetNextToken(in, line);
 
-	if (tok == IDENT)
-		return new Ident(tok);
-	else if (tok == ICONST)
-		return new IConst(tok);
-	else if (tok == SCONST)
-		return new SConst(tok);
-	else if (tok == LPAREN)
-	{
-		ParseTree *expr = Expr(in, line);
-		if (!expr)
-		{
-			ParseError(*line, "Missing expression after repeat");
-			return 0;
-		}
-		if (Parser::GetNextToken(in, line) == RPAREN)
-			return expr;
+  if (tok == IDENT)
+    return new Ident(tok);
+  else if (tok == ICONST)
+    return new IConst(tok);
+  else if (tok == SCONST)
+    return new SConst(tok);
+  else if (tok == LPAREN) {
+    ParseTree *expr = Expr(in, line);
+    if (!expr) {
+      ParseError(*line, "Missing expression after repeat");
+      return 0;
+    }
+    if (Parser::GetNextToken(in, line) == RPAREN)
+      return expr;
 
-		ParseError(*line, "Missing ) after expression");
-		return 0;
-	}
+    ParseError(*line, "Missing ) after expression");
+    return 0;
+  }
 
-	ParseError(*line, "Primary expected");
-	return 0;
+  ParseError(*line, "Primary expected");
+  return 0;
 }
 
 #endif
