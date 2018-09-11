@@ -2,7 +2,7 @@
 
 > Contains Projects & Files from various CS courses from Bergen and NJIT
 
-### C++ Caveats 😬
+## C++ Caveats 😬
 
 - C++ lacks a practical modular library / package system
   - Downloading libraries or packages is annoying and is not intuitive.
@@ -10,7 +10,7 @@
 
 ---
 
-### C++ Newfound Wisdom 💭
+## C++ Newfound Wisdom 💭
 
 - Some good stuff about **c++**
   - **c** like performance
