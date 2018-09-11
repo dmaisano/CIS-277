@@ -9,49 +9,45 @@ Due by 7/29/17
 /*
 Steps
 1. Input:
-    a. month
-    b. day
-    c. year
+        a. month
+        b. day
+        c. year
 
 2. Processing:
-    a. if(month * day == year) (do something)
-    b. else (do something else)
+        a. if(month * day == year) (do something)
+        b. else (do something else)
 
 3. Output:
-    a. if(month * day == year)
-        cout << "Magic date";
+        a. if(month * day == year)
+                cout << "Magic date";
 
-    b. else
-        cout << "Not magic date";
+        b. else
+                cout << "Not magic date";
 */
 
 #include <iostream>
 #include <string>
 using namespace std;
 
-int main()
-{
-	int month, day, year; // variable declaration
+int main() {
+  int month, day, year;
 
-	cout << "---Magic Date Program---\nEnter the month, day, and two-digit year (numerical)\n\nEnter month:\t\t";
-	cin >> month;
+  cout << "---Magic Date Program---\nEnter the month, day, and two-digit year "
+          "(numerical)\n\nEnter month:\t\t";
+  cin >> month;
 
-	cout << "Enter day:\t\t";
-	cin >> day;
+  cout << "Enter day:\t\t";
+  cin >> day;
 
-	cout << "Enter two-digit year:\t";
-	cin >> year;
+  cout << "Enter two-digit year:\t";
+  cin >> year;
 
-	if ((month * day) == year)
-	{ // if the (month x day) is equal to the year, display that it is a magic date
-		cout << "\n"
-				 << month << "/" << day << "/" << year << " is a magic date.";
-	}
-	else
-	{ // if it isn't, display that the data entered is not a magic date
-		cout << "\n"
-				 << month << "/" << day << "/" << year << " is not a magic date.";
-	}
+  if ((month * day) == year) {
+    cout << endl << month << "/" << day << "/" << year << " is a magic date.";
+  } else {
+    cout << endl
+         << month << "/" << day << "/" << year << " is not a magic date.";
+  }
 
-	return 0;
+  return 0;
 }

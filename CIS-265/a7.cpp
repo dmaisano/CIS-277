@@ -23,31 +23,28 @@ Steps
 #include <iostream>
 using namespace std;
 
-int main()
-{
-	int userInt = 0;
-	int sum = 0;
-	int count = 0;
+int main() {
+  int userInt = 0;
+  int sum = 0;
+  int count = 0;
 
-	cout << "Enter a positive integer: ";
-	cin >> userInt;
+  cout << "Enter a positive integer: ";
+  cin >> userInt;
 
-	while (userInt < 0)
-	{
-		cout << "Number entered cannot be negative.\nEnter a positive integer: ";
-		cin >> userInt;
-	}
+  while (userInt < 0) {
+    cout << "Number entered cannot be negative.\nEnter a positive integer: ";
+    cin >> userInt;
+  }
 
-	sum += userInt;
+  sum += userInt;
 
-	while (count != userInt)
-	{
-		sum += count;
+  while (count != userInt) {
+    sum += count;
 
-		count++;
-	}
+    count++;
+  }
 
-	cout << "Sum of numbers: " << sum;
+  cout << "Sum of numbers: " << sum;
 
-	return 0;
+  return 0;
 }

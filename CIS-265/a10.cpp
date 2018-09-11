@@ -25,29 +25,25 @@ Steps
 #include <iostream>
 using namespace std;
 
-int main()
-{
-	int sales[5];
+int main() {
+  int sales[5];
 
-	for (int i = 0; i < 5; i++)
-	{
-		cout << "Enter the sales for store " << i + 1 << ": $";
-		cin >> sales[i];
-	}
+  for (int i = 0; i < 5; i++) {
+    cout << "Enter the sales for store " << i + 1 << ": $";
+    cin >> sales[i];
+  }
 
-	cout << "\nSALES BAR CHART\n(each * = $100)\n---------------";
+  cout << "\nSALES BAR CHART\n(each * = $100)\n---------------";
 
-	for (int x = 0; x < 5; x++)
-	{
-		int ast = sales[x] / 100;
+  for (int x = 0; x < 5; x++) {
+    int ast = sales[x] / 100;
 
-		cout << "\nSales for Store " << x + 1 << ": ";
+    cout << "\nSales for Store " << x + 1 << ": ";
 
-		for (int y = 0; y < ast; y++)
-		{
-			cout << "*";
-		}
-	}
+    for (int y = 0; y < ast; y++) {
+      cout << "*";
+    }
+  }
 
-	return 0;
+  return 0;
 }

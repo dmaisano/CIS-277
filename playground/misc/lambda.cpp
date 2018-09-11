@@ -1,13 +1,10 @@
 #include <iostream>
 using namespace std;
 
-int main()
-{
-	auto saySomething = [](string phrase = "") {
-		cout << phrase;
-	};
+int main() {
+  auto saySomething = [](string phrase = "") { cout << phrase; };
 
-	saySomething("taco cat");
+  saySomething("taco cat");
 
-	return 0;
+  return 0;
 }

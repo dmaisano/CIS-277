@@ -1,12 +1,12 @@
-#include <iostream>
 #include "./header.h"
+#include <iostream>
 using namespace std;
 
-int main()
-{
-	Foo::bar();
+int main() {
+  Foo::bar();
 
-	// Dog bork;
+  // Dog bork;
 
-	// cout << bork.getName() << " is a " << bork.getBreed() << " who is " << bork.getAge() <<  " years old";
+  // cout << bork.getName() << " is a " << bork.getBreed() << " who is " <<
+  // bork.getAge() <<  " years old";
 }
