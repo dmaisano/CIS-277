@@ -33,8 +33,7 @@ public:
   void createNode(int value) {
     node *temp = new node;
     temp->data = value; // assigns the arg to the
-    temp->next =
-        NULL; // creating a new node in the list sets it as the top hence 'NULL'
+    temp->next = NULL;  // creating a new node in the list sets it as the top hence 'NULL'
 
     if (head == NULL) { // if there are no items in the list, set the temp item
                         // as the top hence 'NULL'
@@ -90,8 +89,7 @@ public:
 
     cur = head; // initialize the current node as the head to iterate over it
 
-    while (cur->next !=
-           NULL) { // iterates through the list until the tail is found
+    while (cur->next != NULL) { // iterates through the list until the tail is found
       pre = cur;
       cur = cur->next;
     }

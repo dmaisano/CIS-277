@@ -63,8 +63,7 @@ public:
   void enqueue(int num) {
     // Displays an error message if the queue is full
     if ((front == 0 && rear == max) || rear == front - 1) {
-      cout
-          << "Queue is full! Please remove items before adding to the queue!\n";
+      cout << "Queue is full! Please remove items before adding to the queue!\n";
     }
 
     // Initializes front/rear and inserts first item

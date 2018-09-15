@@ -6,20 +6,6 @@ Project 7
 Due by 8/08/17
 */
 
-/*
-Steps
-1. Input:
-    a. userInt
-
-2. Processing:
-    a. input validation for userInt (no negative values).
-    b. sum = userInt (input from user).
-    c. while loop to get the sum of the numbers
-
-3. Output:
-    a. Total sum of the numbers
-*/
-
 #include <iostream>
 using namespace std;
 

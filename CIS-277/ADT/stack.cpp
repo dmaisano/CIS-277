@@ -12,8 +12,8 @@ private:
 
 public:
   myStack(string stackName) { // constructor function
-    top = -1; // newly created Stack will have a top of -1 == empty Stack
-    name = stackName; // sets the name for initialized Stack
+    top = -1;                 // newly created Stack will have a top of -1 == empty Stack
+    name = stackName;         // sets the name for initialized Stack
   }
 
   string Name() { // returns the name of the Stack

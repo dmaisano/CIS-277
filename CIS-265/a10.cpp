@@ -6,22 +6,6 @@ Project 10
 Due by 8/08/17
 */
 
-/*
-Steps
-1. Input:
-    a. sales for each of the five stores
-
-2. Processing:
-    a. ast = the sales of a store / 100
-    // (ex) sales = 500, sales / 100 = 5
-    // five asterisks
-
-3. Output:
-    a. SALES BAR CHART
-    b. (each * = $100)
-    c. Sales for Store n: *****
-*/
-
 #include <iostream>
 using namespace std;
 

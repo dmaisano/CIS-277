@@ -54,8 +54,7 @@ void menu() {
 
     // the conditional executes if a valid substring is not found
     else
-      cout << input << input
-           << " does not contain a valid substring of '1101'!";
+      cout << input << input << " does not contain a valid substring of '1101'!";
 
     cout << "\nRestart program?\n1 = YES\n2 = NO\nEnter choice: ";
     cin >> restart;

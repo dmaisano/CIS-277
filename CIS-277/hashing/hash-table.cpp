@@ -29,7 +29,6 @@ void countFrequency(string s) {
   }
 
   for (int i = 0; i < 26; i++) {
-    cout << "Letter: " << (char)(i + 'a') << ",  Frequency: " << freq[i]
-         << "\n";
+    cout << "Letter: " << (char)(i + 'a') << ",  Frequency: " << freq[i] << "\n";
   }
 }

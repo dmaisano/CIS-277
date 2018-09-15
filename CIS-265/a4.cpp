@@ -6,25 +6,6 @@ Project 4
 Due by 7/29/17
 */
 
-/*
-Steps
-1. Input:
-        a. month
-        b. day
-        c. year
-
-2. Processing:
-        a. if(month * day == year) (do something)
-        b. else (do something else)
-
-3. Output:
-        a. if(month * day == year)
-                cout << "Magic date";
-
-        b. else
-                cout << "Not magic date";
-*/
-
 #include <iostream>
 #include <string>
 using namespace std;
@@ -45,8 +26,7 @@ int main() {
   if ((month * day) == year) {
     cout << endl << month << "/" << day << "/" << year << " is a magic date.";
   } else {
-    cout << endl
-         << month << "/" << day << "/" << year << " is not a magic date.";
+    cout << endl << month << "/" << day << "/" << year << " is not a magic date.";
   }
 
   return 0;

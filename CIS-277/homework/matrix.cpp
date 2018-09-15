@@ -21,28 +21,23 @@ struct MATRIX {
 
 // Operations Functions
 void performOperation(vector<MATRIX> &); // performs an operation on a MATRIX
-void selectMatrices(
-    const vector<MATRIX> &, MATRIX *,
-    int); // selects one or more MATRICES to be used for the operation(s)
-void addMatrices(MATRIX, MATRIX); // adds the values of two MATRICES
-void subMatrices(MATRIX, MATRIX); // subtracts the values of two MATRICES
-void scalarProduct(
-    MATRIX, MATRIX);     // multiplies the values of a MATRIX by a scalar value
-void scalarMult(MATRIX); // multiplies the values of two MATRICES
-void inverseMatrix(
-    MATRIX, vector<MATRIX> &); // operation to get the inverse of a MATRIX
+void selectMatrices(const vector<MATRIX> &, MATRIX *,
+                    int);           // selects one or more MATRICES to be used for the operation(s)
+void addMatrices(MATRIX, MATRIX);   // adds the values of two MATRICES
+void subMatrices(MATRIX, MATRIX);   // subtracts the values of two MATRICES
+void scalarProduct(MATRIX, MATRIX); // multiplies the values of a MATRIX by a scalar value
+void scalarMult(MATRIX);            // multiplies the values of two MATRICES
+void inverseMatrix(MATRIX, vector<MATRIX> &); // operation to get the inverse of a MATRIX
 
 // General Menu Functions
-void menu(vector<MATRIX> &matrices); // main menu for user interaction
-void printMatrix(const MATRIX);      // prints a single MATRIX
-void printMatrices(
-    const vector<MATRIX> &); // prints all the MATRICESfrom the vector<MATRIX>
-void createMatrix(vector<MATRIX> &); // creates a MATRIX to the vector<MATRIX>
-void deleteMatrix(vector<MATRIX> &); // deletes a MATRIX from the vector<MATRIX>
+void menu(vector<MATRIX> &matrices);        // main menu for user interaction
+void printMatrix(const MATRIX);             // prints a single MATRIX
+void printMatrices(const vector<MATRIX> &); // prints all the MATRICESfrom the vector<MATRIX>
+void createMatrix(vector<MATRIX> &);        // creates a MATRIX to the vector<MATRIX>
+void deleteMatrix(vector<MATRIX> &);        // deletes a MATRIX from the vector<MATRIX>
 
 // Input Validation Functions
-bool validateMenu(
-    int &, int); // used for recursive input validation for a menu/sub-menu
+bool validateMenu(int &, int); // used for recursive input validation for a menu/sub-menu
 void validateMatrix(MATRIX &, int,
                     int = 1); // validates the input for each MATRIX row & col
 void validateScalar(void (*)(MATRIX, MATRIX),
@@ -79,8 +74,7 @@ void menu(vector<MATRIX> &matrices) {
     }
 
     cout << "\nEnter an option: ";
-    menuReturn =
-        validateMenu(userInput, 4); // menu() must be passed as a reference!
+    menuReturn = validateMenu(userInput, 4); // menu() must be passed as a reference!
     if (menuReturn == false) {
       menu(matrices);
     }
@@ -123,8 +117,7 @@ void createMatrix(vector<MATRIX> &matrices) {
 void deleteMatrix(vector<MATRIX> &matrices) {
   int choice;
 
-  cout
-      << "Select a Matrix from the list below that you would like to remove.\n";
+  cout << "Select a Matrix from the list below that you would like to remove.\n";
   printMatrices(matrices);
 
   cout << "\nEnter choice: ";
@@ -134,8 +127,7 @@ void deleteMatrix(vector<MATRIX> &matrices) {
     cin.clear();
     cin.ignore(10000, '\n');
     cout << "Invalid Input! Try again.\n\n";
-    deleteMatrix(
-        matrices); // recursive function to loop until correct input is provided
+    deleteMatrix(matrices); // recursive function to loop until correct input is provided
   }
 
   matrices.erase(matrices.begin() + choice);
@@ -147,12 +139,10 @@ void printMatrices(const vector<MATRIX> &matrices) {
 
     for (int j = 0; j < 2; j++) {
       if (j == 0)
-        cout << "[ " << matrices[i].data[j][0] << " " << matrices[i].data[j][1]
-             << " ]\n";
+        cout << "[ " << matrices[i].data[j][0] << " " << matrices[i].data[j][1] << " ]\n";
 
       else
-        cout << "[ " << matrices[i].data[j][0] << " " << matrices[i].data[j][1]
-             << " ]\n\n";
+        cout << "[ " << matrices[i].data[j][0] << " " << matrices[i].data[j][1] << " ]\n\n";
     }
   }
 }
@@ -189,8 +179,7 @@ void addMatrices(MATRIX matrix1, MATRIX matrix2) {
     }
   }
 
-  cout << "\nSum of matrices " << matrix1.name << " and " << matrix2.name
-       << " is: ";
+  cout << "\nSum of matrices " << matrix1.name << " and " << matrix2.name << " is: ";
   printMatrix(m);
 }
 
@@ -203,8 +192,7 @@ void subMatrices(MATRIX matrix1, MATRIX matrix2) {
     }
   }
 
-  cout << "\nSubtraction of matrices " << matrix1.name << " and "
-       << matrix2.name << " is: ";
+  cout << "\nSubtraction of matrices " << matrix1.name << " and " << matrix2.name << " is: ";
   printMatrix(m);
 }
 
@@ -236,8 +224,7 @@ void scalarMult(MATRIX matrix1) {
     }
   }
 
-  cout << "\nScalar multiple of matrix '" << matrix1.name << "' and scalar '"
-       << scalar << "' is: ";
+  cout << "\nScalar multiple of matrix '" << matrix1.name << "' and scalar '" << scalar << "' is: ";
   printMatrix(m);
 }
 
@@ -250,8 +237,7 @@ void scalarProduct(MATRIX matrix1, MATRIX matrix2) {
     }
   }
 
-  cout << "\nProduct of matrices " << matrix1.name << " and " << matrix2.name
-       << " is: ";
+  cout << "\nProduct of matrices " << matrix1.name << " and " << matrix2.name << " is: ";
   printMatrix(m);
 }
 
@@ -298,31 +284,26 @@ void performOperation(vector<MATRIX> &matrices) {
   selectMatrices(matrices, m,
                  -999); // selects the first matrix to perform the operation
 
-  cout << "\nSelect the operation you would like to perform on Matrix '"
-       << m[0].name << "'\n";
+  cout << "\nSelect the operation you would like to perform on Matrix '" << m[0].name << "'\n";
   if (matrices.size() > 0) {
     cout << "Enter 1 to add another matrix to '" << m[0].name << "'\n";
     cout << "Enter 2 to subtract another matrix to matrix '" << m[0].name
          << "' by another matrix\n";
-    cout << "Enter 3 to multiply matrix '" << m[0].name
-         << "' by another matrix\n";
+    cout << "Enter 3 to multiply matrix '" << m[0].name << "' by another matrix\n";
     cout << "Enter 4 to multiply matrix '" << m[0].name << "' by a scalar.\n";
   }
   cout << "Enter 5 to get the inverse of matrix '" << m[0].name << "'\n";
   cout << "\nEnter an option: ";
 
-  menuReturn = validateMenu(
-      userInput, 6); // gets and validates the input (6 is the max menu size)
-  if (menuReturn ==
-      false) { // if false, error was raised, recursively call menu
+  menuReturn = validateMenu(userInput, 6); // gets and validates the input (6 is the max menu size)
+  if (menuReturn == false) {               // if false, error was raised, recursively call menu
     performOperation(matrices);
   }
 
   selectMatrices(matrices, m, userInput); //
 }
 
-void selectMatrices(const vector<MATRIX> &matrices, MATRIX m[2],
-                    int operation) {
+void selectMatrices(const vector<MATRIX> &matrices, MATRIX m[2], int operation) {
   int userInput;
   int size = matrices.size();
   string matrixName = m[0].name;
@@ -353,8 +334,7 @@ void selectMatrices(const vector<MATRIX> &matrices, MATRIX m[2],
   }
 
   else if (operation == 2) {
-    cout << "Select a matrix from the list to subtract from matrix '"
-         << matrixName << "'\n";
+    cout << "Select a matrix from the list to subtract from matrix '" << matrixName << "'\n";
     printMatrices(matrices);
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);
@@ -366,8 +346,7 @@ void selectMatrices(const vector<MATRIX> &matrices, MATRIX m[2],
   }
 
   else if (operation == 3) {
-    cout << "Select a matrix from the list to multiply to matrix '"
-         << matrixName << "''\n";
+    cout << "Select a matrix from the list to multiply to matrix '" << matrixName << "''\n";
     printMatrices(matrices);
     cout << "Enter an option: ";
     menuReturn = validateMenu(userInput, size);

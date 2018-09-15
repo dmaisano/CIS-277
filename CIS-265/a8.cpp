@@ -6,24 +6,6 @@ Project 8
 Due by 8/08/17
 */
 
-/*
-Steps
-1. Input:
-    a. speed
-    b. hours
-
-2. Processing:
-    a. input validation for speed (no negative values).
-    b. input validation for hours (no values less than 1).
-    c. for loop to handle and display the current distance travelled given the
-speed and the hour in the iteration
-
-3. Output:
-    a. Hour || Distance Travelled    // in Miles
-    b. --------------------------
-    c. hour1 || distance1    // and so on
-*/
-
 #include <iostream>
 using namespace std;
 
@@ -50,10 +32,9 @@ int main() {
   cout << "\nHour\t\tDistance Traveled"; // distance is in miles (mi)
   cout << "\n---------------------------------";
 
-  for (int i = 1; i <= hours;
-       i++) {               // loop to display the distance travelled per hour
-    distance = (speed * i); // the distance per iteration of the loop is equal
-                            // to the hour travelled times the speed
+  for (int i = 1; i <= hours; i++) { // loop to display the distance travelled per hour
+    distance = (speed * i);          // the distance per iteration of the loop is equal
+                                     // to the hour travelled times the speed
 
     cout << "\n" << i << "\t\t" << distance;
   }
