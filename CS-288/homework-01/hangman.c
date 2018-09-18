@@ -1,30 +1,51 @@
+// Domenico Maisano
+// CS-288-101
+
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// function prototype
-void game(char *, int *);
+// define boolean type
+typedef enum { false, true } bool;
+
+const char ACTUAL_WORD[] = "STRENGTHEN";
+
+// function prototypes
+void game(char *);
+void replace(char *, char, int *);
 
 int main() {
-  char word[] = "**********"; // "STRENGTHEN"
-  int guesses = 6;
+  // will not contain more than 80 chars
+  char word[100] = {};
+
+  // fill the array with
+  for (int i = 0; i < strlen(ACTUAL_WORD); i++) {
+    word[i] = '*';
+  }
 
   // welcome message
   printf("Welcome to Hangman!\n");
   printf("Try to guess the secret word one letter at a time.\n");
 
   // play the game
-  game(word, &guesses);
+  game(word);
 
   return 0;
 }
 
-void game(char *word, int *guesses) {
-  char letter = '\0';
+void game(char *word) {
+  char letter;
+
+  // allocate space for the pointers
+  int *guesses = malloc(sizeof(int));
+  bool *foundWord = malloc(sizeof(bool));
+
+  // set # of guesses to 6
+  *guesses = 6;
 
   // loop until exit condition is met
-  while (1) {
+  while (true) {
 
     // print win message and exit
     if (strcmp(word, "STRENGTHEN") == 0) {
@@ -32,9 +53,9 @@ void game(char *word, int *guesses) {
       break;
     }
 
-    // print message is player lost and exit
+    // print message if player lost and exit
     if (*guesses <= 0) {
-      printf("\You ran out of guessed and lost.\n");
+      printf("\nYou ran out of guessed and lost.\n");
       break;
     }
 
@@ -43,43 +64,22 @@ void game(char *word, int *guesses) {
 
     letter = toupper(letter);
 
-    // "STRENGTHEN"
-    switch (letter) {
-    case 'S':
-      word[0] = 'S';
-      break;
+    for (int i = 0; i < strlen(ACTUAL_WORD); i++) {
+      // reset foundWord to false
+      if (i == 0) {
+        *foundWord = false;
+      }
 
-    case 'T':
-      word[1] = 'T';
-      word[6] = 'T';
-      break;
+      if (ACTUAL_WORD[i] == letter) {
+        // specify that we found a match, so that the # of guesses isn't subtracted
+        *foundWord = true;
+        word[i] = letter;
+      }
 
-    case 'R':
-      word[2] = 'R';
-      break;
-
-    case 'E':
-      word[3] = 'E';
-      word[8] = 'E';
-      break;
-
-    case 'N':
-      word[4] = 'N';
-      word[9] = 'N';
-      break;
-
-    case 'G':
-      word[5] = 'G';
-      break;
-
-    case 'H':
-      word[7] = 'H';
-      break;
-
-    default:
       // decrement # of guesses user has left
-      --(*guesses);
-      break;
+      else if (*foundWord == false && i == strlen(ACTUAL_WORD) - 1) {
+        --(*guesses);
+      }
     }
   }
 }
