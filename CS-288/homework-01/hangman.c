@@ -9,17 +9,17 @@
 // define boolean type
 typedef enum { false, true } bool;
 
-const char ACTUAL_WORD[] = "STRENGTHEN";
+// global word variable
+const char ACTUAL_WORD[] = "JAVASCRIPT";
 
 // function prototypes
 void game(char *);
-void replace(char *, char, int *);
 
-int main() {
+main() {
   // will not contain more than 80 chars
-  char word[100] = {};
+  char word[81] = {};
 
-  // fill the array with
+  // fill the array with placeholders
   for (int i = 0; i < strlen(ACTUAL_WORD); i++) {
     word[i] = '*';
   }
@@ -30,36 +30,30 @@ int main() {
 
   // play the game
   game(word);
-
-  return 0;
 }
 
 void game(char *word) {
   char letter;
+  int guesses = 6;
 
-  // allocate space for the pointers
-  int *guesses = malloc(sizeof(int));
-  bool *foundWord = malloc(sizeof(bool));
+  bool matches = false;
 
-  // set # of guesses to 6
-  *guesses = 6;
-
-  // loop until exit condition is met
+  // loop until an exit condition is met
   while (true) {
 
     // print win message and exit
-    if (strcmp(word, "STRENGTHEN") == 0) {
-      printf("\nCongratulations you solved the word: '%s' with %i gusses remaining.\n", word, *guesses);
+    if (!strcmp(word, ACTUAL_WORD)) {
+      printf("\nCongratulations, You solved the word: '%s'\n", word);
       break;
     }
 
     // print message if player lost and exit
-    if (*guesses <= 0) {
-      printf("\nYou ran out of guessed and lost.\n");
+    if (guesses <= 0) {
+      printf("\nYou ran out of guesses and lost.\n");
       break;
     }
 
-    printf("\n# misses left = %i\tword = %s\nenter a letter: ", *guesses, word);
+    printf("\n# misses left = %i\tword = %s\nenter a letter: ", guesses, word);
     scanf(" %c", &letter);
 
     letter = toupper(letter);
@@ -67,18 +61,19 @@ void game(char *word) {
     for (int i = 0; i < strlen(ACTUAL_WORD); i++) {
       // reset foundWord to false
       if (i == 0) {
-        *foundWord = false;
+        matches = false;
       }
 
       if (ACTUAL_WORD[i] == letter) {
-        // specify that we found a match, so that the # of guesses isn't subtracted
-        *foundWord = true;
+        // found match
+        matches = true;
         word[i] = letter;
       }
 
+      // if a match was not found for the char...
       // decrement # of guesses user has left
-      else if (*foundWord == false && i == strlen(ACTUAL_WORD) - 1) {
-        --(*guesses);
+      else if (matches == false && i == strlen(ACTUAL_WORD) - 1) {
+        --guesses;
       }
     }
   }
