@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+int i;
+
 // define boolean type
 typedef enum { false, true } bool;
 
@@ -15,12 +17,12 @@ const char ACTUAL_WORD[] = "JAVASCRIPT";
 // function prototypes
 void game(char *);
 
-main() {
+int main() {
   // will not contain more than 80 chars
   char word[81] = {};
 
   // fill the array with placeholders
-  for (int i = 0; i < strlen(ACTUAL_WORD); i++) {
+  for (i = 0; i < strlen(ACTUAL_WORD); i++) {
     word[i] = '*';
   }
 
@@ -58,7 +60,7 @@ void game(char *word) {
 
     letter = toupper(letter);
 
-    for (int i = 0; i < strlen(ACTUAL_WORD); i++) {
+    for (i = 0; i < strlen(ACTUAL_WORD); i++) {
       // reset foundWord to false
       if (i == 0) {
         matches = false;
