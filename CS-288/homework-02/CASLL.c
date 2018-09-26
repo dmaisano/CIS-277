@@ -1,31 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-/* global constants */
-static int *NODE_CAPACITY;
-static int *NUM_ITEMS;
-
 /* self-referential structure */
 struct Node {
   int item;
+  int vertex;
   struct Node *next;
 };
 
 struct List {
+  int numItems;
+  struct Node **cluster; /* adjacency list */
   struct Node *head;
   struct Node *tail;
 };
 
-struct List SLL_new() {
+struct List SLL_new(int numItems) {
   /* construct an empty list */
   struct List list;
+
+  list.numItems = numItems;
+  list.cluster = malloc(numItems * sizeof(struct * Node));
+
+  int i; /* initialize values in cluster to NULL */
+  for (i = 0; i < numItems; i++) {
+    list.cluster[i] = NULL;
+  };
+
   list.head = NULL;
   list.tail = NULL;
   return list;
 }
 
+/* return the number of items in the list */
 int SLL_length(struct List *list) {
-  /* return the number of items in the list */
+
   struct Node *p;
 
   int n = 0;
@@ -40,16 +49,20 @@ int SLL_empty(struct List *list) {
   return list->head == NULL;
 }
 
-int SLL_pop(struct List *list) {
-  /* remove and return the first item of the list */
+/* remove and return the first cluster of the list */
+Node **SLL_pop(struct List *list) {
+
+  struct Node **items = list->cluster[0];
+
   struct Node *node = list->head;
-  int item = node->item;
   list->head = node->next;
+
   if (SLL_empty(list)) {
     list->tail = NULL;
   }
   free(node);
-  return item;
+
+  return items;
 }
 
 void SLL_clear(struct List *list) {
@@ -83,7 +96,7 @@ void SLL_append(struct List *list, int item) {
   }
 }
 
-int main(int argc, int argv) {
+int main() {
   int i;
 
   struct List list = SLL_new();
