@@ -1,60 +1,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int nodeCapacity;
-
 /* self-referential structure */
-/* each node may contain a cluster of nodes */
 struct Node {
-  int item;
-  int vertex;
-  struct Node **cluster;
+  int **items;
   struct Node *next;
 };
 
 struct List {
-
+  int nodeCapacity;
   struct Node *head;
   struct Node *tail;
 };
 
 struct List SLL_new(int nodeCapacity) {
+  /* construct an empty list */
   struct List list;
-
+  list.nodeCapacity = nodeCapacity;
   list.head = NULL;
   list.tail = NULL;
-
   return list;
-}
-
-/* returns true if cluster has reached the max node capacity */
-int clusterIsFull(struct Node **cluster) {
-  char hasRoom = 'N';
-
-  int i;
-  for (i = 0; i < nodeCapacity; i++) {
-    if (cluster[i] == NULL) {
-      hasRoom = 'Y';
-      break;
-    }
-  }
-
-  return hasRoom == 'N' ? 1 : 0;
-}
-
-/* returns true if cluster is empty */
-int clusterIsEmpty(struct Node **cluster) {
-  char foundNode = 'N';
-
-  int i;
-  for (i = 0; i < nodeCapacity; i++) {
-    if (cluster[i]) {
-      foundNode = 'Y';
-      break;
-    }
-  }
-
-  return foundNode == 'N' ? 1 : 0;
 }
 
 int SLL_length(struct List *list) {
@@ -73,95 +38,163 @@ int SLL_empty(struct List *list) {
   return list->head == NULL;
 }
 
+/* remove and return the first item of the list */
 int SLL_pop(struct List *list) {
-  /* remove and return the first item of the list */
 
   struct Node *node = list->head;
-  int item = node->item;
-  list->head = node->next;
+  int *items = node->items;
+
+  /* find the first item to pop */
+  int item, i;
+  for (i = 0; i < list->nodeCapacity; i++) {
+    if (&node->items[i] != NULL) {
+      item = node->items[i];
+    }
+
+    /* popped the last item in the array, array is now empty */
+    if (i == list->nodeCapacity - 1) {
+      list->head = node->next;
+      free(node);
+    }
+  }
+
   if (SLL_empty(list)) {
     list->tail = NULL;
   }
-  free(node);
+
   return item;
 }
 
+/* remove all the items from the list */
 void SLL_clear(struct List *list) {
-  /* remove all the items from the list */
   while (!SLL_empty(list)) {
     SLL_pop(list);
   }
 }
 
+/* insert the item at the front of the list */
 void SLL_push(struct List *list, int item) {
-  /* insert the item at the front of the list */
 
-  int vertex = list->head->vertex ? list->head->vertex : 0;
+  int capacity = list->nodeCapacity, i;
 
   struct Node *node = malloc(sizeof(struct Node));
-  node->item = item;
-  node->vertex = vertex;
 
-  /* if list is empty, insert node */
-  if (SLL_empty(list)) {
-    /* initialize the list */
-    list->head->cluster = malloc(list->nodeCapacity * sizeof(struct node *));
-    list->head->cluster[0] = node;
-  }
+  int headIsFull = 1;
 
-  if (clusterIsFull(list->head->cluster, list->nodeCapacity)) {
-    /* code goes here */
-  } else {
-    int i;
-    for (i = list->nodeCapacity; i >= 0; i--) {
-      /* insert the node */
-      if (node->cluster[i] == NULL) {
-        node->cluster[i] = node;
+  /* determine if head items are full */
+  if (!SLL_empty(list)) {
+    for (i = 0; i < capacity; i++) {
+      if (&list->head->items[i] == NULL) {
+        headIsFull = 0;
         break;
       }
     }
   }
 
-  /* next node */
-  node->next = list->head;
-  node->next->vertex = node->next->vertex + 1;
-  if (SLL_empty(list)) {
-    list->tail = node;
+  if (SLL_empty(list) || headIsFull) {
+
+    /* allocate memory for the items array */
+    int *data = malloc(capacity * sizeof(int));
+
+    data[0] = item;
+
+    node->items = data;
+
+    int j;
+    for (j = 0; j < capacity; j++) {
+      if (node->items[i]) {
+        printf("item: %d\n", node->items[i]);
+      } else {
+        printf("NULL\n");
+      }
+    }
+
+    /* if head is full, set node as the new head */
+    if (headIsFull) {
+      node->next = list->head;
+      list->head = node;
+    }
+
+    /* if list is empty, set head and tail */
+    else if (SLL_empty(list)) {
+      list->head = node;
+      list->tail = node;
+    }
+
+    return;
   }
-  list->head = node;
+
+  /* iterate over the items and insert the item */
+  for (i = 0; i < list->nodeCapacity; i++) {
+    if (&list->head->items[i] == NULL) {
+      list->head->items[i] = item;
+      break;
+    }
+  }
 }
 
+/* append the item to the end of the list */
 void SLL_append(struct List *list, int item) {
-  /* append the item to the end of the list */
+
   if (SLL_empty(list)) {
     SLL_push(list, item);
-  } else {
-    struct Node *node = malloc(sizeof(struct Node));
-    node->item = item;
-    node->next = NULL;
+    return;
+  }
+
+  int capacity = list->nodeCapacity, i;
+
+  struct Node *node = malloc(sizeof(struct Node));
+
+  int tailIsFull = 1;
+
+  /* determine if tail items are full */
+  if (!SLL_empty(list)) {
+    for (i = 0; i < capacity; i++) {
+      if (&list->tail->items[i] == NULL) {
+        tailIsFull = 0;
+        break;
+      }
+    }
+  }
+
+  if (tailIsFull) {
+    /* allocate memory for the items array */
+    int *data = malloc(capacity * sizeof(int));
+    data[0] = item;
+
+    node->items = data;
+
     list->tail->next = node;
     list->tail = node;
+  } else {
+    /* insert the item into the array */
+    for (i = 0; i < capacity; i++) {
+      if (&list->tail->items[i]) {
+        list->tail->items[i] = item;
+        break;
+      }
+    }
   }
 }
 
 int main(int argc, char *argv[]) {
-  int i;
-
-  if (argc < 4) {
-    printf("Missing params\n");
+  /* if (argc < 3) {
+    printf("Missing argc\n");
     exit(1);
   }
 
-  int numItems = argv[2];
-  int nodeCapacity = argv[3];
+  int nodeCapacity = atoi(argv[2]);
+  int numItems = atoi(argv[3]); */
 
-  struct List list = SLL_new(nodeCapacity);
+  struct List list = SLL_new(2);
 
-  /* insert n items */
+  SLL_push(&list, 1);
+
+  /* int i;
   for (i = 0; i < numItems; ++i) {
     SLL_push(&list, i);
     SLL_append(&list, i);
-  }
+  } */
 
   while (!SLL_empty(&list)) {
     printf("%d\n", SLL_pop(&list));
