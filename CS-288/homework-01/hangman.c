@@ -8,7 +8,7 @@
 
 int i;
 
-// define boolean type
+/* define boolean type */
 typedef enum { false, true } bool;
 
 // global word variable
