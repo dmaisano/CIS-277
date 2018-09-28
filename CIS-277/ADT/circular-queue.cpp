@@ -10,8 +10,8 @@ private:
 public:
   int size, max;
 
-  Queue(int num = NULL, string qname = "") {
-    if (num == NULL) {
+  Queue(int num = 0, string qname = "") {
+    if (num == 0) {
       cout << "Enter the size for the Queue: ";
       cin >> num;
     }
@@ -91,8 +91,7 @@ public:
 
     if (front == -1) {
       cout << "Queue is empty! Please add items to queue before removing!";
-      num = NULL; // returns null if the Queue is empty
-                  // NULL == 0
+      return -999;
     }
 
     num = data[front];
