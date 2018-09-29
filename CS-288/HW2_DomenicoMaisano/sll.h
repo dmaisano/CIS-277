@@ -133,7 +133,8 @@ void SLL_append(struct List *list, int item) {
     struct Node *node = NODE_new(list->nodeCapacity);
     NODE_append(node, item);
     list->tail->next = node;
-    list->tail = node;
+    node->next = list->head;
+    list->head = node;
   }
 }
 

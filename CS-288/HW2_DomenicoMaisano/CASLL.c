@@ -29,20 +29,13 @@ main(int argc, char const *argv[]) {
 
   struct List list = SLL_new(nodeCapacity);
 
-  /* insert items to list  */
+  /* insert  */
   for (i = 0; i < numItems; ++i) {
     SLL_push(&list, i);
     SLL_append(&list, i);
   }
 
   /* remove all items in queue */
-  while (!SLL_empty(&list)) {
-    SLL_pop(&list);
-
-    if (SLL_empty(&list)) {
-      break;
-    }
-  }
 
   /* end time */
   clock_t end = clock();
