@@ -1,7 +1,7 @@
 # Numerous always-ignore extensions
 *.vi
 *.exe
-*.sh
+test*.sh
 *.sass-cache
 node_modules/
 .tmp/
