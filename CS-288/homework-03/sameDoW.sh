@@ -18,22 +18,45 @@ function isValid() {
 	fi
 }
 
-# check if date1 is valid
-if [ $(isValid $1) == 1 ]; then
-	day1=$(date -d $(date -d $1 +'%Y-%m-%d') '+%A')
-	echo "First day of the week is a $day1"
-else
-	echo "$1 - invalid date"
+# returns day of week or err msg
+function getDow() {
+	# check if date is valid
+	if [ $(isValid $1) == 1 ]; then
+		day=$(date -d $(date -d $1 +'%Y-%m-%d') '+%A')
+		echo "$2 day of the week is a $day"
+	else
+		echo "$1 - invalid date"
+	fi
+}
+
+function printDow() {
+	# check if date is valid
+	if [ $(isValid $1) == 1 ]; then
+		day=$(date -d $(date -d $1 +'%Y-%m-%d') '+%A')
+		echo "$2 day of the week is a $day"
+	elif [ $(isValid $1) == 1 ] && [ $2 == "getDow" ]; then
+		day=$(date -d $(date -d $1 +'%Y-%m-%d') '+%A')
+		echo "$day"
+	else
+		echo "$1 - invalid date"
+	fi
+}
+
+# run the functions
+echo $(getDow $1 "First")
+echo $(getDow $2 "Second")
+
+if [ $(isValid $1) == 1 ] && [ $(isValid $2) == 1 ]; then
+
+	if [[ "$(getDow $1 "getDow")" == *$(getDow $2 "getDow")* ]]; then
+		echo "Days of the week match."
+	else
+		echo "Days of the week don't match."
+	fi
+
 fi
 
-# check if date2 is valid
-if [ $(isValid $2) == 1 ]; then
-	day2=$(date -d $(date -d $2 +'%Y-%m-%d') '+%A')
-	echo "Second day of the week is a $day2"
-else
-	echo "$2 - invalid date"
-fi
-
+# $(isValid $arg) checks if date is given in a valid format
 if [ $(isValid $1) == 1 ] && [ $(isValid $2) == 1 ]; then
 
 	if [[ "$day1" == *$day2* ]]; then
