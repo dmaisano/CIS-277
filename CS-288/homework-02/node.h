@@ -27,8 +27,7 @@ struct Node {
 struct Node *NODE_new(int nodeCapacity) {
   struct Node *node;
   node = malloc(sizeof(struct Node));
-  node->front = -1;
-  node->rear = -1;
+  node->front = node->rear = -1;
   node->nodeCapacity = nodeCapacity;
   node->data = malloc(nodeCapacity * sizeof(int));
   node->next = NULL;

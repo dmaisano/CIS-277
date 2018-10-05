@@ -13,15 +13,20 @@
 # cd to home dir
 cd ~
 
-# create sub-directories
-mkdir -p NJIT/CHM NJIT/ECO NJIT/PHY/PHYS
+# mkdir if none exists
+mkdir -p NJIT
 
-# create the text files per subdirectory
-touch NJIT/CHM/chm104 NJIT/CHM/chm203
-touch NJIT/ECO/eco102
-touch NJIT/PHY/phy102 NJIT/PHY/phy104
-touch NJIT/PHY/PHYS/phys430
+# change directories
+cd ./NJIT
 
-# recursively change permissions
-# -rwx-r-x---
+# create dirs
+mkdir -p ./CHM ./ECO ./PHY ./PHY/PHYS
+
+# recursively set '750' permission for every dir
 chmod -R 750 ~/NJIT
+
+# create the files in their respective directories
+touch ./CHM/chm104 ./CHM/chm203 ./ECO/eco102 ./PHY/phy102 ./PHY/phy104 ./PHY/PHYS/phys430
+
+# changes all the permissions of the files
+find ~/NJIT -type f -exec chmod 640 {} \;

@@ -4,34 +4,26 @@
 if [ -z "$1" ]; then echo "No args"; fi
 
 # array of counters "[0-9]"
-declare -a countArr=( $(for i in {1..10}; do echo 0; done) )
+declare -a countArr=($(for i in {1..10}; do echo 0; done))
 
-# count function
-count() {
+# create an array with all the files/dir inside ~/myDir
+contents=($(ls $1))
 
-	# create an array with all the files/dir inside ~/myDir
-	contents=($(ls $1))
+# iterate through array using a counter
+for file in "${contents[@]}"; do
 
-	# iterate through array using a counter
-	for file in "${contents[@]}"; do
+	# store the index
+	index="${file:0:1}"
 
-		# store the index
-		index="${file:0:1}"
+	# files that start with a number "[0-9]"
+	if [[ $index =~ ^([0-9])$ ]]; then
 
+		# increment the occurence
+		((countArr["$index"]++))
+	fi
 
-		# files that start with a number "[0-9]"
-		if [[ $index =~ ([0-9])$ ]]; then
+done
 
-			# increment the occurence
-			(( countArr["$index"]++ ))
-		fi
-
-	done
-
-	for i in "${!countArr[@]}"; do
-		echo $i ${countArr[i]}
-	done
-}
-
-# run the function with the dir arg
-count $1
+for i in "${!countArr[@]}"; do
+	echo $i ${countArr[i]}
+done
