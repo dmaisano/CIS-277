@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # exit if missing 2 dates
 if (("$#" < 2)); then
@@ -22,47 +23,29 @@ function isValid() {
 function getDow() {
 	# check if date is valid
 	if [ $(isValid $1) == 1 ]; then
-		day=$(date -d $(date -d $1 +'%Y-%m-%d') '+%A')
-		echo "$2 day of the week is a $day"
+		# return the date
+		echo "$(date -d $(date -d $1 +'%Y-%m-%d') '+%A')"
 	else
-		echo "$1 - invalid date"
+		echo 1
 	fi
 }
 
-function printDow() {
-	# check if date is valid
-	if [ $(isValid $1) == 1 ]; then
-		day=$(date -d $(date -d $1 +'%Y-%m-%d') '+%A')
-		echo "$2 day of the week is a $day"
-	elif [ $(isValid $1) == 1 ] && [ $2 == "getDow" ]; then
-		day=$(date -d $(date -d $1 +'%Y-%m-%d') '+%A')
-		echo "$day"
-	else
-		echo "$1 - invalid date"
+# exit if any date is invalid
+for arg in "$@"; do
+	if [ $(getDow $arg) == 1 ]; then
+		echo "$arg ~ invalid date"
+		exit 1
 	fi
-}
+done
 
-# run the functions
-echo $(getDow $1 "First")
-echo $(getDow $2 "Second")
+day1=$(getDow $1)
+day2=$(getDow $2)
 
-if [ $(isValid $1) == 1 ] && [ $(isValid $2) == 1 ]; then
+echo "First day of the week is a $day1"
+echo "Second day of the week is a $day2"
 
-	if [[ "$(getDow $1 "getDow")" == *$(getDow $2 "getDow")* ]]; then
-		echo "Days of the week match."
-	else
-		echo "Days of the week don't match."
-	fi
-
-fi
-
-# $(isValid $arg) checks if date is given in a valid format
-if [ $(isValid $1) == 1 ] && [ $(isValid $2) == 1 ]; then
-
-	if [[ "$day1" == *$day2* ]]; then
-		echo "Days of the week match."
-	else
-		echo "Days of the week don't match."
-	fi
-
+if [[ "$day1" == "$day2" ]]; then
+	echo "Days of the week match."
+else
+	echo "Days of the week don't match."
 fi
