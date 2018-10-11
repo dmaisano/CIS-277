@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # exit if no dir arg
-if [ -z "$1" ]; then echo "No args"; fi
+if [ -z "$1" ]; then
+	echo "No args"
+	exit 1
+fi
 
 # array of counters "[0-9]"
 # values initialized to zero

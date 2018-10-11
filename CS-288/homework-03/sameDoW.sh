@@ -24,7 +24,7 @@ function getDow() {
 	# check if date is valid
 	if [ $(isValid $1) == 1 ]; then
 		# return the date
-		echo "$(date -d $(date -d $1 +'%Y-%m-%d') '+%A')"
+		echo "$(date -d $1 '+%A')"
 	else
 		echo 1
 	fi
