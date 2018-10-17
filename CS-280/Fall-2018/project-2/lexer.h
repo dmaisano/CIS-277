@@ -1,6 +1,7 @@
 #ifndef LEXER_H_
 #define LEXER_H_
 
+#include "tokens.h"
 #include <cctype>
 #include <iostream>
 #include <map>
@@ -8,98 +9,46 @@
 using namespace std;
 
 /*
- * projlex.h
- */
-
-enum TType {
-  // keywords
-  SET,
-  PRINT,
-  VAR,
-  REPEAT,
-  // an identifier
-  IDENT,
-  // an integer and string constant
-  ICONST,
-  SCONST,
-  // the operators, parens and semicolon
-  PLUS,
-  MINUS,
-  STAR,
-  COLON,
-  LSQ,
-  RSQ,
-  LPAREN,
-  RPAREN,
-  SC,
-  // any error returns this token
-  ERR,
-  // when completed (EOF), return this token
-  DONE
-};
-
-class Token {
-private:
-  TType tt;
-  string lexeme;
-  int lnum;
-
-public:
-  Token() {
-    tt = ERR;
-    lnum = -1;
-  }
-  Token(TType tt, string lexeme, int line) {
-    this->tt = tt;
-    this->lexeme = lexeme;
-    this->lnum = line;
-  }
-
-  bool operator==(const TType tt) const { return this->tt == tt; }
-  bool operator!=(const TType tt) const { return this->tt != tt; }
-
-  TType GetTokenType() const { return tt; }
-  string GetLexeme() const { return lexeme; }
-  int GetLinenum() const { return lnum; }
-};
-
-extern ostream &operator<<(ostream &out, const Token &tok);
-
-extern Token getNextToken(istream *in, int *linenum);
-
-/*
  * lexer.h
  */
 
 // map that returns the string value for each ENUM type
-static map<TType, string> tokenPrint = {
-    // Reserved Words
-    {SET, "SET"},
+static map<TokenType, string> tokenPrint = {
+    // keywords
     {PRINT, "PRINT"},
-    {VAR, "VAR"},
-    {REPEAT, "REPEAT"},
-    // Identifier
+    {IF, "PRINT"},
+    {THEN, "PRINT"},
+    {TRUE, "TRUE"},
+    {FALSE, "FALSE"},
+    // identifier
     {IDENT, "IDENT"},
-    // Int & String
+    // int & string
     {ICONST, "ICONST"},
     {SCONST, "SCONST"},
-    // Operands
+    // operators & more
     {PLUS, "PLUS"},
     {MINUS, "MINUS"},
     {STAR, "STAR"},
-    {COLON, "COLON"},
-    {LSQ, "LSQ"},
-    {RSQ, "RSQ"},
+    {SLASH, "SLASH"},
+    {ASSIGN, "ASSIGN"},
+    {EQ, "EQ"},
+    {NEQ, "NEQ"},
+    {LT, "LT"},
+    {LEQ, "LEQ"},
+    {GT, "GT"},
+    {GEQ, "GEQ"},
+    {LOGICAND, "LOGICAND"},
+    {LOGICOR, "LOGICOR"},
     {LPAREN, "LPAREN"},
     {RPAREN, "RPAREN"},
     {SC, "SC"},
-    // Error & Done
+    // terminators
     {ERR, "ERR"},
     {DONE, "DONE"}};
 
 // overload the operator to output information about our token
 ostream &operator<<(ostream &out, const Token &tok) {
-  TType tt = tok.GetTokenType();
+  TokenType tt = tok.GetTokenType();
 
   out << tokenPrint[tt];
 
@@ -110,17 +59,20 @@ ostream &operator<<(ostream &out, const Token &tok) {
 };
 
 // map that returns the enum type for each keyword
-static map<string, TType> keywordMap = {
-    {"var", VAR},
-    {"set", SET},
+static map<string, TokenType> keywordMap = {
+    // clang-format off
     {"print", PRINT},
-    {"repeat", REPEAT},
+		{"if", IF},
+		{"then", THEN},
+		{"true", TRUE},
+		{"false", FALSE},
+    // clang-format on
 };
 
 // returns a token that is either an IDENT or possible keyword
 Token ident_or_keyword(const string &lexeme, int linenum) {
   // ident by default
-  TType tt = IDENT;
+  TokenType tt = IDENT;
 
   // try to find a key using our keymap
   auto key = keywordMap.find(lexeme);
@@ -134,14 +86,7 @@ Token ident_or_keyword(const string &lexeme, int linenum) {
 
 // return a token from the stream
 Token getNextToken(istream *in, int *linenum) {
-  enum LexState {
-    BEGIN,
-    INID,
-    INSTRING,
-    SAWMINUS,
-    ININT,
-    INCOMMENT
-  } lexstate = BEGIN;
+  enum LexState { BEGIN, INID, INSTRING, SAWMINUS, ININT, INCOMMENT } lexstate = BEGIN;
   // default state is BEGIN
   string lexeme;
   char ch;
@@ -174,23 +119,20 @@ Token getNextToken(istream *in, int *linenum) {
       else {
         // if the char isn't any of the options contained in the switch
         // statement then return an error by default
-        TType tt = ERR;
+        TokenType tt = ERR;
 
         switch (ch) {
         case '+':
           tt = PLUS;
           break;
+        case '-':
+          tt = MINUS;
+          break;
         case '*':
           tt = STAR;
           break;
-        case ':':
-          tt = COLON;
-          break;
-        case '[':
-          tt = LSQ;
-          break;
-        case ']':
-          tt = RSQ;
+        case '/':
+          tt = SLASH;
           break;
         case '(':
           tt = LPAREN;
@@ -200,6 +142,33 @@ Token getNextToken(istream *in, int *linenum) {
           break;
         case ';':
           tt = SC;
+          break;
+        case '=':
+          tt = ASSIGN;
+          break;
+        case '==':
+          tt = EQ;
+          break;
+        case '!=':
+          tt = NEQ;
+          break;
+        case '>':
+          tt = GT;
+          break;
+        case '>=':
+          tt = GEQ;
+          break;
+        case '<':
+          tt = LT;
+          break;
+        case '<=':
+          tt = LEQ;
+          break;
+        case '&&':
+          tt = LOGICAND;
+          break;
+        case '||':
+          tt = LOGICOR;
           break;
         }
 
@@ -272,9 +241,13 @@ Token getNextToken(istream *in, int *linenum) {
     }
   }
 
-  if (in->eof())
+  // finished parsing file
+  if (in->eof()) {
     return Token(DONE, "", *linenum);
-  return Token(ERR, "some strange I/O error", *linenum);
+  }
+
+  // extraneous error
+  return Token(ERR, "EXCEPTION CAUGHT", *linenum);
 }
 
 #endif
