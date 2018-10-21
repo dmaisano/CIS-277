@@ -18,6 +18,7 @@ dist/
 test.*
 tempCodeRunnerFile.*
 *.txt
+!**/*/homework-04/*.txt
 !CS-280/**/*.txt
 *.log
 *.*-log
