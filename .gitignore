@@ -20,6 +20,7 @@ tempCodeRunnerFile.*
 *.txt
 !**/*/homework-04/*.txt
 !CS-280/**/*.txt
+test.txt
 *.log
 *.*-log
 yarn.lock
