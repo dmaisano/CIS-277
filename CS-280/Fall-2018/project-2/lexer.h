@@ -12,7 +12,10 @@ using namespace std;
  * lexer.h
  */
 
-// map that returns the string value for each ENUM type
+// function prototype
+TokenType complexLexeme(istream *in, char firstChar);
+
+// map to convert enum to string
 static map<TokenType, string> tokenPrint = {
     // keywords
     {PRINT, "PRINT"},
@@ -46,7 +49,7 @@ static map<TokenType, string> tokenPrint = {
     {ERR, "ERR"},
     {DONE, "DONE"}};
 
-// overload the operator to output information about our token
+// overload the operator
 ostream &operator<<(ostream &out, const Token &tok) {
   TokenType tt = tok.GetTokenType();
 
@@ -117,8 +120,7 @@ Token getNextToken(istream *in, int *linenum) {
         lexstate = INCOMMENT;
 
       else {
-        // if the char isn't any of the options contained in the switch
-        // statement then return an error by default
+        // returns err by default
         TokenType tt = ERR;
 
         switch (ch) {
@@ -143,36 +145,33 @@ Token getNextToken(istream *in, int *linenum) {
         case ';':
           tt = SC;
           break;
-        case '=':
-          tt = ASSIGN;
+        default:
+          tt = complexLexeme(in, ch);
           break;
-        case '==':
-          tt = EQ;
-          break;
-        case '!=':
-          tt = NEQ;
-          break;
-        case '>':
-          tt = GT;
-          break;
-        case '>=':
-          tt = GEQ;
-          break;
-        case '<':
-          tt = LT;
-          break;
-        case '<=':
-          tt = LEQ;
-          break;
-        case '&&':
-          tt = LOGICAND;
-          break;
-        case '||':
-          tt = LOGICOR;
-          break;
+          // case '!=':
+          //   tt = NEQ;
+          //   break;
+          // case '>':
+          //   tt = GT;
+          //   break;
+          // case '>=':
+          //   tt = GEQ;
+          //   break;
+          // case '<':
+          //   tt = LT;
+          //   break;
+          // case '<=':
+          //   tt = LEQ;
+          //   break;
+          // case '&&':
+          //   tt = LOGICAND;
+          //   break;
+          // case '||':
+          //   tt = LOGICOR;
+          //   break;
         }
 
-        // finally we return the token
+        // return the token once found
         return Token(tt, lexeme, *linenum);
       }
       break;
@@ -248,6 +247,90 @@ Token getNextToken(istream *in, int *linenum) {
 
   // extraneous error
   return Token(ERR, "EXCEPTION CAUGHT", *linenum);
+}
+
+// returns the TokenType for lexemes with more than one char
+TokenType complexLexeme(istream *in, char firstChar) {
+  char nextChar;
+  in->get(nextChar);
+
+  // ASSIGN OR EQ
+  if (firstChar == '=') {
+    if (nextChar == '=') {
+      return EQ;
+    }
+
+    else {
+      // put back the character
+      in->putback(nextChar);
+      return ASSIGN;
+    }
+  }
+
+  // NEQ
+  else if (firstChar == '!') {
+    if (nextChar == '=') {
+      return NEQ;
+    }
+
+    else {
+      // put back the character
+      in->putback(nextChar);
+    }
+  }
+
+  // LT or LEQ
+  else if (firstChar == '<') {
+    if (nextChar == '=') {
+      return LEQ;
+    }
+
+    else {
+      // put back the character
+      in->putback(nextChar);
+      return LT;
+    }
+  }
+
+  // GT or GEQ
+  else if (firstChar == '>') {
+    if (nextChar == '=') {
+      return GEQ;
+    }
+
+    else {
+      // put back the character
+      in->putback(nextChar);
+      return GT;
+    }
+  }
+
+  // LOGICAND
+  else if (firstChar == '&') {
+    if (nextChar == '&') {
+      return LOGICAND;
+    }
+
+    else {
+      // put back the character
+      in->putback(nextChar);
+    }
+  }
+
+  // LOGICOR
+  else if (firstChar == '|') {
+    if (nextChar == '|') {
+      return LOGICOR;
+    }
+
+    else {
+      // put back the character
+      in->putback(nextChar);
+    }
+  }
+
+  // else return ERR
+  return ERR;
 }
 
 #endif

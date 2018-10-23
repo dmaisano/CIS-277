@@ -1,4 +1,4 @@
-// #include "lexer.h"
+#include "lexer.h"
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -7,18 +7,17 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
   vector<string> args(argv + 1, argv + argc);
-  // int lineNum = 0;
 
   istream *in = &cin;
   ifstream file;
 
-  // bool verbose = false;
+  bool verbose = false;
   // bool sum = false;
   // bool allIds = false;
 
   for (auto arg : args) {
     if (arg == "-v") {
-      // verbose = true;
+      verbose = true;
     }
 
     else if (arg == "-sum") {
@@ -52,8 +51,20 @@ int main(int argc, char *argv[]) {
   }
 
   // run the lexer
-  // Token tok;
-  // while ((tok = getNextToken(in, &lineNum)) != DONE && tok != ERR) {
+  Token tok;
+  int lineNum = 0;
+  while ((tok = getNextToken(in, &lineNum)) != DONE && tok != ERR) {
+    // handle verbose mode
+    if (verbose) {
+      cout << tok << endl;
+    }
+  }
 
-  // }
+  if (tok == ERR) {
+    cout << "Error on line " << lineNum << " (" << tok.GetLexeme() << ")" << endl;
+    return 0;
+  }
+
+  // handle sum mode
+  // if (sum)
 }
