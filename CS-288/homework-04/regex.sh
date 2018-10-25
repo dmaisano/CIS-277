@@ -6,7 +6,7 @@ egrep '^[^A].*[A]' raven.txt
 
 # 1b)
 # empty / whitespace lines
-egrep '^\s+*$' raven.txt
+egrep '^[ ]*$' raven.txt
 
 # 1c)
 # lines with 40+ chars
@@ -35,7 +35,7 @@ egrep '([a-zA-Z])([a-zA-Z])[a-zA-Z]\2\1' raven.txt
 # 2)
 # even parity
 # best to use `egrep -o [pattern] [filename]` to avoid empty lines
-egrep '^(([02468]*[13579]){2})*[02468]*$'
+egrep '^(([02468]*[13579]){2})+|[02468]+$'
 
 # 3a)
 # lines that contain [aA] @ index m, and [zZ] at index n, where n > m
@@ -43,8 +43,8 @@ egrep '[aA].*[zZ]'
 
 # 3b)
 # zip+4
-egrep '^[0-9]{5}(-[0-9]{4})?$'
+egrep '^[ ]*[0-9]{5}(-[0-9]{4})?[ ]*$'
 
 # 3c)
 # int between 0-211   ** assuming a number can start with zeros, ie. 001, 01, etc **
-egrep '^0*([1-9]|[1-9][0-9]?|1[0-9][0-9]|20[0-9]|21[01])$'
+egrep '^([0-9]|[1-9][0-9]|1[0-9][0-9]|20[0-9]|21[01])[ ]*$'
