@@ -9,7 +9,7 @@ egrep '^ *$' raven.txt
 # 1c) lines with 40+ chars
 egrep '^.{40,}$' raven.txt
 
-# 1d) ines with upperase letter(s), ignoring first char on each line
+# 1d) lines with upperase letter(s), ignoring first char on each line
 egrep '^[^.].*[A-Z]' raven.txt
 
 # 1e) two p's followed by 'ore'
