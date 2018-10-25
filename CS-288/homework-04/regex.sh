@@ -1,7 +1,7 @@
 # Domenico Maisano
 
 # 1a) contains but does not start with 'A'
-egrep '^[^A].*[A]' raven.txt
+egrep '^[^A].*A' raven.txt
 
 # 1b) empty / whitespace lines
 egrep '^ *$' raven.txt
