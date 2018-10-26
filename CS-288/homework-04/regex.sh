@@ -28,6 +28,8 @@ egrep '([a-zA-Z])([a-zA-Z])[a-zA-Z]\2\1' raven.txt
 # 2) even parity
 egrep '^([02468]+|(([02468]*[13579]){2})+[02468]*)$'
 
+# ^([02468]+|((([02468]*[13579]){2})+[02468]*)+)$
+
 # 3a) lines that contain [aA] @ index m, and [zZ] at index n, where n > m
 egrep '[aA].*[zZ]'
 
