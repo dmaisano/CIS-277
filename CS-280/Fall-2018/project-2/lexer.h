@@ -13,7 +13,7 @@ using namespace std;
  */
 
 // function prototype
-TokenType complexLexeme(istream *in, char firstChar);
+TokenType complexLexeme(istream *in, char firstChar, int *linenum);
 
 // map to convert enum to string
 static map<TokenType, string> tokenPrint = {
@@ -146,29 +146,8 @@ Token getNextToken(istream *in, int *linenum) {
           tt = SC;
           break;
         default:
-          tt = complexLexeme(in, ch);
+          tt = complexLexeme(in, ch, linenum);
           break;
-          // case '!=':
-          //   tt = NEQ;
-          //   break;
-          // case '>':
-          //   tt = GT;
-          //   break;
-          // case '>=':
-          //   tt = GEQ;
-          //   break;
-          // case '<':
-          //   tt = LT;
-          //   break;
-          // case '<=':
-          //   tt = LEQ;
-          //   break;
-          // case '&&':
-          //   tt = LOGICAND;
-          //   break;
-          // case '||':
-          //   tt = LOGICOR;
-          //   break;
         }
 
         // return the token once found
@@ -250,7 +229,7 @@ Token getNextToken(istream *in, int *linenum) {
 }
 
 // returns the TokenType for lexemes with more than one char
-TokenType complexLexeme(istream *in, char firstChar) {
+TokenType complexLexeme(istream *in, char firstChar, int *linenum) {
   char nextChar;
   in->get(nextChar);
 
@@ -271,6 +250,13 @@ TokenType complexLexeme(istream *in, char firstChar) {
   else if (firstChar == '!') {
     if (nextChar == '=') {
       return NEQ;
+    }
+
+    else if (nextChar == '\n') {
+      (*linenum)++;
+      in->putback(nextChar);
+
+      return ERR;
     }
 
     else {
