@@ -1,51 +1,60 @@
-#ifndef radix_h
-#define radix_h
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/time.h>
+#include <time.h>
 
-long i;
-struct timeval start, stop;
+struct timeval begin, end;
 
-long getMax(long *arr, long len) {
-  long max = arr[0];
+// get max value in arr
+int getMax(int *arr, int n) {
+  int max = arr[0];
 
-  for (i = 1; i < len; i++)
+  for (int i = 1; i < n; i++)
     if (arr[i] > max)
       max = arr[i];
 
   return max;
 }
 
-void countSort(long *arr, long len, long exp) {
-  long output[len];
-  long count[10] = {0};
+// counting sort function
+void countSort(int arr[], int n, int exp) {
+  // array that will be returned
+  int output[n];
+  int i, count[10] = {0};
 
-  for (i = 0; i < len; i++)
+  // Store count of occurrences in count[]
+  for (i = 0; i < n; i++)
     count[(arr[i] / exp) % 10]++;
 
+  // Change count[i] so that count[i] now contains actual
+  //  position of this digit in output[]
   for (i = 1; i < 10; i++)
     count[i] += count[i - 1];
 
-  for (i = len - 1; i >= 0; i--) {
+  // Build the output array
+  for (i = n - 1; i >= 0; i--) {
     output[count[(arr[i] / exp) % 10] - 1] = arr[i];
     count[(arr[i] / exp) % 10]--;
   }
 
-  for (i = 0; i < len; i++)
+  // Copy the output array to arr[], so that arr[] now
+  // contains sorted numbers according to current digit
+  for (i = 0; i < n; i++)
     arr[i] = output[i];
 }
 
-void radixSort(long *arr, long len) {
-  long max = getMax(arr, len);
+void radixSort(int arr[], int n) {
+  // Find the maximum number to know number of digits
+  int m = getMax(arr, n);
 
-  long exp;
-  for (exp = 1; max / exp > 0; exp *= 10)
-    countSort(arr, len, exp);
+  // Do counting sort for every digit. Note that instead
+  // of passing digit number, exp is passed. exp is 10^i
+  // where i is current digit number
+  for (int exp = 1; m / exp > 0; exp *= 10)
+    countSort(arr, n, exp);
 }
 
 int main(int argc, char const *argv[]) {
+
   if (argc < 2) {
     printf("missing args\n");
     return 1;
@@ -56,30 +65,32 @@ int main(int argc, char const *argv[]) {
     return 1;
   }
 
-  long numItems = atol(argv[1]);
+  int numItems = atol(argv[1]);
 
-  FILE *file = fopen("data.txt", "r");
+  FILE *dataFile = fopen("data.txt", "r");
 
-  long items[numItems];
+  int *items = calloc(numItems, sizeof(int));
 
-  /* parse the text file */
+  int i;
+
+  // parse the text file
   for (i = 0; i < numItems; i++) {
-    fscanf(file, "%ld", &items[i]);
+    fscanf(dataFile, "%d", &items[i]);
   }
 
-  fclose(file);
+  fclose(dataFile);
 
-  gettimeofday(&start, NULL);
+  gettimeofday(&begin, NULL);
   radixSort(items, numItems);
-  gettimeofday(&stop, NULL);
+  gettimeofday(&end, NULL);
 
-  long execTime = stop.tv_usec - start.tv_usec;
+  unsigned long execTime = end.tv_usec - begin.tv_usec;
 
   FILE *results = fopen("results.txt", "ab+");
-  fprintf(results, "radix sort (%ld) took %lds\n", numItems, execTime);
+
+  fprintf(results, "radix [%d items] (%lums)\n", numItems, execTime);
+
   fclose(results);
 
   return 0;
 }
-
-#endif

@@ -17,12 +17,15 @@ dist/
 *.zip
 test.*
 tempCodeRunnerFile.*
-*.txt
-!**/*/homework-04/*.txt
 !CS-280/**/*.txt
-test.txt
+*.txt
 *.log
 *.*-log
 yarn.lock
 shrinkwrap.yaml
 package-lock.json
+
+# ignore executables
+*
+!/**/
+!*.*

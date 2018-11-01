@@ -2,29 +2,32 @@
 #include <stdlib.h>
 #include <time.h>
 
-clock_t begin, end;
+struct timeval begin, end;
 
-void selectSwap(int *xp, int *yp) {
+void swap(int *xp, int *yp) {
   int temp = *xp;
   *xp = *yp;
   *yp = temp;
 }
 
 void selectionSort(int *arr, int n) {
-  int i, j, minIndex;
+  int i, j, min_idx;
 
+  // One by one move boundary of unsorted subarray
   for (i = 0; i < n - 1; i++) {
-
-    minIndex = i;
+    // Find the minimum element in unsorted array
+    min_idx = i;
     for (j = i + 1; j < n; j++)
-      if (arr[j] < arr[minIndex])
-        minIndex = j;
+      if (arr[j] < arr[min_idx])
+        min_idx = j;
 
-    selectSwap(&arr[minIndex], &arr[i]);
+    // Swap the found minimum element with the first element
+    swap(&arr[min_idx], &arr[i]);
   }
 }
 
 int main(int argc, char const *argv[]) {
+
   if (argc < 2) {
     printf("missing args\n");
     return 1;
@@ -35,33 +38,36 @@ int main(int argc, char const *argv[]) {
     return 1;
   }
 
-  int numItems = atoi(argv[1]);
+  int numItems = atol(argv[1]);
 
-  if (numItems > 1000000) {
-    printf("skipping selection sort\n");
+  if (numItems >= 1000000) {
+    printf("skipping selection sort for %d items\n", numItems);
     return 0;
   }
 
-  FILE *file = fopen("data.txt", "r");
+  FILE *dataFile = fopen("data.txt", "r");
 
-  int items[numItems];
+  int *items = calloc(numItems, sizeof(int));
 
-  /* parse the text file */
   int i;
+
+  // parse the text file
   for (i = 0; i < numItems; i++) {
-    fscanf(file, "%d", &items[i]);
+    fscanf(dataFile, "%d", &items[i]);
   }
 
-  fclose(file);
+  fclose(dataFile);
 
-  clock_t begin = clock();
+  gettimeofday(&begin, NULL);
   selectionSort(items, numItems);
-  clock_t end = clock();
+  gettimeofday(&end, NULL);
 
-  float execTime = (double)(end - begin) / CLOCKS_PER_SEC;
+  unsigned long execTime = end.tv_usec - begin.tv_usec;
 
   FILE *results = fopen("results.txt", "ab+");
-  fprintf(results, "selection sort (%d) took %fs\n", numItems, execTime);
+
+  fprintf(results, "selection [%d items] (%lums)\n", numItems, execTime);
+
   fclose(results);
 
   return 0;
