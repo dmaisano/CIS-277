@@ -1,8 +1,9 @@
-#include "quick.h"
+#include "merge.h"
 #include "radix.h"
 #include "selection.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 int i;
@@ -20,18 +21,19 @@ int *cpyArr(int const *arr, size_t len) {
 float execTime(clock_t begin, clock_t end) { return (double)(end - begin) / CLOCKS_PER_SEC; }
 
 void writeResults(char *type, int size, float f) {
-  FILE *file = open("results.txt", "ab+");
-  fprintf(file, "%s sort took %fs", f);
+  FILE *file = fopen("results.txt", "ab+");
+  fprintf(file, "%s sort took %fs\n", f);
+  fclose(file);
 }
 
-void quickSortTest(int *arr, int low, int high) {
+void mergeSortTest(int *arr, int low, int high) {
   int size = sizeof(arr) / sizeof(arr[0]);
 
   begin = clock();
-  quickSort(arr, low, high);
+  mergeSort(arr, low, high);
   end = clock();
 
-  printf("exec time: %f\n", execTime(begin, end));
+  printf("merge exec time: %f\n", execTime(begin, end));
 }
 
 void radixSortTest(int *arr, int len) {
@@ -39,7 +41,7 @@ void radixSortTest(int *arr, int len) {
   radixSort(arr, len);
   end = clock();
 
-  printf("exec time: %f\n", execTime(begin, end));
+  printf("radix exec time: %f\n", execTime(begin, end));
 }
 
 void selectionSortTest(int *arr, int len) {
@@ -53,7 +55,7 @@ void selectionSortTest(int *arr, int len) {
   selectionSort(arr, len);
   end = clock();
 
-  printf("exec time: %f\n", execTime(begin, end));
+  printf("selection exec time: %f\n", execTime(begin, end));
 }
 
 int main(int argc, char const *argv[]) {
@@ -79,13 +81,20 @@ int main(int argc, char const *argv[]) {
     fscanf(file, "%d", &items[i]);
   }
 
-  int *quickSortItems = cpyArr(items, numItems);
+  int *mergeSortItems = cpyArr(items, numItems);
   int *radixSortItems = cpyArr(items, numItems);
   int *selectionSortItems = cpyArr(items, numItems);
 
-  quickSortTest(quickSortItems, 0, numItems);
+  free(items);
+
+  mergeSortTest(mergeSortItems, 0, numItems);
+  free(mergeSortItems);
+
   radixSortTest(radixSortItems, numItems);
+  free(radixSortItems);
+
   selectionSortTest(selectionSortItems, numItems);
+  free(selectionSortItems);
 
   return 0;
 }

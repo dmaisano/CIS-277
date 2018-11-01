@@ -3,7 +3,7 @@
 import sys
 import random
 
-size = 10000000
+size = 100000000
 
 if len(sys.argv) > 1:
     size = int(sys.argv[1])
