@@ -1,25 +1,18 @@
-# Domenico Maisano
-
-# python script to generate data for the sorting algorithms
+# python script to generate unique data for the sorting algorithms
 
 import sys
 import random
 
+size = 10000000
+
 if len(sys.argv) > 1:
-    numItems = int(sys.argv[1])
-else:
-    print("no args")
-    exit(1)
+    size = int(sys.argv[1])
 
-f = open("data.txt", "w+")
+data = random.sample(range(size), size)
 
-for i in range(numItems):
-    num = random.randint(0, 1000000)
+dataFile = open("data.txt", "w")
 
-    # f.write("%d\n" % num)
+print("populating data.txt with %d integers" % size)
 
-    if (i == numItems - 1):
-        f.write("%d" % num)
-
-    else:
-        f.write("%d," % num)
+for i in data:
+    dataFile.write(str(i) + "\n")
