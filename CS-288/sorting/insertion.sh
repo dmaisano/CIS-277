@@ -1,36 +1,30 @@
 #!/bin/bash
 # Insertion Sort
 
-insertionSort() {
-	for ((i = 1; i < n; i++)); do
+function insertionSort() {
+	local -a arr=($@)
+	local n=$#
 
-		tmp=${arr[i]}
-		j=$((i - 1))
+	for ((i = 0; i < n; i++)); do
+		local key=${arr[i]}
+		local j=$((i - 1))
 
-		while (($tmp < ${arr[j]})); do
-
-			arr[$(($j + 1))]=${arr[j]}
+		# shift the elements greater than the key one position ahead
+		while ((${arr[j]} > $key && $j >= 0)); do
+			arr[$((j + 1))]=${arr[j]}
 
 			# decrement j
 			let j--
-
-			# check if j is out of bounds
-			if [ $j -eq -1 ]; then
-				break
-			fi
 		done
 
-		arr[$((j + 1))]=$tmp
+		arr[$((j + 1))]=$key
 	done
+
+	# return the sorted array
+	echo ${arr[@]}
 }
 
-echo "Enter Numbers to be Sorted : "
-
+echo "Enter Numbers to be Sorted: "
 read -a arr
 
-n=${#arr[@]}
-
-insertionSort
-
-printf "\nsorted arr\n"
-echo ${arr[*]}
+printf "\nsorted array:\n$(insertionSort ${arr[@]})\n"
