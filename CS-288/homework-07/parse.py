@@ -1,4 +1,4 @@
-from xml.dom.minidom import parse, parseString
+from xml.dom.minidom import parse
 
 file = "data.xhtml"
 
