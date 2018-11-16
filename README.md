@@ -10,7 +10,7 @@
 
 ---
 
-## C++ Newfound Wisdom 💭
+## C++ Goodies 🍬
 
 - Some good stuff about **c++**
   - **c** like performance
