@@ -1,24 +1,30 @@
 #!/bin/bash
 
-# good url to scrape: "https://www.bloomberg.com/markets/stocks/world-indexes/americas"
-
-if [ $# -lt 1 ]; then
-	echo "missing url argument"
-	exit 1
-elif [ $# -gt 1 ]; then
-	echo "too many args"
-	exit 1
+# download tagsoup if not exist
+if [ ! -f "./tagsoup-1.2.1.jar" ]; then
+	curl -O "http://vrici.lojban.org/\~cowan/XML/tagsoup/tagsoup-1.2.1.jar"
 fi
 
-url=$1
-htmlFIle="data.html"
-xmlFile="data.xml"
+url="http://wsj.com/mdc/public/page/2_3021-activnnm-actives.html"
 
-# download the raw html
-wget -O $htmlFIle $url
+scrape() {
+	local url=$1
+	local timestamp="$(date +"%Y-%m-%d-%H-%M-%S")"
 
-# convert to xhtml
-java -jar tagsoup.jar --files $htmlFIle
+	# create data folder if not exist
+	mkdir -p ./data
 
-# remove old file
-rm -rf $htmlFIle
+	# get a snapshot of the most active stocks
+	wget -O "data/$timestamp.html" $url
+
+	# convert cr*p html to xhtml
+	java -jar tagsoup-1.2.1.jar --files "data/$timestamp.html"
+
+	# remove old file
+	rm -rf "data/$timestamp.html"
+}
+
+for ((i = 0; i <= 60; i++)); do
+	scrape $url
+	sleep 60
+done
