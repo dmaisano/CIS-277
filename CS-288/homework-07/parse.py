@@ -1,14 +1,34 @@
-# from xml.dom.minidom import parse
-import xml.dom.minidom as dom
+import sys
+from xml.dom.minidom import parse
 
-file = "data.xhtml"
+xhtmlFile = sys.argv[1]
+document = parse(xhtmlFile)
 
-dom = dom.parse("data.xhtml")
+# fetch the table
+table = document.getElementsByTagName("table")[2]
 
-nodes = dom.getElementsByTagName("div")
+# data to be stored in csvFile
+data = ["exchange,symbol,company,volume,price,change"]
 
-for node in nodes:
-    print(node.firstChild)
-    print(node.firstChild.nodeValue)
-    if node.hasAttribute("buyer-title"):
-        print(node.firstChild.nodeValue)
+# helper function to return text from an element
+def getText(element):
+    for node in element:
+        if node.nodeType == node.TEXT_NODE:
+            print(node.nodeValue)
+
+
+for tr in table.getElementsByTagName("tr"):
+    res = []
+
+    anchor = tr.getElementsByTagName("a")
+
+    print(anchor.firstChild.nodeValue)
+
+    # print(getText(anchor))
+
+    # for td in tr.getElementsByTagName("td"):
+
+    # for node in td.childNodes:
+    #     if node.nodeType == node.TEXT_NODE:
+    #         print(node.nodeValue)
+

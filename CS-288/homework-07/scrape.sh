@@ -2,7 +2,7 @@
 
 # download tagsoup if not exist
 if [ ! -f "./tagsoup-1.2.1.jar" ]; then
-	curl -O "http://vrici.lojban.org/\~cowan/XML/tagsoup/tagsoup-1.2.1.jar"
+	curl "http://vrici.lojban.org/\~cowan/XML/tagsoup/tagsoup-1.2.1.jar"
 fi
 
 url="http://wsj.com/mdc/public/page/2_3021-activnnm-actives.html"
@@ -15,7 +15,7 @@ scrape() {
 	mkdir -p ./data
 
 	# get a snapshot of the most active stocks
-	wget -O "data/$timestamp.html" $url
+	wget $url -O "data/$timestamp.html"
 
 	# convert cr*p html to xhtml
 	java -jar tagsoup-1.2.1.jar --files "data/$timestamp.html"
@@ -24,7 +24,7 @@ scrape() {
 	rm -rf "data/$timestamp.html"
 }
 
-for ((i = 0; i <= 60; i++)); do
+for ((i = 0; i < 60; i++)); do
 	scrape $url
 	sleep 60
 done
