@@ -1,4 +1,5 @@
 import sys
+import re
 from xml.dom.minidom import parse
 
 xhtmlFile = sys.argv[1]
@@ -11,24 +12,36 @@ table = document.getElementsByTagName("table")[2]
 data = ["exchange,symbol,company,volume,price,change"]
 
 # helper function to return text from an element
-def getText(element):
-    for node in element:
-        if node.nodeType == node.TEXT_NODE:
-            print(node.nodeValue)
+def getText(arg):
+    for element in arg:
+        for node in element.childNodes:
+            if node.nodeType == node.TEXT_NODE:
+                return node.nodeValue
 
 
 for tr in table.getElementsByTagName("tr"):
     res = []
 
-    anchor = tr.getElementsByTagName("a")
+    anchorText = ""
+    exchange = "NASDAQ"
+    symbol = ""
+    company = ""
+    volume = ""
+    price = ""
+    change = ""
 
-    print(anchor.firstChild.nodeValue)
+    td = tr.getElementsByTagName("td")
 
-    # print(getText(anchor))
+    anchor = td[1].getElementsByTagName("a")
 
-    # for td in tr.getElementsByTagName("td"):
+    anchorText = str(getText(anchor))
 
-    # for node in td.childNodes:
-    #     if node.nodeType == node.TEXT_NODE:
-    #         print(node.nodeValue)
+    matches = re.findall(r"[^\(\)\n]+", anchorText)
 
+    company = str(matches[0]).strip()
+
+    symbol = str(matches.pop()).strip()
+
+    print(symbol)
+    print(company)
+    print(anchorText)
