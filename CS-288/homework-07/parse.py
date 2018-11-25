@@ -36,12 +36,9 @@ for tr in table.getElementsByTagName("tr"):
 
     anchorText = str(getText(anchor))
 
-    matches = re.findall(r"[^\(\)\n]+", anchorText)
+    symbol = anchorText[anchorText.find("(") + 1 : anchorText.find(")")]
 
-    company = str(matches[0]).strip()
+    company = re.search(r"[^\(\)\n]+", anchorText)[0]
 
-    symbol = str(matches.pop()).strip()
-
-    print(symbol)
-    print(company)
+    print("symbol: %s\ncompany: %s" % (symbol, company))
     print(anchorText)

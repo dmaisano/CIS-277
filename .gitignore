@@ -1,3 +1,8 @@
+# ignore executables
+*
+!*.*
+!*/
+
 # Numerous always-ignore extensions
 *.vi
 *.exe
@@ -24,11 +29,6 @@ tempCodeRunnerFile.*
 yarn.lock
 shrinkwrap.yaml
 package-lock.json
-
-# ignore executables
-*
-!/**/
-!*.*
 
 # 288
 *.xhtml
