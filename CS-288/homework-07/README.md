@@ -12,4 +12,4 @@ bash ./xhtml-convert.sh
 python3 csv.py xhtml/fileName.xhtml
 ```
 
-> after running the python script, the csv file will be located in the created ./data directory
+> after running the python script, the csv file will be located in the created ./csv-data directory

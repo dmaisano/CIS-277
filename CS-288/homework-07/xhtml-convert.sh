@@ -4,8 +4,8 @@
 # "http://vrici.lojban.org/\~cowan/XML/tagsoup/tagsoup-1.2.1.jar"
 
 convertHTML() {
-	local url="http://wsj.com/mdc/public/page/2_3021-activnnm-actives.html"
-	local timestamp="$(date +"%Y-%m-%d-%H-%M-%S")"
+	url="http://wsj.com/mdc/public/page/2_3021-activnnm-actives.html"
+	timestamp="$(date +"%Y-%m-%d-%H-%M-%S")"
 
 	# download snapshot of the most active stocks
 	curl --output "xhtml/$timestamp.html" --url $url
