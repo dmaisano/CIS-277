@@ -17,6 +17,10 @@ for tr in table.getElementsByTagName("tr")[1:]:
     i = 0
     for td in tr.getElementsByTagName("td"):
 
+        if i == 0:
+            i += 1
+            continue
+
         if i == 1:
             anchor = td.getElementsByTagName("a")[0]
             anchorText = anchor.firstChild.nodeValue.split("(")
@@ -37,8 +41,6 @@ for tr in table.getElementsByTagName("tr")[1:]:
             data.append(nodeText)
 
         i += 1
-
-    del data[1]
 
     data = data[: len(data) - 1]
 
