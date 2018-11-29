@@ -34,10 +34,8 @@ def createCSV(xhtmlFile):
     document = parse(xhtmlFile)
     # fetch the table containing the stock data
     table = document.getElementsByTagName("table")[2]
-    # get all the table rows
-    tableRows = table.getElementsByTagName("tr")
     # exclude the first row which contains the header
-    tableRows = tableRows[1 : tableRows.length]
+    tableRows = table.getElementsByTagName("tr")[1:]
     # create the dir/filename
     outputFile = "%s/%s.csv" % (directory, getFileName(xhtmlFile))
     csvFile = open(outputFile, "w")
