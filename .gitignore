@@ -29,6 +29,3 @@ tempCodeRunnerFile.*
 yarn.lock
 shrinkwrap.yaml
 package-lock.json
-
-# 288
-*.xhtml

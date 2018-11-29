@@ -23,7 +23,7 @@ def getRowData(tr):
     anchor = td[1].getElementsByTagName("a")[0]
     anchorText = getText(anchor).split("(")
     company = anchorText[0].strip()
-    symbol = anchorText[1][0 : len(anchorText[1]) - 2]
+    symbol = anchorText[1][: len(anchorText[1]) - 2]
     volume = getText(td[2]).replace(",", "")
     price = getText(td[3]).replace(",", "").replace("$", "")
     change = getText(td[4])
