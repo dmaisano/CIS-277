@@ -5,7 +5,7 @@
 echo "Enter your MySql username"
 read mysqlUser
 
-echo "Enter your MySql user password"
+echo "Enter your MySql password"
 read mysqlPass
 
 python3 ./nasdaq.py $mysqlUser $mysqlPass
