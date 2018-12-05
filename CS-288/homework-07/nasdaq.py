@@ -2,14 +2,15 @@ import sys
 import mysql.connector
 
 
-def insert(cursor):
-    query = "INSERT INTO book(isbn,title,price) VALUES (%s,%s,%s)"
-    cursor.execute(query, ("0385514239", "Origin", 2995))
+def insert(cursor, values):
+    query = "INSERT INTO nasdaq(timestamp,exchange,symbol,company,volume,price,percentChange) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+    cursor.execute(query, values)
+    # cursor.execute(query, ("0385514239", "Origin", 2995))
 
 
-def update(cursor):
-    query = "UPDATE book SET price=%s WHERE isbn=%s"
-    cursor.execute(query, (29.95, "0385514239"))
+# def update(cursor, values):
+#     query = "UPDATE book SET price=%s WHERE isbn=%s"
+#     cursor.execute(query, (29.95, "0385514239"))
 
 
 if len(sys.argv) < 2:

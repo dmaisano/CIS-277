@@ -5,13 +5,15 @@
 #ifndef PARSETREE_H_
 #define PARSETREE_H_
 
+#include "./lexer.h"
+// #include "./value.h"
+#include <iostream>
 #include <map>
 #include <vector>
-using std::map;
-using std::vector;
+using namespace std;
 
 // NodeType represents all possible types
-enum NodeType { ERRTYPE, INTTYPE, STRTYPE, BOOLTYPE };
+// enum NodeType { ERRTYPE, INTTYPE, STRTYPE, BOOLTYPE };
 
 // a "forward declaration" for a class to hold values
 class Value;

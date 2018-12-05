@@ -1,11 +1,22 @@
-/*
- * parse.cpp
- *
- *  Created on: Mar 8, 2018
- *      Author: gerardryan
- */
+#ifndef PARSER_H_
+#define PARSER_H_
 
 #include "parse.h"
+#include "parsetree.h"
+using namespace std;
+
+// prototypes
+ParseTree *Prog(istream *in, int *line);
+ParseTree *Slist(istream *in, int *line);
+ParseTree *Stmt(istream *in, int *line);
+ParseTree *VarStmt(istream *in, int *line);
+ParseTree *SetStmt(istream *in, int *line);
+ParseTree *PrintStmt(istream *in, int *line);
+ParseTree *RepeatStmt(istream *in, int *line);
+ParseTree *Expr(istream *in, int *line);
+ParseTree *Term(istream *in, int *line);
+ParseTree *Factor(istream *in, int *line);
+ParseTree *Primary(istream *in, int *line);
 
 namespace Parser {
 bool pushed_back = false;
@@ -330,3 +341,5 @@ ParseTree *Primary(istream *in, int *line) {
   ParseError(*line, "Primary expected");
   return 0;
 }
+
+#endif
