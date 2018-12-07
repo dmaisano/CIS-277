@@ -10,12 +10,12 @@
         <?php
         
         // sorting is handled based on query string params
-        $queryString = $_GET ? $_SERVER['QUERY_STRING'] : 'orderBy=symbol&sort=ASC';
+        $queryString = $_GET ? $_SERVER['QUERY_STRING'] : 'DEFAULT';
 
         // log the query string to the console
         echo '<script> console.log("'.$queryString.'") </script>';
 
-        echo '<tr style="text-align: center;">';
+        echo '<tr class="header" style="text-align: center;">';
         echo '<td>exchange</td>';
         
         if ($queryString == 'orderBy=symbol&sort=ASC') {
@@ -50,7 +50,7 @@
 
         echo '</tr>';
 
-        $cnx = new mysqli('localhost', 'user', 'password', 'db');
+        $cnx = new mysqli('localhost', 'jeremiah', 'topkek12', 'demo');
 
         if ($cnx->connect_error) {
             die('Connection failed: ' . $cnx->connect_error);
@@ -63,7 +63,7 @@
         // default sort ASC
         $sortyBy = (isset($_GET['sort']) && $_GET['sort'] == 'ASC' || $_GET['sort'] == 'DESC') ? $_GET['sort'] : 'ASC';
 
-        $query = "SELECT * FROM table ORDER BY $orderBy $sortyBy";
+        $query = $queryString == 'DEFAULT' ? "SELECT * FROM nasdaq" : "SELECT * FROM nasdaq ORDER BY $orderBy $sortyBy"; 
         $cursor = $cnx->query($query);
 
         while ($row = $cursor->fetch_assoc()) {
@@ -76,6 +76,56 @@
         ?>
 
     </table>
+      
+    <!-- some css to make the table look nicer -->
+    <style>
+       * {
+        padding: 0;
+        margin: 0;
+        font-size: 1.2rem;
+      }
+
+      body {
+        background: #4a4a48;
+      }
+
+      a,
+      a:link,
+      a:visited,
+      a:hover,
+      a:active {
+        color: #000;
+        text-decoration: none;
+      }
+
+      .header {
+        background: #4a4a48 !important;
+      }
+
+      .header td, .header td a {
+        font-weight: bold;
+        color: #fff;
+      }
+
+      table {
+        border-collapse: collapse;
+        overflow: hidden;
+        width: 100%;
+      }
+
+      td {
+        border: 1px solid #ddd;
+        padding: 0.5rem;
+      }
+
+      tr:nth-child(even) {
+        background: #fff;
+      }
+
+      tr:nth-child(odd) {
+        background: #f2f2f2;
+      }
+    </style>
 </body>
 
 </html>
