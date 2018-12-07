@@ -41,7 +41,7 @@ if len(sys.argv) < 3:
 
 try:
     cnx = mysql.connector.connect(
-        host="localhost", user="jeremiah", password="topkek12", database="demo"
+        host="localhost", user="USERNAME", password="PASSWORD", database="DATABASE"
     )
     cursor = cnx.cursor()
 

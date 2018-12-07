@@ -50,7 +50,7 @@
 
         echo '</tr>';
 
-        $cnx = new mysqli('localhost', 'jeremiah', 'topkek12', 'demo');
+        $cnx = new mysqli('localhost', 'USERNAME', 'PASSWORD', 'DATABASE');
 
         if ($cnx->connect_error) {
             die('Connection failed: ' . $cnx->connect_error);
