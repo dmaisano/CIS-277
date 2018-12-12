@@ -1,45 +1,50 @@
-/*
- * lexer.h
- */
+#ifndef LEXER_H_
+#define LEXER_H_
 
 #include "tokens.h"
 #include <cctype>
+#include <iostream>
 #include <map>
+#include <string>
 using namespace std;
 
-// clang-format off
-static map<TokenType,string> tokenPrint = {
-  { IF, "IF" },
-  { THEN, "THEN" },
-  { PRINT, "PRINT" },
-  { TRUE, "TRUE" },
-  { FALSE, "FALSE" },
+/*
+  lexer.h
+*/
 
-  { IDENT, "IDENT" },
+static map<TokenType, string> tokenPrint = {
+    // clang-format off
+		{ IF, "IF" },
+		{ THEN, "THEN" },
+		{ PRINT, "PRINT" },
+		{ TRUE, "TRUE" },
+		{ FALSE, "FALSE" },
 
-  { ICONST, "ICONST" },
-  { SCONST, "SCONST" },
+		{ IDENT, "IDENT" },
 
-  { PLUS, "PLUS" },
-  { MINUS, "MINUS" },
-  { STAR, "STAR" },
-  { SLASH, "SLASH" },
-  { ASSIGN, "ASSIGN" },
-  { EQ, "EQ" },
-  { NEQ, "NEQ" },
-  { LT, "LT" },
-  { LEQ, "LEQ" },
-  { GT, "GT" },
-  { GEQ, "GEQ" },
-  { LOGICAND, "LOGICAND" },
-  { LOGICOR, "LOGICOR" },
-  { SC, "SC" },
+		{ ICONST, "ICONST" },
+		{ SCONST, "SCONST" },
 
-  { ERR, "ERR" },
+		{ PLUS, "PLUS" },
+		{ MINUS, "MINUS" },
+		{ STAR, "STAR" },
+		{ SLASH, "SLASH" },
+		{ ASSIGN, "ASSIGN" },
+		{ EQ, "EQ" },
+		{ NEQ, "NEQ" },
+		{ LT, "LT" },
+		{ LEQ, "LEQ" },
+		{ GT, "GT" },
+		{ GEQ, "GEQ" },
+		{ LOGICAND, "LOGICAND" },
+		{ LOGICOR, "LOGICOR" },
+		{ SC, "SC" },
 
-  { DONE, "DONE" }
+		{ ERR, "ERR" },
+
+		{ DONE, "DONE" }
+    // clang-format on
 };
-// clang-format on
 
 ostream &operator<<(ostream &out, const Token &tok) {
   TokenType tt = tok.GetTokenType();
@@ -64,21 +69,23 @@ Token id_or_kw(const string &lexeme, int linenum) {
   return Token(tt, lexeme, linenum);
 }
 
-// clang-format off
 // macro to putback and decrement if newline
 // the string PB is replaced by this block of code... it's a little hacky
+// clang-format off
 #define PB { in->putback(ch); if( ch == '\n' ) (*linenum)--; }
+// clang-format on
 
 // inline function to putback and decrement if newline
 // this is cleaner but longer to call
 inline void PutBack(char ch, istream *in, int *linenum) {
   in->putback(ch);
-  if( ch == '\n' )
+  if (ch == '\n')
     (*linenum)--;
 }
 
 // another version of the macro could have been
-#define PB2(ch,in,linenum) { in->putback(ch); if( ch == '\n' ) (*linenum)--; }
+// clang-format off
+#define PB2(ch,in,linenum)    { in->putback(ch); if( ch == '\n' ) (*linenum)--; }
 // clang-format on
 
 Token getNextToken(istream *in, int *linenum) {
@@ -258,3 +265,5 @@ Token getNextToken(istream *in, int *linenum) {
     return Token(DONE, "", *linenum);
   return Token(ERR, "some strange I/O error", *linenum);
 }
+
+#endif

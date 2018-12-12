@@ -2,13 +2,18 @@
  * main.cpp
  */
 
-#include "parse.h"
-#include "tokens.h"
+#include "parser.h"
+#include "value.h"
 #include <fstream>
-using std::cin;
-using std::cout;
-using std::endl;
-using std::ifstream;
+#include <iostream>
+using namespace std;
+
+map<string, Value> symbols;
+
+void RunTimeError(string error) {
+  cout << "0: RUNTIME ERROR " << error << endl;
+  exit(0);
+}
 
 int main(int argc, char *argv[]) {
   ifstream file;
@@ -38,30 +43,7 @@ int main(int argc, char *argv[]) {
   if (prog == 0)
     return 0;
 
-  cout << "LEAF COUNT: " << prog->LeafCount() << endl;
-  cout << "STRING COUNT: " << prog->StringCount() << endl;
-  int idc = prog->IdentCount();
-  if (idc) {
-    cout << "IDENT COUNT: " << idc << endl;
-    map<string, int> ids;
-    prog->GetVars(ids);
-
-    // find max
-    int maxval = ids.begin()->second;
-    for (const auto &s : ids)
-      if (s.second > maxval)
-        maxval = s.second;
-    bool printed = false;
-    for (auto s : ids) {
-      if (s.second != maxval)
-        continue;
-      if (printed)
-        cout << ", ";
-      cout << s.first;
-      printed = true;
-    }
-    cout << endl;
-  }
+  prog->Eval();
 
   return 0;
 }

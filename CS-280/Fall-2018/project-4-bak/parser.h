@@ -1,24 +1,20 @@
-/*
- * parser.h
- */
-
 #ifndef PARSER_H_
 #define PARSER_H_
 
+#include "parse.h"
 #include "parsetree.h"
-#include <iostream>
 using namespace std;
 
+// prototypes
 ParseTree *Prog(istream *in, int *line);
 ParseTree *Slist(istream *in, int *line);
 ParseTree *Stmt(istream *in, int *line);
-ParseTree *IfStmt(istream *in, int *line);
+ParseTree *VarStmt(istream *in, int *line);
+ParseTree *SetStmt(istream *in, int *line);
 ParseTree *PrintStmt(istream *in, int *line);
+ParseTree *RepeatStmt(istream *in, int *line);
 ParseTree *Expr(istream *in, int *line);
-ParseTree *LogicExpr(istream *in, int *line);
-ParseTree *CompareExpr(istream *in, int *line);
-ParseTree *AddExpr(istream *in, int *line);
-ParseTree *MulExpr(istream *in, int *line);
+ParseTree *Term(istream *in, int *line);
 ParseTree *Factor(istream *in, int *line);
 ParseTree *Primary(istream *in, int *line);
 
