@@ -12,6 +12,7 @@ bufferSize = 4096
 payload = "X" * count
 
 client = socket(AF_INET, SOCK_DGRAM)
+client.settimeout(1)
 
 numRetries = 0
 while numRetries < 3:
