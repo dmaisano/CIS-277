@@ -18,7 +18,7 @@ numRetries = 0
 while numRetries < 3:
     try:
         client.sendto(payload.encode(), (host, port))
-        print("Sending data to  %s, %d: %s" % (host, port, payload))
+        print("Sending data to   %s, %d: %s" % (host, port, payload))
 
         client.settimeout(1)
         data, serverAddress = client.recvfrom(bufferSize)
@@ -26,6 +26,7 @@ while numRetries < 3:
         print("Message timed out")
         numRetries += 1
     except KeyboardInterrupt:
+        client.close()
         exit(0)
     else:
         print("Receive data from %s, %d: %s" % (*serverAddress, data.decode()))

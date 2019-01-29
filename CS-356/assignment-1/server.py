@@ -24,8 +24,8 @@ while True:
         server.close()
         exit(0)
     else:
-        print("Receive data from %s, %d: %s" % (*clientAddress, data.decode()))
+        print("Receive data from client %s, %d: %s" % (*clientAddress, data.decode()))
 
         server.sendto(data, clientAddress)
-        print("Sending data to  %s, %d: %s\n" % (*clientAddress, data.decode()))
+        print("Sending data to   client %s, %d: %s\n" % (*clientAddress, data.decode()))
 
