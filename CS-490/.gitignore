@@ -1,0 +1,7 @@
+.cache
+node_modules/
+dist/
+**/*/config/*
+
+package-lock.json
+copy.sh
