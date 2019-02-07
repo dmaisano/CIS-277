@@ -1,27 +1,35 @@
-// const alert
+let alertIsVisible = false;
+
+const triggerAlert = message => {
+  document.querySelector('.alert').setAttribute('style', 'display: grid');
+  alertIsVisible = true;
+
+  // set the message
+  document.querySelector('#alert--message').textContent = message;
+  // 'Unable to login to NJIT and Backend';
+};
+
+const dismissAlert = () => {
+  if (!alertIsVisible) {
+    return;
+  }
+
+  document.querySelector('.alert').setAttribute('style', 'display: none');
+  alertIsVisible = false;
+};
 
 const handleSubmit = async () => {
+  const ucid = document.querySelector('#ucid').textContent;
+  const pass = document.querySelector('#pass').textContent;
+
   // fetch data
-  const result = {
-    data: '',
-    error: true,
-  };
+  const result = fetch('http://localhost:5000/login.php', {
+    method: 'POST',
+    mode: 'same-origin',
+    credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ucid, pass }),
+  });
 
-  if (result.error) {
-    const alert = document.querySelector('.alert');
-    alert.setAttribute('style', 'display: grid');
-    alert.classList.add('fadein');
-
-    const alertMessage = document.querySelector('#alert--message');
-    alertMessage.textContent = 'Unable to login to NJIT and Backend';
-
-    setTimeout(() => {
-      alert.classList.remove('fadein');
-      alert.classList.add('fadeout');
-      setTimeout(() => {
-        alert.setAttribute('style', 'display: none');
-        alert.classList.remove('fadeout');
-      }, 1000);
-    }, 6000);
-  }
+  console.log(await result);
 };

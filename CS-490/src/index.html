@@ -9,10 +9,12 @@
     <link rel="stylesheet" href="styles/login.css" />
   </head>
   <body>
+    <div class="background"></div>
+
     <div class="card">
       <h1>CS 490 Login</h1>
       <form class="login">
-        <input type="text" id="user" placeholder="UCID" />
+        <input type="text" id="ucid" placeholder="UCID" />
         <input type="password" id="pass" placeholder="Password" />
         <button type="button" onclick="handleSubmit()">Login</button>
       </form>
@@ -21,7 +23,7 @@
     <div id="alert-box">
       <div class="alert">
         <div id="alert--message"></div>
-        <div class="alert--dismiss">
+        <div class="alert--dismiss" class="submit" onclick="dismissAlert()">
           Dismiss
         </div>
       </div>
