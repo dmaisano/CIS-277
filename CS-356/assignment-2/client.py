@@ -10,14 +10,15 @@ port = int(sys.argv[2]) if len(sys.argv) >= 3 else 3000
 bufferSize = 4096
 
 # map of round trip times
-tripTimes = {}
+tripTimes = []
 
 client = socket(AF_INET, SOCK_DGRAM)
 client.settimeout(1)
 
-print("Connecting to %s:%d" % (host, port))
+print("Pinging %s:%d with 8 bytes of data" % (host, port))
 
-for i in range(10):
+numTries = 10
+for i in range(1, numTries + 1):
     try:
         # get the current start time
         startTime = time()
@@ -29,19 +30,34 @@ for i in range(10):
 
         response, serverAddress = client.recvfrom(bufferSize)
 
-        tripTimes[i] = time() - startTime
+        responseTime = (time() - startTime) * 1000  # time in ms
+        tripTimes.append(responseTime)
 
-        payload, sequenceNum = struct.unpack("!ii", response)
+        sequence = struct.unpack("!ii", response)[1]
 
-        roundTripTime = str(tripTimes[i]).split(".")
-        roundTripTime = "%s.%ss" % (roundTripTime[0], roundTripTime[1][0:4])
-
-        print("Receive sequence num '%d' trip time: %s" % (sequenceNum, roundTripTime))
+        print(
+            "Reply from %s:%d, sequence=%d, time=%dms"
+            % (host, port, sequence, responseTime)
+        )
     except timeout:
-        print("Message timed out: %i" % (i))
+        print("Message timed out, sequence=%i" % (i))
     except KeyboardInterrupt:
         client.close()
         exit(0)
-    else:
-        print("Receive data from %s, %d: %s" % (*serverAddress, data.decode()))
-        break
+
+print("\nPing statistics for %s:%d" % (host, port))
+print(
+    "\tPackets: Sent = %d, Received = %d, Lost = %d, (%d percent loss)"
+    % (
+        numTries,
+        len(tripTimes),
+        numTries - len(tripTimes),
+        round((len(tripTimes) / numTries) * 100),
+    )
+)
+print("Approximate round trip times in milli-seconds")
+print(
+    "\tMinimum = %dms, Maximum = %dms, Average = %dms"
+    % (min(tripTimes), max(tripTimes), round(sum(tripTimes) / len(tripTimes)) * 100)
+)
+
