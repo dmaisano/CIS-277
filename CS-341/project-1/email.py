@@ -93,12 +93,13 @@ outputFile = open(fileName, "w")
 
 
 print("Project 1 for CS 341")
-outputFile.write("Project 1 for CS 341" + "\n")
+outputFile.write("Project 1 for CS 341\n")
 print("Semester: Spring 2019")
-outputFile.write("Semester: Spring 2019" + "\n")
-print("Written by: Domenico Maisano, dm583")
+outputFile.write("Semester: Spring 2019\n")
+print("Written by: Domenico Maisano, ucid dm583")
+outputFile.write("Written by: Domenico Maisano, ucid dm583\n")
 print("Instructor: Marvin Nakayama, marvin@njit.edu")
-outputFile.write("Instructor: Marvin Nakayama, marvin@njit.edu" + "\n")
+outputFile.write("Instructor: Marvin Nakayama, marvin@njit.edu\n")
 
 
 # no stdin
@@ -117,24 +118,24 @@ while index < len(stdin):
     email = str(stdin[index + 1]) if stdin[index] == "y" else exit(0)
 
     print("\nevaluating email: " + email)
-    outputFile.write("\nevaluating email: " + email + "\n")
+    outputFile.write("\nevaluating email: %s\n" % email)
     print("initial state: q1")
-    outputFile.write("initial state: q1" + "\n")
+    outputFile.write("initial state: q1\n")
 
     for charIndex in range(len(email)):
         char = str(email[charIndex])
 
         currentState = determineState(char, previousState)
         previousState = currentState
-        print(char + ", state: " + currentState)
-        outputFile.write(char + ", state: " + currentState + "\n")
+        print("%s, state: %s" % (char, currentState))
+        outputFile.write("%s, state: %s\n" % (char, currentState))
 
         if charIndex == len(email) - 1 and currentState == "q9":
-            print(email + " is a valid email")
-            outputFile.write(email + " is a valid email" + "\n")
+            print("%s is a valid email" % email)
+            outputFile.write("%s is a valid email\n" % email)
         elif charIndex == len(email) - 1 and currentState != "q9":
-            print(email + " is not a valid email")
-            outputFile.write(email + " is not a valid email" + "\n")
+            print("%s is not a valid email" % email)
+            outputFile.write("%s is not a valid email\n" % email)
 
     # increment index
     index += 2
