@@ -2,6 +2,7 @@
 *
 !*.*
 !*/
+*.out
 
 # Numerous always-ignore extensions
 *.vi
