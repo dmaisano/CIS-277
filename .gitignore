@@ -5,6 +5,9 @@
 *.out
 *.class
 
+# python
+**/*/__pycache__
+
 # Numerous always-ignore extensions
 *.vi
 *.exe
