@@ -7,7 +7,3 @@ def twoSum(nums: "List[int]", target: "int") -> "List[int]":
             if nums[j] == target - nums[i]:
                 return [i, j]
 
-
-soln = twoSum([1, 2, 3, 4], 5)
-
-print(soln)
