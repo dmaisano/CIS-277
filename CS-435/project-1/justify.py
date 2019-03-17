@@ -1,11 +1,14 @@
 from typing import List
+import os
 import re
-from sys import argv
-from os import isatty
+import sys
 
 
-def wordWrap(words: List[str], width: int):
-    return "owo"
+def wordWrap(text: str, width: int):
+    wrappedText = ""
+    # line = ""
+
+    return wrappedText
 
 
 # def wordWrap(words: List[str], width: int):
@@ -13,7 +16,7 @@ def wordWrap(words: List[str], width: int):
 #     # done = false
 #     # formattedString = ''
 
-#     line = ""
+#     line = ""``
 #     for word in words:
 #         if len(line) == width:
 #             wrappedText.append(line + "\n")
@@ -31,18 +34,15 @@ def wordWrap(words: List[str], width: int):
 #     return wrappedText
 
 
-maxWidth = int(argv[1]) if len(argv) >= 2 else 60
+maxWidth = int(sys.argv[1]) if len(sys.argv) >= 2 else 60
 
 # no stdin
-if isatty(0):
+if os.isatty(0):
     print("missing stdin")
     exit(1)
 
 # read from stdin
-words = str(sys.stdin.read()).split()
+# words = str(sys.stdin.read()).split()
+text = sys.stdin.read()
 
-lines = wordWrap(words, maxWidth)
-
-for line in lines:
-    print("length: " + str(len(line)), line)
-# print(wordWrap(words, maxWidth))
+lines = wordWrap(text, maxWidth)

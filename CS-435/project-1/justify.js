@@ -7,14 +7,15 @@ function wordWrap(str, maxWidth) {
   do {
     found = false;
     // Inserts new line at first whitespace of the line
-    for (i = maxWidth; i >= 0; i--) {
-      if (testWhite(str.charAt(i))) {
-        res = res + [str.slice(0, i), newLineStr].join('');
-        str = str.slice(i + 1);
-        found = true;
-        break;
-      }
-    }
+    // for (i = maxWidth; i >= 0; i--) {
+    //   if (testWhite(str.charAt(i))) {
+    //     res += str.slice(0, i) + '\n';
+    //     // res = res + [str.slice(0, i), newLineStr].join('');
+    //     str = str.slice(i + 1);
+    //     found = true;
+    //     break;
+    //   }
+    // }
     // Inserts new line at maxWidth position, the word is too long to wrap
     if (!found) {
       res += [str.slice(0, maxWidth), newLineStr].join('');
