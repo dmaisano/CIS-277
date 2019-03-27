@@ -1,4 +1,6 @@
 from socket import socket, AF_INET, SOCK_STREAM
+from os import path
+from datetime import datetime
 import sys
 
 
@@ -28,22 +30,30 @@ while True:
 
         request: str = data.splitlines()[0]
         requestMethod: str = request.split()[0]
-        fileName: str = request.split()[1][1:]
+        fileName: str = request.split()[1]
 
         header: bytes = b""
         response: bytes = b""
 
         try:
-            response = open(fileName, "rb").read()
-            header = "HTTP/1.1 200 OK\nContent-Type: text/html\n\n".encode("utf-8")
-        except:
-            # send 404 page / response
-            header = "HTTP/1.1 404 Not Found\nContent-Type: text/html\n\n".encode(
-                "utf-8"
-            )
-            response = open("./404.html", "rb").read()
+            __path__ = path.dirname(path.realpath(__file__))
+            response = open(__path__ + fileName, "rb").read()
 
-        connection.send(header + response)
+            date = datetime.now().strftime("%a, %d %b %Y %H:%M:%S GMT")
+
+            timestamp = path.getmtime(__path__ + fileName)
+            lastModified = datetime.utcfromtimestamp(timestamp).strftime(
+                "%a, %d %b %Y %H:%M:%S GMT"
+            )
+            lastModified = "Last-Modified: " + lastModified
+
+            header = "HTTP/1.1 200 OK\nContent-Type: text/html\n%s\n\n" % (lastModified)
+        except:
+            # send 404 response
+            header = "HTTP/1.1 404 Not Found\n"
+            response = b""
+
+        connection.send(header.encode("utf-8") + response)
         connection.close()
 
     except KeyboardInterrupt:
