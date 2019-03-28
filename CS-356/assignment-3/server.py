@@ -1,4 +1,4 @@
-from socket import socket, AF_INET, SOCK_STREAM
+from socket import socket, AF_INET, SOCK_STREAM, SHUT_RDWR, SOL_SOCKET, SO_REUSEADDR
 from os import path
 from datetime import datetime
 import sys
@@ -10,6 +10,9 @@ port = int(sys.argv[2]) if len(sys.argv) >= 3 else 8080
 # create TCP socket
 server = socket(AF_INET, SOCK_STREAM)
 
+# override socket if already in use
+server.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+
 try:
     server.bind((ip, port))
     server.listen(1)
@@ -19,14 +22,12 @@ except Exception as e:
     print(e)
     exit(1)
 
-
 while True:
     try:
-        # get the connection from the client
-        connection, address = server.accept()
+        conn, address = server.accept()
 
         PACKET_SIZE = 100000
-        data: str = connection.recv(PACKET_SIZE).decode("utf-8")
+        data: str = conn.recv(PACKET_SIZE).decode("utf-8")
 
         request: str = data.splitlines()[0]
         requestMethod: str = request.split()[0]
@@ -35,26 +36,30 @@ while True:
         header: bytes = b""
         response: bytes = b""
 
+        date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
+
         try:
             __path__ = path.dirname(path.realpath(__file__))
             response = open(__path__ + fileName, "rb").read()
 
-            date = datetime.now().strftime("%a, %d %b %Y %H:%M:%S GMT")
-
             timestamp = path.getmtime(__path__ + fileName)
-            lastModified = datetime.utcfromtimestamp(timestamp).strftime(
-                "%a, %d %b %Y %H:%M:%S GMT"
-            )
-            lastModified = "Last-Modified: " + lastModified
+            lastModified = datetime.utcfromtimestamp(timestamp)
+            lastModified = lastModified.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
-            header = "HTTP/1.1 200 OK\nContent-Type: text/html\n%s\n\n" % (lastModified)
+            header = "HTTP/1.1 200 OK\n"
+            header += "Date: " + date + "\n"
+            header += "Last-Modified: " + lastModified + "\n"
+            header += "Content-Length: " + str(path.getsize(__path__ + fileName)) + "\n"
+            header += "Content-Type: text/html; charset=UTF-8\n"
+            header += "\n"
         except:
-            # send 404 response
+            # send 404 response / file not found
             header = "HTTP/1.1 404 Not Found\n"
+            header += "Date: " + date + "\n\n"
             response = b""
 
-        connection.send(header.encode("utf-8") + response)
-        connection.close()
+        conn.send(header.encode("utf-8") + response)
+        conn.close()
 
     except KeyboardInterrupt:
         server.close()
