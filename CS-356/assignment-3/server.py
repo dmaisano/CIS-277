@@ -1,5 +1,5 @@
 from socket import socket, AF_INET, SOCK_STREAM, SHUT_RDWR, SOL_SOCKET, SO_REUSEADDR
-from datetime import datetime
+from datetime import datetime, time
 from typing import List
 from sys import argv
 from os import path
@@ -52,49 +52,41 @@ while True:
         responseHeaders: str = ""
         responseBody = b""
 
-        date: str = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
+        date: str = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT\r\n")
 
         try:
-            htmlFile = open(filePath, "rb").read()
+            responseBody = open(filePath, "rb").read()
 
             # get time file was last modified
             lastModified = path.getmtime(filePath)
-            lastModified = datetime.utcfromtimestamp(lastModified)
+            lastModified = datetime.utcfromtimestamp(lastModified).replace(
+                microsecond=0
+            )
+
+            # HTTP 200 Response
+            responseHeaders = "HTTP/1.1 200 OK\r\n"
+            responseHeaders += "Date: " + date
+            responseHeaders += "Last-Modified: " + lastModified.strftime(
+                "%a, %d %b %Y %H:%M:%S GMT\r\n"
+            )
+            responseHeaders += "Content-Length: " + str(path.getsize(filePath)) + "\r\n"
+            responseHeaders += "Content-Type: text/html; charset=UTF-8\r\n"
+            responseHeaders += "\r\n"
 
             if cacheModifiedTime:
-
-                print(lastModified)
-                print(cacheModifiedTime)
-                print(lastModified > cacheModifiedTime)
-
-                if lastModified > cacheModifiedTime:
-                    responseHeaders = "HTTP/1.1 200 OK\n"
-                    responseHeaders += "Date: " + date + "\n"
-                    responseHeaders += "Last-Modified: " + lastModified + "\n"
-                    responseHeaders += (
-                        "Content-Length: " + str(path.getsize(filePath)) + "\n"
-                    )
-                    responseHeaders += "Content-Type: text/html; charset=UTF-8\n"
-                    responseHeaders += "\n"
-                    responseHeaders = responseHeaders
-                    responseBody = htmlFile
-                else:
-                    print("owo")
-                    responseHeaders = "HTTP/1.1 304 Not Modified\n"
-                    responseHeaders += "Date: " + date + "\n"
-                    responseHeaders += "\n"
-                    responseHeaders = responseHeaders
+                if lastModified <= cacheModifiedTime:
+                    responseHeaders = "HTTP/1.1 304 Not Modified\r\n"
+                    responseHeaders += "Date: " + date
+                    responseHeaders += "\r\n"
                     responseBody = b""
-
-            lastModified = path.getmtime(filePath)
-            lastModified = datetime.utcfromtimestamp(lastModified)
-            lastModified = lastModified.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
         except Exception as e:
             # send 404 response / file not found
-            headers: str = "HTTP/1.1 404 Not Found\n"
-            headers += "Date: " + date + "\n\n"
-            response: bytes = b""
+            responseHeaders: str = "HTTP/1.1 404 Not Found\r\n"
+            responseHeaders += "Date: " + date
+            responseHeaders += "\r\n"
+            responseBody: bytes = b""
+            print(e)
 
         conn.send(responseHeaders.encode("utf-8") + responseBody)
         conn.close()

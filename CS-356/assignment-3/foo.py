@@ -1,18 +1,10 @@
-from datetime import datetime
 from os import path
+from datetime import datetime
 
-filePath = path.dirname(path.realpath(__file__)) + "/cache.html"
-modifiedTime = path.getmtime(filePath)
-modifiedTime = datetime.utcfromtimestamp(modifiedTime)
-modifiedTime = modifiedTime.strftime("%a, %d %b %Y %H:%M:%S GMT")
+filePath: str = path.dirname(path.realpath(__file__)) + "/sample.html"
 
-print(modifiedTime[0 : len(modifiedTime) - 4])
+lastModified = path.getmtime(filePath)
+lastModified = datetime.utcfromtimestamp(lastModified).replace(microsecond=0)
 
-foo = datetime.strptime(
-    modifiedTime[0 : len(modifiedTime) - 4], "%a, %d %b %Y %H:%M:%S"
-)
-
-print(foo)
-print(datetime.utcnow())
-print(datetime.utcnow() > foo)
-# print("2019-03-29 16:20:06" > foo)
+print(type(lastModified))
+print(lastModified)
