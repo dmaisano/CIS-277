@@ -2,16 +2,16 @@ from socket import socket, AF_INET, SOCK_STREAM, SHUT_RDWR, SOL_SOCKET, SO_REUSE
 from datetime import datetime
 from sys import argv
 from os import path
-from re import search
+from re import match
 
 
 if len(argv) < 2:
     print("missing url")
     exit(1)
 
-url = search("(http://)?(.+):([0-9]{4})(/.+)?", argv[1])
+url = match(r"(http://)?(.+):([0-9]{4})(/.+)?", argv[1])
 
-if not url.group(4):
+if not url.groups(4):
     print("missing filename")
     exit(1)
 
@@ -27,7 +27,15 @@ client = socket(AF_INET, SOCK_STREAM)
 client.connect((host, port))
 
 requestHeaders = "GET " + fileName + " HTTP/1.1\n"
-requestHeaders += "Host: " + client.getsockname()[0] + ":" + client.getsockname()[1]
+requestHeaders += "Host: " + host + ":" + str(port) + "\n"
 requestHeaders += "\n"
 
 print(requestHeaders)
+
+client.send(requestHeaders.encode("utf-8"))
+
+PACKET_SIZE = 10000
+response: bytes = client.recv(PACKET_SIZE)
+response: str = response.decode()
+
+print(response)

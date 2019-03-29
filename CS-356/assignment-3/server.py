@@ -3,7 +3,7 @@ from datetime import datetime
 from typing import List
 from sys import argv
 from os import path
-import re
+from re import match
 
 
 ip = argv[1] if len(argv) >= 2 else "127.0.0.1"
@@ -35,8 +35,8 @@ while True:
 
         for header in headers:
             print(header)
-            if re.match(r"GET .+ HTTP/1.1", header):
-                fileName = re.match(r"GET (.+) HTTP/1.1", header).groups()[0]
+            if match(r"GET .+ HTTP/1.1", header):
+                fileName = match(r"GET (.+) HTTP/1.1", header).groups()[0]
 
         filePath: str = path.dirname(path.realpath(__file__)) + fileName
 
