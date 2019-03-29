@@ -26,16 +26,39 @@ client = socket(AF_INET, SOCK_STREAM)
 # connect to remote host
 client.connect((host, port))
 
+# check if file is already cached
+filePath = path.dirname(path.realpath(__file__)) + "/cache.html"
+isCached = path.isfile(filePath)
+
+# initialize request headers
 requestHeaders = "GET " + fileName + " HTTP/1.1\n"
 requestHeaders += "Host: " + host + ":" + str(port) + "\n"
-requestHeaders += "\n"
 
-print(requestHeaders)
+if isCached:
+    modifiedTime = path.getmtime(filePath)
+    modifiedTime = datetime.utcfromtimestamp(modifiedTime)
+    modifiedTime = modifiedTime.strftime("%a, %d %b %Y %H:%M:%S GMT")
+    requestHeaders += "If-Modified-Since: " + modifiedTime + "\n"
+    requestHeaders += "\n"
+else:
+    requestHeaders += "\n"
 
 client.send(requestHeaders.encode("utf-8"))
 
+
 PACKET_SIZE = 10000
-response: bytes = client.recv(PACKET_SIZE)
-response: str = response.decode()
+response = client.recv(PACKET_SIZE)
+response = response.decode()
 
 print(response)
+
+# cache the file and print the contents
+if not isCached:
+    response = response[response.find("\n\n") + 2 : len(response)]
+    print(response)
+    htmlFile = open("cache.html", "w")
+    htmlFile.write(response)
+else:
+
+
+client.close()
