@@ -1,11 +1,13 @@
 from socket import socket, AF_INET, SOCK_STREAM, SHUT_RDWR, SOL_SOCKET, SO_REUSEADDR
-from os import path
 from datetime import datetime
-import sys
+from typing import List
+from sys import argv
+from os import path
+import re
 
 
-ip = sys.argv[1] if len(sys.argv) >= 2 else "127.0.0.1"
-port = int(sys.argv[2]) if len(sys.argv) >= 3 else 8080
+ip = argv[1] if len(argv) >= 2 else "127.0.0.1"
+port = int(argv[2]) if len(argv) >= 3 else 8080
 
 # create TCP socket
 server = socket(AF_INET, SOCK_STREAM)
@@ -27,32 +29,37 @@ while True:
         conn, address = server.accept()
 
         PACKET_SIZE = 100000
-        data: str = conn.recv(PACKET_SIZE).decode("utf-8")
+        headers: List[str] = str(conn.recv(PACKET_SIZE).decode("utf-8")).splitlines()
 
-        request: str = data.splitlines()[0]
-        requestMethod: str = request.split()[0]
-        fileName: str = request.split()[1]
+        fileName = ""
+
+        for header in headers:
+            print(header)
+            if re.match(r"GET .+ HTTP/1.1", header):
+                fileName = re.match(r"GET (.+) HTTP/1.1", header).groups()[0]
+
+        filePath: str = path.dirname(path.realpath(__file__)) + fileName
 
         header: bytes = b""
         response: bytes = b""
 
-        date = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
+        date: str = datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S GMT")
 
         try:
             __path__ = path.dirname(path.realpath(__file__))
-            response = open(__path__ + fileName, "rb").read()
+            response = open(filePath, "rb").read()
 
-            timestamp = path.getmtime(__path__ + fileName)
-            lastModified = datetime.utcfromtimestamp(timestamp)
-            lastModified = lastModified.strftime("%a, %d %b %Y %H:%M:%S GMT")
+            modifiedTime = path.getmtime(filePath)
+            modifiedTime = datetime.utcfromtimestamp(modifiedTime)
+            modifiedTime = modifiedTime.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
             header = "HTTP/1.1 200 OK\n"
             header += "Date: " + date + "\n"
-            header += "Last-Modified: " + lastModified + "\n"
-            header += "Content-Length: " + str(path.getsize(__path__ + fileName)) + "\n"
+            header += "Last-Modified: " + modifiedTime + "\n"
+            header += "Content-Length: " + str(path.getsize(filePath)) + "\n"
             header += "Content-Type: text/html; charset=UTF-8\n"
             header += "\n"
-        except:
+        except Exception as e:
             # send 404 response / file not found
             header = "HTTP/1.1 404 Not Found\n"
             header += "Date: " + date + "\n\n"
