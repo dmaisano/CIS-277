@@ -35,7 +35,6 @@ while True:
         cacheModifiedTime = False
 
         for header in headers:
-            print(header)
             if match(r"GET .+ HTTP/1.1", header):
                 fileName = match(r"GET (.+) HTTP/1.1", header).groups()[0]
 
@@ -80,13 +79,12 @@ while True:
                     responseHeaders += "\r\n"
                     responseBody = b""
 
-        except Exception as e:
+        except:
             # send 404 response / file not found
             responseHeaders: str = "HTTP/1.1 404 Not Found\r\n"
             responseHeaders += "Date: " + date
             responseHeaders += "\r\n"
             responseBody: bytes = b""
-            print(e)
 
         conn.send(responseHeaders.encode("utf-8") + responseBody)
         conn.close()

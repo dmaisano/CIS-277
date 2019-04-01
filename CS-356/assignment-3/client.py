@@ -6,7 +6,6 @@ from re import match
 
 
 def cacheFile(htmlString: str):
-    print(htmlString)
     cachedFile = open("cache.html", "w")
     cachedFile.write(htmlString)
     cachedFile.close()
@@ -18,7 +17,7 @@ if len(argv) < 2:
 
 url = match(r"(http://)?(.+):([0-9]{4})(/.+)?", argv[1])
 
-if not url.groups(4):
+if not url.group(4):
     print("missing filename")
     exit(1)
 
@@ -50,6 +49,8 @@ if isCached:
 else:
     requestHeaders += "\r\n"
 
+print(requestHeaders)
+
 client.send(requestHeaders.encode("utf-8"))
 
 
@@ -59,20 +60,31 @@ response: str = response.decode()
 
 startIndex = response.find("Content-Type: text/html; charset=UTF-8\r\n\r\n")
 
+
 if startIndex == -1:
     htmlFile = ""
 else:
-    htmlFile = response[startIndex + 40 : len(response)]
+    htmlFile = response[startIndex + 42 : len(response)]
 
-if isCached:
-    isModified = response.find("HTTP/1.1 200 Ok")
+is200 = response.find("HTTP/1.1 200 OK")
+is304 = response.find("HTTP/1.1 304 Not Modified")
+is404 = response.find("HTTP/1.1 404 Not Found")
 
-    if htmlFile != "":
-        print("file has been modified")
-        cacheFile(htmlFile)
-    else:
-        print("file has not been modified")
-else:
+
+if is404 != -1:
+    print(response)
+
+if is200 != -1 and not isCached:
+    print(response)
     cacheFile(htmlFile)
+
+if is200 != -1 and isCached:
+    print("file has been modified\n")
+    print(response)
+    cacheFile(htmlFile)
+
+if is304 != -1:
+    print("file has not been modified")
+    print(response)
 
 client.close()
