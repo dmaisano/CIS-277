@@ -1,0 +1,10 @@
+/* Number 1 */
+CREATE VIEW CONTACT
+AS SELECT name, phone
+FROM publisher;
+
+
+/* Number 3 */
+CREATE FORCE VIEW HOMEWORK13
+AS SELECT Col1, Col2
+FROM FIRSTATTEMPT;
