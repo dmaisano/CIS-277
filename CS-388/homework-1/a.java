@@ -1,5 +1,5 @@
-// 3a
-class A {
+// 3a, page 355
+class SquareCube {
 	public static void main(String args[]) {
 		System.out.println("number\tsquare\tcube");
 
