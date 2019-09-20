@@ -19,7 +19,7 @@ class Account {
 }
 
 // 3b, page 373
-class AccountTest {
+public class AccountTest {
   public static void main(String args[]) {
     Account account1 = new Account(50.00);
     Account account2 = new Account(-7.53);
