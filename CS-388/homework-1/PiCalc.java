@@ -6,14 +6,14 @@ public class PiCalc {
     for (int i = 1; i < 200000; i++) {
       if (i % 2 != 0) { // odd iteration
         pi -= (4.0 / divisor);
-        divisor += 2;
       } else { // even iteration
         pi += (4.0 / divisor);
-        divisor += 2;
       }
 
+      divisor += 2;
+
       String piDouble = String.format("%.5f", pi);
-      System.out.printf("%d %s\t%f/%f\n", i, piDouble, 4.0, divisor);
+      System.out.printf("i: %d\t value: %s\n", i, piDouble);
 
       if (piDouble.equals("3.14159")) {
         break;
