@@ -21,7 +21,7 @@ dist/
 # OS or Editor folders
 .DS_Store
 .cache
-.vscode
+# .vscode
 
 # Personal Ignore Extensions
 *.zip
@@ -34,3 +34,6 @@ tempCodeRunnerFile.*
 yarn.lock
 shrinkwrap.yaml
 package-lock.json
+
+# vscode
+.vscode/c_cpp_properties.json
