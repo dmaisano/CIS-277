@@ -11,17 +11,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 class Domino {
+  public String label;
   public String top;
   public String bottom;
 
-  public Domino(String top, String bottom) {
+  public Domino(String top, String bottom, String label) {
     this.top = top;
     this.bottom = bottom;
+    this.label = label;
   }
 
   @Override
   public String toString() {
-    return String.format("%s : %s", this.top, this.bottom);
+    return this.label;
+    // return String.format("%s : %s", this.top, this.bottom);
   }
 
   @Override
@@ -52,8 +55,10 @@ class Domino {
 }
 
 class State {
-  String diff; // + -
+  String diff;
   ArrayList<Domino> dominoes;
+  String topString;
+  String bottomString;
   State parent;
 }
 
@@ -62,7 +67,15 @@ class Graph {
   private int maxNumStates;
   private int numDominoes;
   private Boolean verboseMode;
-  private HashMap<String, Domino> dominoPool;
+  private ArrayList<Domino> dominoPool = new ArrayList<Domino>();
+
+  public Graph(int maxQueueSize, int maxNumStates, int numDominoes, Boolean verboseMode, ArrayList<Domino> dominoPool) {
+    this.maxQueueSize = maxQueueSize;
+    this.maxNumStates = maxNumStates;
+    this.numDominoes = numDominoes;
+    this.verboseMode = verboseMode;
+    this.dominoPool = dominoPool;
+  }
 }
 
 public class PCS {
@@ -79,7 +92,7 @@ public class PCS {
     int maxNumStates = 0;
     Boolean verboseMode = false;
     int numDominoes = 0;
-    Map<String, Domino> dominoPool = new HashMap<String, Domino>();
+    ArrayList<Domino> dominoPool = new ArrayList<Domino>();
 
     // read the input file
     try {
@@ -96,8 +109,7 @@ public class PCS {
         String top = line[line.length - 2];
         String bottom = line[line.length - 1];
 
-        Domino d = new Domino(top, bottom);
-        dominoPool.put("D" + i, d);
+        dominoPool.add(new Domino(top, bottom, "D" + i));
       }
     } catch (IOException e) {
       System.out.printf("Unable to open file, \"%s\"\n", fileName);
@@ -107,13 +119,13 @@ public class PCS {
       System.exit(1);
     }
 
-    System.out.printf("max queue size: %d\n", maxQueueSize);
-    System.out.printf("max num states: %d\n", maxNumStates);
-    System.out.printf("verbose: %b\n", verboseMode);
-    System.out.printf("num dominoes: %d\n", numDominoes);
+    // System.out.printf("max queue size: %d\n", maxQueueSize);
+    // System.out.printf("max num states: %d\n", maxNumStates);
+    // System.out.printf("verbose: %b\n", verboseMode);
+    // System.out.printf("num dominoes: %d\n", numDominoes);
 
-    for (String key : dominoPool.keySet()) {
-      System.out.printf("key: %s, domino: %s\n", key, dominoPool.get(key));
+    for (Domino d : dominoPool) {
+      System.out.println(d.toString());
     }
   }
 }
