@@ -5,10 +5,12 @@ import java.nio.file.Files;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 class Domino {
   public String top;
@@ -62,7 +64,18 @@ class Graph {
   private int maxNumStates;
   private int numDominoes;
   private Boolean verboseMode;
-  private HashMap<String, Domino> dominoPool;
+  private Map<String, Domino> dominoPool = new HashMap<String, Domino>();
+
+  private Queue<Domino> frontier = new LinkedList<Domino>();
+
+  public Graph(int maxQueueSize, int maxNumStates, int numDominoes, Boolean verboseMode,
+      Map<String, Domino> dominoPool) {
+    this.maxQueueSize = maxQueueSize;
+    this.maxNumStates = maxNumStates;
+    this.numDominoes = numDominoes;
+    this.verboseMode = verboseMode;
+    this.dominoPool = dominoPool; // set of dominoes read from the input file
+  }
 }
 
 public class PCS {
@@ -106,6 +119,8 @@ public class PCS {
       System.out.println("Error parsing input file");
       System.exit(1);
     }
+
+    Graph myGraph = new Graph(maxQueueSize, maxNumStates, numDominoes, verboseMode, dominoPool);
 
     System.out.printf("max queue size: %d\n", maxQueueSize);
     System.out.printf("max num states: %d\n", maxNumStates);
