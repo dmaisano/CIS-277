@@ -3,30 +3,17 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 class Domino {
-  public String label;
-  public String top;
-  public String bottom;
+  String label;
+  String top;
+  String bottom;
 
-  public Domino(String top, String bottom, String label) {
+  Domino(String top, String bottom, String label) {
     this.top = top;
     this.bottom = bottom;
     this.label = label;
-  }
-
-  @Override
-  public String toString() {
-    return this.label;
-    // return String.format("%s : %s", this.top, this.bottom);
   }
 
   @Override
@@ -54,14 +41,50 @@ class Domino {
 
     return true;
   }
+
 }
 
+// BFS & DFS Nodes in the graph
 class State {
   String diff;
-  ArrayList<Domino> dominoes;
-  String topString;
-  String bottomString;
-  State parent;
+  ArrayList<Domino> dominoList;
+  LinkedList<State> adjList[];
+
+  State(String diff, ArrayList<Domino> dominoList) {
+    this.diff = diff;
+    this.dominoList = dominoList;
+  }
+
+  State(String diff, ArrayList<Domino> dominoList, int depth) {
+    this.diff = diff;
+    this.dominoList = dominoList;
+  }
+
+  // returns true is domino can be added & adds domino
+  Boolean addDomino(Domino newDomino) {
+    String topString;
+    String bottomString;
+
+    List<Domino> dominoList = this.dominoes;
+
+    dominoList.add(newDomino);
+
+    for (Domino d : this.dominoes) {
+      topString += d.top;
+      bottomString += d.bottom;
+    }
+
+    int len = topString.length() >= bottomString.length() ? topString.length() : bottomString.length();
+
+    if (!topString.substring(0, len).equals(bottomString.substring(0, len))) {
+      return false;
+    }
+
+    // add the domino to the list
+    this.dominoList.add(newDomino);
+
+    return true;
+  }
 }
 
 class Graph {
@@ -69,14 +92,26 @@ class Graph {
   private int maxNumStates;
   private int numDominoes;
   private Boolean verboseMode;
-  private ArrayList<Domino> dominoPool = new ArrayList<Domino>();
+  private ArrayList<Domino> dominoPool = new ArrayList<Domino>(); // given dominoes from input file
 
-  public Graph(int maxQueueSize, int maxNumStates, int numDominoes, Boolean verboseMode, ArrayList<Domino> dominoPool) {
+  private State startingNode;
+  private Queue<Domino> states = new LinkedList<Domino>(); // queue of dominoes in the graph
+
+  Graph(int maxQueueSize, int maxNumStates, int numDominoes, Boolean verboseMode, ArrayList<Domino> dominoPool) {
     this.maxQueueSize = maxQueueSize;
     this.maxNumStates = maxNumStates;
     this.numDominoes = numDominoes;
     this.verboseMode = verboseMode;
     this.dominoPool = dominoPool;
+
+    this.startingNode = new State("", new ArrayList<Domino>()); // empty starting state
+  }
+
+  // fill out the frontier
+  void BFS_SEARCH() {
+    // for (Domino d : dominoPool) {
+    // this.dominoPool
+    // }
   }
 }
 
@@ -121,13 +156,6 @@ public class PCS {
       System.exit(1);
     }
 
-    // System.out.printf("max queue size: %d\n", maxQueueSize);
-    // System.out.printf("max num states: %d\n", maxNumStates);
-    // System.out.printf("verbose: %b\n", verboseMode);
-    // System.out.printf("num dominoes: %d\n", numDominoes);
-
-    for (Domino d : dominoPool) {
-      System.out.println(d.toString());
-    }
+    Graph g = new Graph(maxQueueSize, maxNumStates, numDominoes, verboseMode, dominoPool);
   }
 }
