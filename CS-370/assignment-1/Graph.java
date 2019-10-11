@@ -1,74 +1,117 @@
+import java.io.IOException;
+import java.io.File;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 
-// Java program to print BFS traversal from a given source vertex. 
-// BFS(int s) traverses vertices reachable from s. 
-import java.io.*;
 import java.util.*;
 
-// This class represents a directed graph using adjacency list 
-// representation 
 public class Graph {
-  private int V; // No. of vertices
-  private LinkedList<Integer> adj[]; // Adjacency Lists
 
-  // Constructor
-  Graph(int v) {
-    V = v;
-    adj = new LinkedList<Integer>()[v];
-    for (int i = 0; i < v; ++i)
-      adj[i] = new LinkedList<Integer>();
-  }
+  static class Domino {
+    String label;
+    String top;
+    String bottom;
 
-  // Function to add an edge into the graph
-  void addEdge(int v, int w) {
-    adj[v].add(w);
-  }
-
-  // prints BFS traversal from a given source s
-  void BFS(int s) {
-    // Mark all the vertices as not visited(By default
-    // set as false)
-    boolean visited[] = new boolean[V];
-
-    // Create a queue for BFS
-    LinkedList<Integer> queue = new LinkedList<Integer>();
-
-    // Mark the current node as visited and enqueue it
-    visited[s] = true;
-    queue.add(s);
-
-    while (queue.size() != 0) {
-      // Dequeue a vertex from queue and print it
-      s = queue.poll();
-      System.out.print(s + " ");
-
-      // Get all adjacent vertices of the dequeued vertex s
-      // If a adjacent has not been visited, then mark it
-      // visited and enqueue it
-      Iterator<Integer> i = adj[s].listIterator();
-      while (i.hasNext()) {
-        int n = i.next();
-        if (!visited[n]) {
-          visited[n] = true;
-          queue.add(n);
-        }
-      }
+    Domino(String top, String bottom, String label) {
+      this.top = top;
+      this.bottom = bottom;
+      this.label = label;
     }
   }
 
-  // Driver method to
-  public static void main(String args[]) {
-    Graph g = new Graph(4);
+  static class State {
+    LinkedList<Domino> dominoList;
+    String topString = "";
+    String bottomString = "";
+    String diff;
 
-    g.addEdge(0, 1);
-    g.addEdge(0, 2);
-    g.addEdge(1, 2);
-    g.addEdge(2, 0);
-    g.addEdge(2, 3);
-    g.addEdge(3, 3);
+    State(LinkedList<Domino> dominoList) {
+      this.dominoList = dominoList;
 
-    System.out.println("Following is Breadth First Traversal " + "(starting from vertex 2)");
+      for (Domino d : dominoList) {
+        this.topString += d.top;
+        this.bottomString += d.bottom;
+      }
 
-    g.BFS(2);
+      if (dominoList.size() < 1 || this.topString.equals(this.bottomString)) {
+        this.diff = "";
+      } else if (this.topString.length() >= this.bottomString.length()) {
+        // top heavy string
+        this.diff = "+" + this.topString.substring(this.bottomString.length(), this.topString.length());
+      } else {
+        // bottom heavy string
+        this.diff = "-" + this.bottomString.substring(this.topString.length(), this.bottomString.length());
+      }
+    }
+
+    // returns false is the combinations of dominoes is not allowed
+    Boolean isValid() {
+      int len = this.topString.length() >= this.bottomString.length() ? this.topString.length()
+          : this.bottomString.length();
+
+      for (int i = 0; i < len; i++) {
+        if (this.topString.charAt(i) != this.bottomString.charAt(i))
+          return false;
+      }
+
+      return true;
+    }
+  }
+
+  public static void main(String[] args) {
+    if (args.length == 0) {
+      System.out.println("missing input file name");
+      System.exit(0);
+    }
+
+    String fileName = args[0];
+
+    int maxQueueSize = 0;
+    int maxNumStates = 0;
+    Boolean verboseMode = false;
+    int numDominoes = 0;
+    LinkedList<Domino> dominoPool = new LinkedList<Domino>();
+
+    // read the input file
+    try {
+      List<String> lines = Files.readAllLines(new File(fileName).toPath(), Charset.defaultCharset());
+
+      maxQueueSize = Integer.parseInt(lines.get(0).trim());
+      maxNumStates = Integer.parseInt(lines.get(1).trim());
+      verboseMode = Boolean.parseBoolean(lines.get(2).trim());
+      numDominoes = Integer.parseInt(lines.get(3).trim());
+
+      for (int i = 1; i <= numDominoes; i++) {
+        String[] line = lines.get(i + 3).trim().split("\\s+");
+
+        String top = line[line.length - 2];
+        String bottom = line[line.length - 1];
+
+        dominoPool.add(new Domino(top, bottom, "D" + i));
+      }
+    } catch (IOException e) {
+      System.out.printf("Unable to open file, \"%s\"\n", fileName);
+      System.exit(1);
+    } catch (Exception e) {
+      System.out.println("Error parsing input file");
+      System.exit(1);
+    }
+
+    LinkedList<State> states = new LinkedList<State>();
+
+    for (Domino d : dominoPool) {
+      System.out.println(d.label);
+    }
+
+    LinkedList<Domino> sample = new LinkedList<Domino>();
+
+    sample.add(dominoPool.get(dominoPool.size() - 1));
+
+    State s = new State(sample);
+
+    System.out.println(s.topString);
+    System.out.println(s.bottomString);
+    System.out.println(s.diff);
+    System.out.println(s.isValid());
   }
 }
-// This code is contributed by Aakash Hasija
