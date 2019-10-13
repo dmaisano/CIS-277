@@ -6,6 +6,66 @@ import java.nio.file.Files;
 import java.util.*;
 
 public class Graph {
+  int maxQueueSize = 0;
+  int maxNumStates = 0; // max number of vertices in adj list
+  Boolean verboseMode = false;
+  int numDominoes = 0;
+  LinkedList<Domino> dominoPool;
+
+  Queue<State> states; // states traversed during BFS
+  Queue<State> frontier; // queue returned after BFS
+  Set<String> explored; // stores a set of domino sequences
+
+  Graph(int maxQueueSize, int maxNumStates, Boolean verboseMode, LinkedList<Domino> dominoPool) {
+    this.maxQueueSize = maxQueueSize;
+    this.maxNumStates = maxNumStates;
+    this.verboseMode = verboseMode;
+    this.dominoPool = dominoPool;
+
+    this.states = new LinkedList<State>();
+    this.frontier = new LinkedList<State>(); // frontier of states returned used in iter
+    this.explored = new HashSet<String>();
+  }
+
+  // should return frontier queue
+  // explore frontier using BFS
+  Queue<State> BFS() {
+    State initialState = new State();
+
+    // add initial domino nodes from the pool
+    for (Domino d : this.dominoPool) {
+      LinkedList<Domino> dominoList = new LinkedList<Domino>();
+      dominoList.add(d);
+
+      State newState = new State(dominoList, initialState);
+
+      if (newState.isValid()) {
+        this.states.add(newState);
+        this.frontier.add(newState);
+        this.explored.add(newState.getSequenceString());
+      }
+    }
+
+    while (!this.states.isEmpty()) {
+      if (this.explored.size() >= this.maxNumStates)
+        break;
+
+      if (this.frontier.size() >= this.maxQueueSize)
+        break;
+
+      State currentState = this.states.remove();
+
+      for (Domino d : this.dominoPool) {
+        State nextState = currentState.getNextState(currentState, d);
+
+        if (nextState.isValid() && !this.explored.contains(nextState.getSequenceString())) {
+
+        }
+      }
+    }
+
+    return this.frontier;
+  }
 
   static class Domino {
     String label;
@@ -20,21 +80,36 @@ public class Graph {
   }
 
   static class State {
-    LinkedList<Domino> dominoList;
+    LinkedList<Domino> dominoList = new LinkedList<Domino>();
     String topString = "";
     String bottomString = "";
-    String diff;
+    String diff = "";
+    State parent;
+    LinkedList<State> children; // list possible children nodes
 
-    State(LinkedList<Domino> dominoList) {
+    // root node
+    State() {
+      this.parent = null;
+      this.children = new LinkedList<State>();
+    }
+
+    // State(State parent) {
+    // this.parent = parent;
+    // this.children = new LinkedList<State>();
+    // }
+
+    State(LinkedList<Domino> dominoList, State parent) {
       this.dominoList = dominoList;
 
-      for (Domino d : dominoList) {
+      this.children = new LinkedList<State>();
+      this.parent = parent;
+
+      for (Domino d : this.dominoList) {
         this.topString += d.top;
         this.bottomString += d.bottom;
       }
 
       if (dominoList.size() < 1 || this.topString.equals(this.bottomString)) {
-        this.diff = "";
       } else if (this.topString.length() >= this.bottomString.length()) {
         // top heavy string
         this.diff = "+" + this.topString.substring(this.bottomString.length(), this.topString.length());
@@ -44,10 +119,25 @@ public class Graph {
       }
     }
 
+    State getNextState(State s, Domino d) {
+      LinkedList<Domino> dominoList = s.dominoList;
+
+      dominoList.add(d);
+
+      State newState = new State(dominoList, s);
+
+      return newState;
+    }
+
     // returns false is the combinations of dominoes is not allowed
     Boolean isValid() {
-      int len = this.topString.length() >= this.bottomString.length() ? this.topString.length()
-          : this.bottomString.length();
+      int len = 0;
+
+      if (this.topString.length() <= this.bottomString.length()) {
+        len = this.topString.length();
+      } else {
+        len = this.bottomString.length();
+      }
 
       for (int i = 0; i < len; i++) {
         if (this.topString.charAt(i) != this.bottomString.charAt(i))
@@ -55,6 +145,18 @@ public class Graph {
       }
 
       return true;
+    }
+
+    // returns the string representation of dominoes in the list
+    // e.g. D1D2D3
+    String getSequenceString() {
+      String res = "";
+
+      for (Domino d : this.dominoList) {
+        res += d.label;
+      }
+
+      return res;
     }
   }
 
@@ -97,21 +199,17 @@ public class Graph {
       System.exit(1);
     }
 
-    LinkedList<State> states = new LinkedList<State>();
-
-    for (Domino d : dominoPool) {
-      System.out.println(d.label);
-    }
+    // for (Domino d : dominoPool) {
+    // System.out.println(d.label);
+    // }
 
     LinkedList<Domino> sample = new LinkedList<Domino>();
 
-    sample.add(dominoPool.get(dominoPool.size() - 1));
+    sample.add(dominoPool.get(0));
+    sample.add(dominoPool.get(0));
 
-    State s = new State(sample);
+    Graph g = new Graph(maxQueueSize, maxNumStates, verboseMode, dominoPool);
 
-    System.out.println(s.topString);
-    System.out.println(s.bottomString);
-    System.out.println(s.diff);
-    System.out.println(s.isValid());
+    g.BFS();
   }
 }
