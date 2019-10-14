@@ -6,25 +6,23 @@ import java.nio.file.Files;
 import java.util.*;
 
 public class Graph {
-  int maxQueueSize = 0;
-  int maxNumStates = 0; // max number of vertices in adj list
-  Boolean verboseMode = false;
+  int maxQueueSize = 0; // max frontier size
+  int maxNumStates = 0; // max number of states during Iterative Deepening
+  boolean verboseMode = false;
   int numDominoes = 0;
   LinkedList<Domino> dominoPool;
 
-  Queue<State> states; // states traversed during BFS
-  Queue<State> frontier; // queue returned after BFS
-  Set<String> explored; // stores a set of domino sequences
+  Queue<State> frontier; // returned after BFS, used for Iterative Deepening
+  HashMap<String, State> explored; // map of explored states, key is the diff of the state
 
-  Graph(int maxQueueSize, int maxNumStates, Boolean verboseMode, LinkedList<Domino> dominoPool) {
+  Graph(int maxQueueSize, int maxNumStates, boolean verboseMode, LinkedList<Domino> dominoPool) {
     this.maxQueueSize = maxQueueSize;
     this.maxNumStates = maxNumStates;
     this.verboseMode = verboseMode;
     this.dominoPool = dominoPool;
 
-    this.states = new LinkedList<State>();
-    this.frontier = new LinkedList<State>(); // frontier of states returned used in iter
-    this.explored = new HashSet<String>();
+    this.frontier = new LinkedList<State>(); // frontier of states returned used in Iterative Deepening
+    this.explored = new HashMap<String, State>(); // key is the diff of the state
   }
 
   // should return frontier queue
@@ -32,39 +30,83 @@ public class Graph {
   Queue<State> BFS() {
     State initialState = new State();
 
-    // add initial domino nodes from the pool
-    for (Domino d : this.dominoPool) {
-      LinkedList<Domino> dominoList = new LinkedList<Domino>();
-      dominoList.add(d);
+    this.frontier.add(initialState);
 
-      State newState = new State(dominoList, initialState);
-
-      if (newState.isValid()) {
-        this.states.add(newState);
-        this.frontier.add(newState);
-        this.explored.add(newState.getSequenceString());
+    int counter = 0;
+    while (!this.frontier.isEmpty() && counter <= this.maxNumStates) {
+      if (this.frontier.size() >= this.maxQueueSize) {
+        break;
       }
-    }
 
-    while (!this.states.isEmpty()) {
-      if (this.explored.size() >= this.maxNumStates)
-        break;
-
-      if (this.frontier.size() >= this.maxQueueSize)
-        break;
-
-      State currentState = this.states.remove();
+      State currentState = this.frontier.remove();
 
       for (Domino d : this.dominoPool) {
         State nextState = currentState.getNextState(currentState, d);
 
-        if (nextState.isValid() && !this.explored.contains(nextState.getSequenceString())) {
+        if (nextState.isValid() && !this.explored.containsKey(nextState.diff)) {
+          counter++;
 
+          // this.states.add(nextState);
+          this.frontier.add(nextState);
+          this.explored.put(nextState.diff, nextState);
+
+          if (this.verboseMode)
+            System.out.println(nextState);
         }
       }
     }
 
     return this.frontier;
+  }
+
+  void DFS(State s) {
+    if (this.verboseMode) {
+      System.out.printf("\nPERFORMING DFS ON NODE:\n*** %s ***\n\n", s);
+    }
+
+    Stack<State> stateStack = new Stack<State>();
+
+    stateStack.push(s);
+
+    int counter = 0;
+    while (!stateStack.isEmpty() && counter <= this.maxNumStates) {
+      State currentState = stateStack.pop();
+
+      for (Domino d : this.dominoPool) {
+        State nextState = currentState.getNextState(currentState, d);
+
+        if (nextState.isValid() && !this.explored.containsKey(nextState.diff)) {
+          counter++;
+
+          stateStack.push(nextState);
+          this.explored.put(nextState.diff, nextState);
+
+          if (this.verboseMode)
+            System.out.println(nextState);
+        }
+      }
+    }
+  }
+
+  // runs BFS and then DFS for each node in the frontier
+  void solve() {
+    if (this.verboseMode) {
+      System.out.println("====BFS SEARCH====");
+    }
+    Queue<State> frontier = this.BFS();
+
+    // reset explored
+    this.explored = new HashMap<String, State>();
+
+    if (this.verboseMode) {
+      System.out.println("\n====BEGIN ITERATIVE DEEPENING====\n");
+    }
+    while (!frontier.isEmpty()) {
+      this.DFS(frontier.remove());
+    }
+
+    // no solution was found
+    System.out.println("\n====No Solution Found====\n");
   }
 
   static class Domino {
@@ -80,29 +122,18 @@ public class Graph {
   }
 
   static class State {
-    LinkedList<Domino> dominoList = new LinkedList<Domino>();
+    LinkedList<Domino> dominoList;
     String topString = "";
     String bottomString = "";
     String diff = "";
-    State parent;
-    LinkedList<State> children; // list possible children nodes
 
     // root node
     State() {
-      this.parent = null;
-      this.children = new LinkedList<State>();
+      this.dominoList = new LinkedList<Domino>();
     }
 
-    // State(State parent) {
-    // this.parent = parent;
-    // this.children = new LinkedList<State>();
-    // }
-
-    State(LinkedList<Domino> dominoList, State parent) {
+    State(LinkedList<Domino> dominoList) {
       this.dominoList = dominoList;
-
-      this.children = new LinkedList<State>();
-      this.parent = parent;
 
       for (Domino d : this.dominoList) {
         this.topString += d.top;
@@ -120,17 +151,29 @@ public class Graph {
     }
 
     State getNextState(State s, Domino d) {
-      LinkedList<Domino> dominoList = s.dominoList;
+      LinkedList<Domino> dominoList = new LinkedList<Domino>();
+
+      // deep copy
+      for (Domino domino : s.dominoList) {
+        dominoList.add(domino);
+      }
 
       dominoList.add(d);
 
-      State newState = new State(dominoList, s);
+      State newState = new State(dominoList);
+
+      if (newState.isGoalState()) {
+        System.out.println(newState);
+        System.out.println("\n====FOUND GOAL STATE====");
+        System.out.printf("Goal State: %s\n\n", newState);
+        System.exit(0);
+      }
 
       return newState;
     }
 
     // returns false is the combinations of dominoes is not allowed
-    Boolean isValid() {
+    boolean isValid() {
       int len = 0;
 
       if (this.topString.length() <= this.bottomString.length()) {
@@ -147,6 +190,16 @@ public class Graph {
       return true;
     }
 
+    boolean isGoalState() {
+      if (this.dominoList.size() < 1)
+        return false;
+
+      if (this.topString.length() != this.bottomString.length())
+        return false;
+
+      return this.isValid();
+    }
+
     // returns the string representation of dominoes in the list
     // e.g. D1D2D3
     String getSequenceString() {
@@ -157,6 +210,23 @@ public class Graph {
       }
 
       return res;
+    }
+
+    @Override
+    public String toString() {
+      String res = "{ ";
+
+      for (int i = 0; i < this.dominoList.size(); i++) {
+        Domino d = this.dominoList.get(i);
+
+        res += d.label;
+
+        if (i != this.dominoList.size() - 1) {
+          res += ", ";
+        }
+      }
+
+      return res + " }";
     }
   }
 
@@ -170,7 +240,7 @@ public class Graph {
 
     int maxQueueSize = 0;
     int maxNumStates = 0;
-    Boolean verboseMode = false;
+    boolean verboseMode = false;
     int numDominoes = 0;
     LinkedList<Domino> dominoPool = new LinkedList<Domino>();
 
@@ -180,7 +250,7 @@ public class Graph {
 
       maxQueueSize = Integer.parseInt(lines.get(0).trim());
       maxNumStates = Integer.parseInt(lines.get(1).trim());
-      verboseMode = Boolean.parseBoolean(lines.get(2).trim());
+      verboseMode = lines.get(2).trim().equals("1") ? true : false;
       numDominoes = Integer.parseInt(lines.get(3).trim());
 
       for (int i = 1; i <= numDominoes; i++) {
@@ -199,17 +269,8 @@ public class Graph {
       System.exit(1);
     }
 
-    // for (Domino d : dominoPool) {
-    // System.out.println(d.label);
-    // }
-
-    LinkedList<Domino> sample = new LinkedList<Domino>();
-
-    sample.add(dominoPool.get(0));
-    sample.add(dominoPool.get(0));
-
     Graph g = new Graph(maxQueueSize, maxNumStates, verboseMode, dominoPool);
 
-    g.BFS();
+    g.solve();
   }
 }
