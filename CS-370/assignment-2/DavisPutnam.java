@@ -182,7 +182,7 @@ public class DavisPutnam {
     try {
       List<String> lines = Files.readAllLines(new File(filePath).toPath(), Charset.defaultCharset());
 
-      List<Clause> S = new LinkedList<Clause>(); // set of clauses
+      List<Clause> S = new LinkedList<Clause>(); // unique set of clauses
       Map<String, AtomValue> V = new HashMap<String, AtomValue>(); // truth assignments per atoms
 
       List<String> extraLines = new LinkedList<String>();
@@ -215,8 +215,10 @@ public class DavisPutnam {
           clause.literals.add(L);
         }
 
-        // unique set of clauses
-        // ? didn't want to use Set interface as I want to retrieve elements by index
+        /*
+         * I didn't want to use Set interface as I want to have the ability to retrieve
+         * elements by index
+         */
         if (!S.contains(clause)) {
           S.add(clause);
         }
