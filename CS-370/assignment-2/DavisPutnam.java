@@ -42,6 +42,15 @@ public class DavisPutnam {
       }
     }
 
+    public boolean truthEvaluation(Valuation valuation) {
+      switch (valuation) {
+      case TRUE:
+        return true;
+      default:
+        return false;
+      }
+    }
+
     @Override
     public int hashCode() {
       return literal.hashCode();
@@ -154,14 +163,32 @@ public class DavisPutnam {
     }
   }
 
+  public static boolean evaluateClause(Clause clause, Map<String, Valuation> V) {
+
+    for (Literal L : clause.literals) {
+      Valuation valuation = V.get(L.atom);
+      if (L.truthEvaluation(valuation)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   // returns whether or not the set of clauses is satisfiable
   public static boolean DP_HELPER(SortedSet<String> ATOMS, SortedSet<Clause> S, Map<String, Valuation> V) {
-    // solution found, S is null
-    // if (S.isEmpty()) {
-    for (Map.Entry<String, Valuation> entry : V.entrySet()) {
-      entry.setValue(Valuation.TRUE);
+    // 1) solution found, S is null, assign remaining UNBOUNDED ATOMS to TRUE
+    if (S.isEmpty()) {
+      for (Map.Entry<String, Valuation> entry : V.entrySet()) {
+        if (entry.getValue().equals(Valuation.UNBOUND)) {
+          entry.setValue(Valuation.TRUE);
+        }
+      }
+
+      return true;
     }
-    // }
+
+    // 2) return null
 
     return true;
   }
