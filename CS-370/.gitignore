@@ -1,4 +1,4 @@
-!*.tx
+!*.txt
 dist/
 
 # npm

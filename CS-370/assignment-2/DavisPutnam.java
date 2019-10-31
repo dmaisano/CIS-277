@@ -8,18 +8,24 @@ import java.util.regex.*;
 
 public class DavisPutnam {
 
-  public enum AtomValue {
+  public enum Valuation {
     UNBOUND, TRUE, FALSE;
   }
 
-  static class Atom {
+  static class Literal {
     public String atom;
+    public String literal;
+    public boolean isNegated;
 
-    public Atom() {
+    public Literal() {
       this.atom = null;
+      this.literal = null;
+      this.isNegated = false;
     }
 
-    public Atom(String literal) {
+    public Literal(String literalString) {
+      this.literal = literalString;
+
       Matcher matcher = Pattern.compile("[1-9]+").matcher(literal);
 
       if (matcher.find()) {
@@ -28,40 +34,6 @@ public class DavisPutnam {
         System.out.printf("INVALID LITERAL: %s\n", literal);
         System.exit(-1);
       }
-    }
-
-    public Atom getAtomObj() {
-      return this;
-    }
-
-    @Override
-    public int hashCode() {
-      return this.atom.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (obj instanceof Atom) {
-        return ((Atom) obj).atom.equals(this.atom);
-      }
-
-      return false;
-    }
-  }
-
-  static class Literal extends Atom {
-    public String literal;
-    public boolean isNegated;
-
-    public Literal() {
-      super();
-      this.literal = null;
-      this.isNegated = false;
-    }
-
-    public Literal(String literalString) {
-      super(literalString);
-      this.literal = literalString;
 
       if (literal.contains("-")) {
         this.isNegated = true;
@@ -85,7 +57,7 @@ public class DavisPutnam {
     }
   }
 
-  static class Clause {
+  static class Clause implements Comparable<Clause> {
     public LinkedList<Literal> literals;
     public boolean isSatisfied;
 
@@ -149,6 +121,21 @@ public class DavisPutnam {
       return false;
     }
 
+    public String getLiteralString() {
+      String res = "";
+
+      for (Literal literal : this.literals) {
+        res += literal;
+      }
+
+      return res;
+    }
+
+    @Override
+    public int compareTo(Clause clause) {
+      return this.getLiteralString().compareTo(clause.getLiteralString());
+    }
+
     @Override
     public String toString() {
       String res = "";
@@ -167,8 +154,16 @@ public class DavisPutnam {
     }
   }
 
-  public void DP_HELPER() {
+  // returns whether or not the set of clauses is satisfiable
+  public static boolean DP_HELPER(SortedSet<String> ATOMS, SortedSet<Clause> S, Map<String, Valuation> V) {
+    // solution found, S is null
+    // if (S.isEmpty()) {
+    for (Map.Entry<String, Valuation> entry : V.entrySet()) {
+      entry.setValue(Valuation.TRUE);
+    }
+    // }
 
+    return true;
   }
 
   public static void main(String[] args) {
@@ -182,8 +177,9 @@ public class DavisPutnam {
     try {
       List<String> lines = Files.readAllLines(new File(filePath).toPath(), Charset.defaultCharset());
 
-      List<Clause> S = new LinkedList<Clause>(); // unique set of clauses
-      Map<String, AtomValue> V = new HashMap<String, AtomValue>(); // truth assignments per atoms
+      SortedSet<String> ATOMS = new TreeSet<String>(); // set of atoms
+      SortedSet<Clause> S = new TreeSet<Clause>(); // unique set of clauses
+      Map<String, Valuation> V = new HashMap<String, Valuation>(); // truth assignments per atoms
 
       List<String> extraLines = new LinkedList<String>();
       boolean sawZero = false;
@@ -203,42 +199,61 @@ public class DavisPutnam {
           continue;
         }
 
+        if (line.isEmpty()) {
+          continue;
+        }
+
         Clause clause = new Clause();
 
         for (String literal : line.split("\\s")) {
           Literal L = new Literal(literal);
 
+          // set initial atoms in V to UNBOUND
           if (!V.containsKey(L.atom)) {
-            V.put(L.atom, AtomValue.UNBOUND);
+            ATOMS.add(L.atom);
+            V.put(L.atom, Valuation.UNBOUND);
           }
 
           clause.literals.add(L);
         }
 
-        /*
-         * I didn't want to use Set interface as I want to have the ability to retrieve
-         * elements by index
-         */
-        if (!S.contains(clause)) {
-          S.add(clause);
-        }
+        // prevents adding duplicates (Sorted Set)
+        S.add(clause);
       }
 
-      for (Map.Entry<String, AtomValue> entry : V.entrySet()) {
-        System.out.printf("%s : %s\n", entry.getKey(), entry.getValue());
+      if (ATOMS.size() < 1) {
+        throw new Exception("NO ATOMS");
       }
 
+      if (S.size() < 1) {
+        throw new Exception("NO LITERALS");
+      }
+
+      boolean isSat = DP_HELPER(ATOMS, S, V);
+
+      for (Map.Entry<String, Valuation> entry : V.entrySet()) {
+        System.out.printf("%s : %s\n", entry.getKey(), entry.getValue() == Valuation.TRUE ? "T" : "F");
+      }
+
+      System.out.println("\n");
       for (Clause clause : S) {
         System.out.println(clause);
+      }
+
+      System.out.println("\n");
+      if (isSat) {
+        for (String line : extraLines) {
+          System.out.println(line);
+        }
       }
 
     } catch (IOException e) {
       System.out.printf("Unable to open file, \"%s\"\n", filePath);
       System.exit(1);
     } catch (Exception e) {
-      System.out.println("Error parsing input file");
+      System.out.println("===CAUGHT EXCEPTION===");
       System.out.println(e);
-      System.exit(1);
+      System.exit(2);
     }
   }
 }
