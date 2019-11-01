@@ -9,7 +9,7 @@ import java.util.regex.*;
 public class DavisPutnam {
 
   public enum Valuation {
-    UNBOUND, TRUE, FALSE;
+    NULL, UNBOUND, TRUE, FALSE;
   }
 
   static class Literal {
@@ -26,7 +26,7 @@ public class DavisPutnam {
     public Literal(String literalString) {
       this.literal = literalString;
 
-      Matcher matcher = Pattern.compile("[1-9]+").matcher(literal);
+      Matcher matcher = Pattern.compile("\\d+").matcher(literal);
 
       if (matcher.find()) {
         this.atom = matcher.group(0);
@@ -42,12 +42,14 @@ public class DavisPutnam {
       }
     }
 
-    public boolean truthEvaluation(Valuation valuation) {
+    public Valuation truthEvaluation(Valuation valuation) {
       switch (valuation) {
       case TRUE:
-        return true;
+        return this.isNegated ? Valuation.FALSE : Valuation.TRUE;
+      case FALSE:
+        return this.isNegated ? Valuation.TRUE : Valuation.FALSE;
       default:
-        return false;
+        return Valuation.NULL;
       }
     }
 
@@ -163,11 +165,11 @@ public class DavisPutnam {
     }
   }
 
-  public static boolean evaluateClause(Clause clause, Map<String, Valuation> V) {
+  public static boolean evaluateClause(Clause clause, Map<String, Valuation> V) { // <ATOM, TRUTH_VALUE>
 
     for (Literal L : clause.literals) {
       Valuation valuation = V.get(L.atom);
-      if (L.truthEvaluation(valuation)) {
+      if (L.truthEvaluation(valuation) == Valuation.TRUE) {
         return true;
       }
     }
@@ -206,6 +208,11 @@ public class DavisPutnam {
 
       SortedSet<String> ATOMS = new TreeSet<String>(); // set of atoms
       SortedSet<Clause> S = new TreeSet<Clause>(); // unique set of clauses
+
+      /*
+       * TODO: need to have a mechanism to keep track of last Valuation assignment in
+       * alg Maybe use a Stack of the Valuation Map???
+       */
       Map<String, Valuation> V = new HashMap<String, Valuation>(); // truth assignments per atoms
 
       List<String> extraLines = new LinkedList<String>();
