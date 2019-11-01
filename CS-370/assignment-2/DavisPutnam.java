@@ -18,36 +18,36 @@ public class DavisPutnam {
     public boolean isNegated;
 
     public Literal() {
-      this.atom = null;
-      this.literal = null;
-      this.isNegated = false;
+      atom = null;
+      literal = null;
+      isNegated = false;
     }
 
     public Literal(String literalString) {
-      this.literal = literalString;
+      literal = literalString;
 
       Matcher matcher = Pattern.compile("\\d+").matcher(literal);
 
       if (matcher.find()) {
-        this.atom = matcher.group(0);
+        atom = matcher.group(0);
       } else {
         System.out.printf("INVALID LITERAL: %s\n", literal);
         System.exit(-1);
       }
 
       if (literal.contains("-")) {
-        this.isNegated = true;
+        isNegated = true;
       } else {
-        this.isNegated = false;
+        isNegated = false;
       }
     }
 
     public Valuation truthEvaluation(Valuation valuation) {
       switch (valuation) {
       case TRUE:
-        return this.isNegated ? Valuation.FALSE : Valuation.TRUE;
+        return isNegated ? Valuation.FALSE : Valuation.TRUE;
       case FALSE:
-        return this.isNegated ? Valuation.TRUE : Valuation.FALSE;
+        return isNegated ? Valuation.TRUE : Valuation.FALSE;
       default:
         return Valuation.NULL;
       }
@@ -61,30 +61,38 @@ public class DavisPutnam {
     @Override
     public boolean equals(Object obj) {
       if (obj instanceof Literal) {
-        return ((Literal) obj).literal.equals(this.literal);
+        return ((Literal) obj).literal.equals(literal);
       }
 
       return false;
     }
   }
 
-  static class Clause implements Comparable<Clause> {
+  static class Clause {
     public LinkedList<Literal> literals;
     public boolean isSatisfied;
 
     public Clause() {
-      this.literals = new LinkedList<Literal>();
-      this.isSatisfied = false;
+      literals = new LinkedList<Literal>();
+      isSatisfied = false;
     }
 
     // copy constructor
     public Clause(Clause c) {
-      this.literals = new LinkedList<Literal>();
-      this.isSatisfied = c.isSatisfied;
+      literals = new LinkedList<Literal>();
+      isSatisfied = c.isSatisfied;
 
       for (Literal literal : c.literals) {
-        this.literals.add(literal);
+        literals.add(literal);
       }
+    }
+
+    public boolean isNullClause(Valuation valuation) {
+      if (literals.size() > 1) {
+        return false;
+      }
+
+      return literals.get(0).truthEvaluation(valuation) == Valuation.TRUE;
     }
 
     public Literal getLiteral(String literalString) {
@@ -94,14 +102,17 @@ public class DavisPutnam {
         }
       }
 
-      return new Literal();
+      return null;
     }
+
+    // return new Literal();
+    // }
 
     @Override
     public int hashCode() {
       String res = "";
 
-      for (Literal literal : this.literals) {
+      for (Literal literal : literals) {
         res += literal;
       }
 
@@ -113,11 +124,11 @@ public class DavisPutnam {
       if (obj instanceof Clause) {
         Clause otherClause = (Clause) obj;
 
-        if (this.literals.size() != otherClause.literals.size()) {
+        if (literals.size() != otherClause.literals.size()) {
           return false;
         }
 
-        for (int i = 0; i < this.literals.size(); i++) {
+        for (int i = 0; i < literals.size(); i++) {
           Literal lit1 = literals.get(i);
           Literal lit2 = otherClause.literals.get(i);
 
@@ -135,16 +146,11 @@ public class DavisPutnam {
     public String getLiteralString() {
       String res = "";
 
-      for (Literal literal : this.literals) {
+      for (Literal literal : literals) {
         res += literal;
       }
 
       return res;
-    }
-
-    @Override
-    public int compareTo(Clause clause) {
-      return this.getLiteralString().compareTo(clause.getLiteralString());
     }
 
     @Override
@@ -177,117 +183,144 @@ public class DavisPutnam {
     return false;
   }
 
-  // returns whether or not the set of clauses is satisfiable
-  public static boolean DP_HELPER(SortedSet<String> ATOMS, SortedSet<Clause> S, Map<String, Valuation> V) {
-    // 1) solution found, S is null, assign remaining UNBOUNDED ATOMS to TRUE
-    if (S.isEmpty()) {
-      for (Map.Entry<String, Valuation> entry : V.entrySet()) {
-        if (entry.getValue().equals(Valuation.UNBOUND)) {
-          entry.setValue(Valuation.TRUE);
+  public static class DP {
+    LinkedHashSet<String> ATOMS; // set of atoms
+    LinkedList<Clause> S; // unique set of clauses
+    Stack<Map<String, Valuation>> V; // history of truth evaluations
+
+    // history of the truth assignments
+    // this is a representation of the current index of V, useful for backtracking
+    int historyIndex;
+
+    public DP(LinkedHashSet<String> ATOMS, LinkedList<Clause> S, Map<String, Valuation> V) {
+      this.ATOMS = ATOMS;
+
+      this.S = S;
+
+      this.V = new Stack<Map<String, Valuation>>();
+      this.V.add(V);
+
+      historyIndex = 0;
+    }
+
+    public Map<String, Valuation> getTruthEvaluation() {
+      return V.elementAt(historyIndex);
+    }
+
+    // returns whether or not the set of clauses is satisfiable
+    public Valuation DP_HELPER() {
+      // 1) solution found, S is null, assign remaining UNBOUNDED ATOMS to TRUE
+      if (S.isEmpty() || S.size() < 1) {
+        for (Map.Entry<String, Valuation> entry : getTruthEvaluation().entrySet()) {
+          if (entry.getValue().equals(Valuation.UNBOUND)) {
+            entry.setValue(Valuation.TRUE);
+          }
         }
+
+        return Valuation.TRUE;
       }
 
-      return true;
+      for (Clause clause : S) {
+
+      }
+
+      return Valuation.TRUE;
     }
 
-    // 2) return null
+    public static void main(String[] args) {
+      if (args.length == 0) {
+        System.out.println("missing input file");
+        System.exit(0);
+      }
 
-    return true;
-  }
+      String filePath = args[0];
 
-  public static void main(String[] args) {
-    if (args.length == 0) {
-      System.out.println("missing input file");
-      System.exit(0);
-    }
+      try {
+        List<String> lines = Files.readAllLines(new File(filePath).toPath(), Charset.defaultCharset());
 
-    String filePath = args[0];
+        LinkedHashSet<String> ATOMS = new LinkedHashSet<String>(); // set of atoms
+        LinkedList<Clause> S = new LinkedList<Clause>(); // unique set of clauses
 
-    try {
-      List<String> lines = Files.readAllLines(new File(filePath).toPath(), Charset.defaultCharset());
+        /*
+         * TODO: need to have a mechanism to keep track of last Valuation assignment in
+         * alg Maybe use a Stack of the Valuation Map???
+         */
+        Map<String, Valuation> V = new HashMap<String, Valuation>(); // truth assignments per atoms
 
-      SortedSet<String> ATOMS = new TreeSet<String>(); // set of atoms
-      SortedSet<Clause> S = new TreeSet<Clause>(); // unique set of clauses
+        List<String> extraLines = new LinkedList<String>();
+        boolean sawZero = false;
 
-      /*
-       * TODO: need to have a mechanism to keep track of last Valuation assignment in
-       * alg Maybe use a Stack of the Valuation Map???
-       */
-      Map<String, Valuation> V = new HashMap<String, Valuation>(); // truth assignments per atoms
-
-      List<String> extraLines = new LinkedList<String>();
-      boolean sawZero = false;
-
-      for (String line : lines) {
-        if (!sawZero) {
-          line = line.trim();
-        }
-
-        if (line.equals("0")) {
-          sawZero = true;
-          continue;
-        }
-
-        if (sawZero) {
-          extraLines.add(line);
-          continue;
-        }
-
-        if (line.isEmpty()) {
-          continue;
-        }
-
-        Clause clause = new Clause();
-
-        for (String literal : line.split("\\s")) {
-          Literal L = new Literal(literal);
-
-          // set initial atoms in V to UNBOUND
-          if (!V.containsKey(L.atom)) {
-            ATOMS.add(L.atom);
-            V.put(L.atom, Valuation.UNBOUND);
+        for (String line : lines) {
+          if (!sawZero) {
+            line = line.trim();
           }
 
-          clause.literals.add(L);
+          if (line.equals("0")) {
+            sawZero = true;
+            continue;
+          }
+
+          if (sawZero) {
+            extraLines.add(line);
+            continue;
+          }
+
+          if (line.isEmpty()) {
+            continue;
+          }
+
+          Clause clause = new Clause();
+
+          for (String literal : line.split("\\s")) {
+            Literal L = new Literal(literal);
+
+            // set initial atoms in V to UNBOUND
+            if (!V.containsKey(L.atom)) {
+              ATOMS.add(L.atom);
+              V.put(L.atom, Valuation.UNBOUND);
+            }
+
+            clause.literals.add(L);
+          }
+
+          // prevents adding duplicates (Sorted Set)
+          S.add(clause);
         }
 
-        // prevents adding duplicates (Sorted Set)
-        S.add(clause);
-      }
-
-      if (ATOMS.size() < 1) {
-        throw new Exception("NO ATOMS");
-      }
-
-      if (S.size() < 1) {
-        throw new Exception("NO LITERALS");
-      }
-
-      boolean isSat = DP_HELPER(ATOMS, S, V);
-
-      for (Map.Entry<String, Valuation> entry : V.entrySet()) {
-        System.out.printf("%s : %s\n", entry.getKey(), entry.getValue() == Valuation.TRUE ? "T" : "F");
-      }
-
-      System.out.println("\n");
-      for (Clause clause : S) {
-        System.out.println(clause);
-      }
-
-      System.out.println("\n");
-      if (isSat) {
-        for (String line : extraLines) {
-          System.out.println(line);
+        if (ATOMS.size() < 1) {
+          throw new Exception("NO ATOMS");
         }
-      }
 
-    } catch (IOException e) {
-      System.out.printf("Unable to open file, \"%s\"\n", filePath);
-      System.exit(1);
-    } catch (Exception e) {
-      System.out.println("===CAUGHT EXCEPTION===");
-      System.out.println(e);
-      System.exit(2);
+        if (S.size() < 1) {
+          throw new Exception("NO LITERALS");
+        }
+
+        DP davisPutnamSolver = new DP(ATOMS, S, V);
+
+        for (Map.Entry<String, Valuation> entry : V.entrySet()) {
+          System.out.printf("%s : %s\n", entry.getKey(), entry.getValue() == Valuation.TRUE ? "T" : "F");
+        }
+
+        // System.out.println("\n");
+        // for (Clause clause : S) {
+        // System.out.println(clause);
+        // }
+
+        // System.out.println("\n");
+        // if (isSat.equals(Valuation.TRUE)) {
+        // for (String line : extraLines) {
+        // System.out.println(line);
+        // }
+        // }
+
+      } catch (IOException e) {
+        System.out.printf("Unable to open file, \"%s\"\n", filePath);
+        System.exit(1);
+      } catch (Exception e) {
+        System.out.println("===CAUGHT EXCEPTION===");
+        System.out.println(e);
+        System.exit(2);
+      }
     }
   }
 }
