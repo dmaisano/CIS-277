@@ -105,9 +105,6 @@ public class DavisPutnam {
       return null;
     }
 
-    // return new Literal();
-    // }
-
     @Override
     public int hashCode() {
       String res = "";
@@ -192,6 +189,8 @@ public class DavisPutnam {
     // this is a representation of the current index of V, useful for backtracking
     int historyIndex;
 
+    String currentAtomValuation;
+
     public DP(LinkedHashSet<String> ATOMS, LinkedList<Clause> S, Map<String, Valuation> V) {
       this.ATOMS = ATOMS;
 
@@ -220,8 +219,10 @@ public class DavisPutnam {
         return Valuation.TRUE;
       }
 
+      // loop over clauses
       for (Clause clause : S) {
-
+        // 2) if S contains NULL clause
+        if (clause.isNullClause(valuation))
       }
 
       return Valuation.TRUE;
@@ -241,10 +242,6 @@ public class DavisPutnam {
         LinkedHashSet<String> ATOMS = new LinkedHashSet<String>(); // set of atoms
         LinkedList<Clause> S = new LinkedList<Clause>(); // unique set of clauses
 
-        /*
-         * TODO: need to have a mechanism to keep track of last Valuation assignment in
-         * alg Maybe use a Stack of the Valuation Map???
-         */
         Map<String, Valuation> V = new HashMap<String, Valuation>(); // truth assignments per atoms
 
         List<String> extraLines = new LinkedList<String>();
