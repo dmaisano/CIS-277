@@ -2,4 +2,4 @@
 
 # must be in same dir to run script
 
-javac DavisPutnam.java && java DavisPutnam ./input.txt
+node dp.js input.txt

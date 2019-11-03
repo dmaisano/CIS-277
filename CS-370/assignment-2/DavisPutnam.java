@@ -159,7 +159,7 @@ public class DavisPutnam {
         Literal L = literals.get(i);
 
         if (i < literals.size() - 1) {
-          res += (L.literal + ", ");
+          res += (L.literal + " ");
         } else {
           res += L.literal;
         }
@@ -234,7 +234,7 @@ public class DavisPutnam {
     }
 
     private void backTrack() {
-
+      System.out.println("I RAN");
     }
 
     private void propagate() {
@@ -242,8 +242,28 @@ public class DavisPutnam {
         return;
       }
 
-      for (String string : ATOMS) {
+      for (int i = 0; i < getS().size(); i++) {
+        Clause clause = getS().get(i);
+        boolean clauseIsSatisfied = false;
 
+        for (int j = 0; j < clause.literals.size(); j++) {
+          Literal L = clause.literals.get(j);
+          String atom = L.atom;
+          Valuation valuation = getTruthEvaluation().get(atom);
+
+          if (valuation.equals(Valuation.TRUE)) {
+            clauseIsSatisfied = true;
+            break;
+          } else {
+            clause.literals.remove(j);
+            continue;
+          }
+        }
+
+        if (clauseIsSatisfied) {
+          System.out.printf("**REMOVING CLAUSE '%S'**\n", clause);
+          getS().remove(i);
+        }
       }
     }
 
@@ -289,6 +309,7 @@ public class DavisPutnam {
       for (Clause clause : getS()) {
         // 2) if S contains NULL clause, backtrack
         if (isNullClause(clause)) {
+          System.out.println("NULL CLAUSE");
           backTrack();
         }
 
@@ -440,24 +461,13 @@ public class DavisPutnam {
 
       DP davisPutnamSolver = new DP(ATOMS, S, V);
 
-      // for (Map.Entry<String, Valuation> entry : V.entrySet()) {
-      // System.out.printf("%s : %s\n", entry.getKey(), entry.getValue() ==
-      // Valuation.TRUE ? "T" : "F");
-      // }
-
-      // System.out.println("\n");
-      // for (Clause clause : S) {
-      // System.out.println(clause);
-      // }
-
       if (davisPutnamSolver.isSatisfied()) {
         for (Map.Entry<String, Valuation> entry : davisPutnamSolver.V.lastElement().entrySet()) {
-          System.out.printf("%S : %S\n", entry.getKey(), entry.getValue());
+          System.out.printf("%S %S\n", entry.getKey(), entry.getValue().equals(Valuation.TRUE) ? "T" : "F");
         }
-      } else {
-        System.out.println("0");
       }
 
+      System.out.println("0");
       for (String line : extraLines) {
         System.out.println(line);
       }
