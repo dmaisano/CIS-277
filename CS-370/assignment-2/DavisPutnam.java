@@ -16,14 +16,36 @@ public class DavisPutnam {
     public String atom;
     public String literal;
     public boolean isNegated;
+    public boolean isBackTracked;
 
     public Literal() {
       atom = null;
       literal = null;
       isNegated = false;
+      isBackTracked = false;
     }
 
     public Literal(String literalString) {
+      setLiteralString(literalString);
+
+      isBackTracked = false;
+    }
+
+    public Literal(String literalString, boolean isBackTracked) {
+      setLiteralString(literalString);
+
+      this.isBackTracked = isBackTracked;
+    }
+
+    // copy constructor
+    public Literal(Literal L) {
+      atom = L.atom;
+      literal = L.literal;
+      isNegated = L.isNegated;
+      isBackTracked = L.isBackTracked;
+    }
+
+    private void setLiteralString(String literalString) {
       literal = literalString;
 
       Matcher matcher = Pattern.compile("\\d+").matcher(literal);
@@ -42,12 +64,41 @@ public class DavisPutnam {
       }
     }
 
-    public Valuation truthEvaluation(Valuation valuation) {
-      switch (valuation) {
+    /**
+     * If a literal is negated, it may only be TRUE, if the assignment of that atom
+     * is FALSE, else TRUE
+     */
+    public Valuation determineAppropriateValuation() {
+      if (isNegated) {
+        return Valuation.FALSE;
+      }
+
+      return Valuation.TRUE;
+    }
+
+    /**
+     * Returns TRUE based on the current set of assignments and negation of the
+     * literal
+     * 
+     * @param V truth assignment map
+     * @return appropriate valuation
+     */
+    public Valuation truthEvaluation(Map<String, Valuation> V) {
+      switch (V.get(atom)) {
       case TRUE:
-        return isNegated ? Valuation.FALSE : Valuation.TRUE;
+        if (isNegated) {
+          return Valuation.FALSE;
+        } else {
+          return Valuation.TRUE;
+        }
       case FALSE:
-        return isNegated ? Valuation.TRUE : Valuation.FALSE;
+        if (isNegated) {
+          return Valuation.TRUE;
+        } else {
+          return Valuation.FALSE;
+        }
+      case UNBOUND:
+        return Valuation.UNBOUND;
       default:
         return Valuation.NULL;
       }
@@ -80,16 +131,24 @@ public class DavisPutnam {
       literals = new LinkedList<Literal>();
 
       for (Literal literal : c.literals) {
-        literals.add(literal);
+        literals.add(new Literal(literal));
       }
     }
 
-    public boolean isNullClause(Valuation valuation) {
-      if (literals.size() > 1) {
-        return false;
+    public boolean isNullClause(Map<String, Valuation> V) {
+      for (Literal literal : literals) {
+        switch (V.get(literal.atom)) {
+        case TRUE:
+        case UNBOUND:
+          return false;
+        default:
+          break;
+        }
       }
 
-      return literals.get(0).truthEvaluation(valuation) == Valuation.TRUE;
+      Literal L = literals.get(0);
+
+      return L.truthEvaluation(V) != Valuation.TRUE;
     }
 
     public boolean hasOnlyOneLiteral() {
@@ -141,16 +200,6 @@ public class DavisPutnam {
       return false;
     }
 
-    public String getLiteralString() {
-      String res = "";
-
-      for (Literal literal : literals) {
-        res += literal;
-      }
-
-      return res;
-    }
-
     @Override
     public String toString() {
       String res = "";
@@ -171,226 +220,103 @@ public class DavisPutnam {
 
   public static class DP {
     LinkedList<String> ATOMS;
-    Stack<LinkedList<Clause>> S;
-    Stack<Map<String, Valuation>> V;
+    LinkedList<Clause> ORIGINAL_S;
+    Map<String, Valuation> ORIGINAL_V;
 
-    // history of the truth assignments
-    // this is a representation of the current index of V, useful for backtracking
-    int historyIndex;
-    int currentAtomIndex;
+    LinkedList<Clause> S;
+    Map<String, Valuation> V;
 
-    String currentAtomValuation;
+    LinkedList<Literal> ASSIGNED_ATOMS;
 
-    // boolean isSatisfied;
+    int BACKTRACKED_ATOMS;
+
+    boolean IS_SATISFIED;
 
     public DP(LinkedList<String> ATOMS, LinkedList<Clause> S, Map<String, Valuation> V) {
       this.ATOMS = ATOMS;
-      this.S = new Stack<LinkedList<Clause>>();
-      this.V = new Stack<Map<String, Valuation>>();
 
-      this.S.add(S);
-      this.V.add(V);
+      ORIGINAL_S = S;
+      ORIGINAL_V = V;
 
-      historyIndex = 0;
-      currentAtomIndex = 0; // used to keep track of the current atom
+      this.S = DP.DEEP_COPY(ORIGINAL_S);
+      this.V = DP.DEEP_COPY(ORIGINAL_V);
 
-      // isSatisfied = true;
+      ASSIGNED_ATOMS = new LinkedList<Literal>();
 
-      // call DP Helper
-      DP_HELPER();
+      BACKTRACKED_ATOMS = 0;
+
+      this.IS_SATISFIED = DP_HELPER();
     }
 
-    // evaluate a clause using the current valuation from V at the current index in
-    // the history
-    public boolean evaluateClause(Clause clause) {
+    public static LinkedList<Clause> DEEP_COPY(LinkedList<Clause> S) {
+      LinkedList<Clause> copy = new LinkedList<Clause>();
 
-      boolean result = false;
-
-      Valuation valuation = getTruthEvaluation().get(getCurrentValuationAtom());
-
-      for (Literal L : clause.literals) {
-        if (L.truthEvaluation(valuation) == Valuation.TRUE) {
-          return true;
-        }
+      for (Clause clause : S) {
+        copy.add(new Clause(clause));
       }
 
-      return result;
+      return copy;
     }
 
-    private String getCurrentValuationAtom() {
-      return ATOMS.get(currentAtomIndex);
-    }
+    public static HashMap<String, Valuation> DEEP_COPY(Map<String, Valuation> V) {
+      HashMap<String, Valuation> copy = new HashMap<String, Valuation>();
 
-    private Valuation getCurrentValuation() {
-      return getTruthEvaluation().get(ATOMS.get(currentAtomIndex));
-    }
-
-    private LinkedList<Clause> getS() {
-      return S.elementAt(historyIndex);
-    }
-
-    private Map<String, Valuation> getTruthEvaluation() {
-      return V.elementAt(historyIndex);
-    }
-
-    private void backTrack() {
-      System.out.println("I RAN");
-    }
-
-    private void propagate() {
-      if (getCurrentValuation().equals(Valuation.UNBOUND)) {
-        return;
-      }
-
-      for (int i = 0; i < getS().size(); i++) {
-        Clause clause = getS().get(i);
-        boolean clauseIsSatisfied = false;
-
-        for (int j = 0; j < clause.literals.size(); j++) {
-          Literal L = clause.literals.get(j);
-          String atom = L.atom;
-          Valuation valuation = getTruthEvaluation().get(atom);
-
-          if (valuation.equals(Valuation.TRUE)) {
-            clauseIsSatisfied = true;
-            break;
-          } else {
-            clause.literals.remove(j);
-            continue;
-          }
-        }
-
-        if (clauseIsSatisfied) {
-          System.out.printf("**REMOVING CLAUSE '%S'**\n", clause);
-          getS().remove(i);
-        }
-      }
-    }
-
-    private boolean isNullClause(Clause clause) {
-      if (!clause.hasOnlyOneLiteral()) {
-        return true;
-      }
-
-      Literal L = clause.literals.getLast();
-      Valuation valuation = L.truthEvaluation(getTruthEvaluation().get(L.atom));
-
-      return !valuation.equals(Valuation.TRUE);
-    }
-
-    private boolean isSatisfied() {
-
-      for (Clause clause : getS()) {
-        for (Literal L : clause.literals) {
-          if (getTruthEvaluation().get(L.atom).equals(Valuation.TRUE)) {
-            return true;
-          }
-        }
-      }
-
-      return true;
-    }
-
-    // returns whether or not the set of clauses is satisfiable
-    public void DP_HELPER() {
-      // 1) solution found, S is null, assign remaining UNBOUNDED ATOMS to TRUE
-      if (S.isEmpty() || S.size() < 1) {
-        for (Map.Entry<String, Valuation> entry : getTruthEvaluation().entrySet()) {
-          if (entry.getValue().equals(Valuation.UNBOUND)) {
-            entry.setValue(Valuation.TRUE);
-          }
-        }
-      }
-
-      // used for checking if there are any literals with only one sign
-      LinkedHashSet<String> literalSet = new LinkedHashSet<String>();
-
-      // loop over clauses
-      for (Clause clause : getS()) {
-        // 2) if S contains NULL clause, backtrack
-        if (isNullClause(clause)) {
-          System.out.println("NULL CLAUSE");
-          backTrack();
-        }
-
-        for (Literal literal : clause.literals) {
-          if (!literalSet.contains(literal.literal)) {
-            literalSet.add(literal.literal);
-          }
-        }
-
-        // 4) S contains a clause with only one literal
-        if (clause.hasOnlyOneLiteral()
-            && getTruthEvaluation().get(clause.literals.get(0).atom).equals(Valuation.UNBOUND)) {
-          Valuation val = clause.literals.get(0).isNegated ? Valuation.FALSE : Valuation.TRUE;
-          getTruthEvaluation().replace(clause.literals.get(0).atom, val);
-        }
-      }
-
-      for (String literalString : literalSet) {
-        boolean isNegated = literalString.contains("-");
-        boolean isOnlyOneSign = !literalSet.contains(isNegated ? literalString.substring(1) : "-" + literalString);
-        String atom = isNegated ? literalString.substring(1) : literalString;
-
-        if (isOnlyOneSign && getTruthEvaluation().get(atom).equals(Valuation.UNBOUND)) {
-
-          getTruthEvaluation().replace(atom, isNegated ? Valuation.FALSE : Valuation.TRUE);
-          System.out.printf("FOUND ONLY ONE SIGN, %S, %S\n", atom, isNegated ? Valuation.FALSE : Valuation.TRUE);
-        }
-      }
-
-      propagate();
-
-      int i = 0;
-      for (Map.Entry<String, Valuation> entry : getTruthEvaluation().entrySet()) {
-        Valuation valuation = entry.getValue();
-
-        if (valuation.equals(Valuation.UNBOUND)) {
-          getTruthEvaluation().replace(entry.getKey(), Valuation.TRUE);
-          break;
-        }
-
-        // can't assign true to any remaining items in V
-        if (i == ATOMS.size() - 1) {
-          backTrack();
-        }
-
-        i++;
-      }
-
-      if (isSatisfied()) {
-        return;
-      }
-
-      LinkedList<Clause> SC = new LinkedList<Clause>();
-      for (Clause clause : getS()) {
-        SC.push(new Clause(clause));
-      }
-      S.add(SC);
-
-      Map<String, Valuation> VC = new HashMap<String, Valuation>();
-      for (Map.Entry<String, Valuation> entry : getTruthEvaluation().entrySet()) {
+      for (Map.Entry<String, Valuation> entry : V.entrySet()) {
+        String atom = entry.getKey();
         Valuation valuation = Valuation.UNBOUND;
 
         switch (entry.getValue()) {
-        case TRUE:
-          valuation = Valuation.TRUE;
-          break;
-        case FALSE:
-          valuation = Valuation.FALSE;
         case NULL:
           valuation = Valuation.NULL;
+          break;
+        case TRUE:
+          valuation = Valuation.UNBOUND;
+        case FALSE:
+          valuation = Valuation.FALSE;
         default:
           break;
         }
 
-        VC.put(entry.getKey(), valuation);
+        copy.put(atom, valuation);
       }
-      V.add(VC);
 
-      historyIndex++;
+      return copy;
+    }
 
-      DP_HELPER();
+    private void findLiteralsWithOneSign() {
+      Map<String, Boolean> foundLiterals = new HashMap<String, Boolean>();
+
+      Map<String, Valuation> uniqueLiterals = new HashMap<String, Valuation>();
+
+      for (Clause clause : S) {
+        for (Literal L : clause.literals) {
+          if (!foundLiterals.containsKey(L.atom)) {
+            foundLiterals.put(L.atom, L.isNegated);
+            // uniqueLiterals.put(L.atom);
+          } else {
+            // determine if existing literal is of same sign, else remove
+          }
+        }
+      }
+    }
+
+    private void backTrack() {
+    }
+
+    private void propagate() {
+    }
+
+    private boolean DP_HELPER() {
+      for (Literal L : ASSIGNED_ATOMS) {
+        this.V.replace(L.atom, L.truthEvaluation(V));
+      }
+
+      // ? S is null (solved)
+      if (S.size() < 1) {
+        return true;
+      }
+
+      return this.DP_HELPER();
     }
   }
 
@@ -461,11 +387,13 @@ public class DavisPutnam {
 
       DP davisPutnamSolver = new DP(ATOMS, S, V);
 
-      if (davisPutnamSolver.isSatisfied()) {
-        for (Map.Entry<String, Valuation> entry : davisPutnamSolver.V.lastElement().entrySet()) {
-          System.out.printf("%S %S\n", entry.getKey(), entry.getValue().equals(Valuation.TRUE) ? "T" : "F");
-        }
-      }
+      // if (davisPutnamSolver.isSatisfied()) {
+      // for (Map.Entry<String, Valuation> entry :
+      // davisPutnamSolver.V.lastElement().entrySet()) {
+      // System.out.printf("%S %S\n", entry.getKey(),
+      // entry.getValue().equals(Valuation.TRUE) ? "T" : "F");
+      // }
+      // }
 
       System.out.println("0");
       for (String line : extraLines) {
