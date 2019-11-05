@@ -8,13 +8,20 @@ import java.util.*;
 // reference: https://www.wikiwand.com/en/DPLL_algorithm
 
 public class DavisPutnam {
+
   public enum Valuation {
     NULL, UNBOUND, FALSE, TRUE
   }
 
+  // ? global variables
+  private static boolean satIsSolved = false, endOfClauses = false;
+  private static TreeSet<Integer> ATOMS;
+  private static LinkedList<HashMap<Integer, Valuation>> S;
+  private static HashMap<Integer, Valuation> V;
+
   public static void DP(LinkedList<HashMap<Integer, Valuation>> S, int atom, Valuation atomValuation) {
     LinkedList<HashMap<Integer, Valuation>> nextSetOfClauses = new LinkedList<HashMap<Integer, Valuation>>();
-    Set<Integer> remainingAtoms = new TreeSet<Integer>();
+    TreeSet<Integer> remainingAtoms = new TreeSet<Integer>();
 
     for (HashMap<Integer, Valuation> clause : S) {
       // assume the clause to be null
@@ -23,7 +30,7 @@ public class DavisPutnam {
       // determine if clause will be removed
       boolean removeClause = false;
 
-      Set<Integer> tmpAtoms = new TreeSet<Integer>();
+      TreeSet<Integer> tmpAtoms = new TreeSet<Integer>();
       for (Map.Entry<Integer, Valuation> entry : clause.entrySet()) {
         int literal = entry.getKey();
         int entryAtom = Math.abs(literal);
@@ -58,7 +65,7 @@ public class DavisPutnam {
         for (Map.Entry<Integer, Valuation> entry : clause.entrySet()) {
           int literal = entry.getKey();
           int entryAtom = Math.abs(literal);
-          Valuation entryAtomValuation = entry.getValue();
+
           if (entryAtom == atom) {
             clause.replace(literal, Valuation.UNBOUND);
           }
@@ -73,6 +80,114 @@ public class DavisPutnam {
         remainingAtoms.addAll(tmpAtoms);
       }
     }
+
+    // S in NULL, clauses have been satisfied
+    if (nextSetOfClauses.size() == 0) {
+      satIsSolved = true;
+      V.replace(atom, atomValuation);
+      return;
+    }
+
+    DP_HELPER(nextSetOfClauses, remainingAtoms);
+  }
+
+  public static void DP_HELPER(LinkedList<HashMap<Integer, Valuation>> clauses, TreeSet<Integer> atoms) {
+    for (int atom : atoms) {
+      boolean isPureLiteral = true;
+      Valuation pureValuation = Valuation.UNBOUND;
+
+      // loop and check for either pure literals or clause with only one literal
+      for (HashMap<Integer, Valuation> clause : clauses) {
+        for (Map.Entry<Integer, Valuation> entry : clause.entrySet()) {
+          int literal = entry.getKey();
+          int entryAtom = Math.abs(literal);
+          Valuation entryAtomValuation = entry.getValue();
+
+          if (clause.size() == 1 && literal == atom) {
+            // positive litral
+            if (literal > 0) {
+              DP(clauses, literal, Valuation.UNBOUND);
+              if (satIsSolved) {
+                V.replace(literal, Valuation.TRUE);
+              } else {
+                for (Map.Entry<Integer, Valuation> atomToUndo : clause.entrySet()) {
+                  if (Math.abs(atomToUndo.getKey()) == literal) {
+                    clause.replace(atomToUndo.getKey(), Valuation.UNBOUND);
+                  }
+                }
+              }
+
+              return;
+            }
+          }
+
+          if (entryAtom == atom) {
+            // positive literal
+            if (literal > 0) {
+              if (pureValuation == Valuation.UNBOUND) {
+                pureValuation = Valuation.TRUE;
+              } else if (pureValuation != Valuation.TRUE) {
+                isPureLiteral = false;
+              }
+            } else {
+              if (pureValuation == Valuation.UNBOUND) {
+                pureValuation = Valuation.FALSE;
+              } else if (pureValuation != Valuation.FALSE) {
+                isPureLiteral = false;
+              }
+            }
+          }
+        }
+      }
+      if (isPureLiteral) {
+        DP(clauses, atom, pureValuation);
+        if (satIsSolved) {
+          V.replace(atom, pureValuation);
+        } else {
+          for (HashMap<Integer, Valuation> clause : clauses) {
+            for (Map.Entry<Integer, Valuation> atomToUndo : clause.entrySet()) {
+              if (Math.abs(atomToUndo.getKey()) == atom) {
+                clause.replace(atomToUndo.getKey(), Valuation.UNBOUND);
+              }
+            }
+          }
+        }
+        return;
+      }
+    }
+
+    DP(clauses, atoms.first(), Valuation.TRUE);
+
+    if (satIsSolved) {
+      V.replace(atoms.first(), Valuation.TRUE);
+      return;
+    } else {
+      for (HashMap<Integer, Valuation> clause : clauses) {
+        for (Map.Entry<Integer, Valuation> atomToUndo : clause.entrySet()) {
+          int literal = atomToUndo.getKey();
+          int entryAtom = Math.abs(literal);
+          Valuation entryAtomValuation = atomToUndo.getValue();
+
+          if (entryAtom == atoms.first()) {
+            clause.replace(entryAtom, Valuation.UNBOUND);
+          }
+        }
+      }
+    }
+
+    DP(clauses, atoms.first(), Valuation.FALSE);
+
+    if (satIsSolved) {
+      V.replace(atoms.first(), Valuation.FALSE);
+    } else {
+      for (HashMap<Integer, Valuation> clause : clauses) {
+        for (Map.Entry<Integer, Valuation> atomToUndo : clause.entrySet()) {
+          if (Math.abs(atomToUndo.getKey()) == atoms.first()) {
+            clause.replace(atomToUndo.getKey(), Valuation.UNBOUND);
+          }
+        }
+      }
+    }
   }
 
   public static void main(String[] args) {
@@ -84,18 +199,11 @@ public class DavisPutnam {
     String filePath = args[0];
 
     try {
-      Set<Integer> ATOMS = new TreeSet<Integer>();
-      LinkedList<HashMap<Integer, Valuation>> S = new LinkedList<HashMap<Integer, Valuation>>();
-      HashMap<Integer, Valuation> V = new HashMap<Integer, Valuation>();
+      ATOMS = new TreeSet<Integer>();
+      S = new LinkedList<HashMap<Integer, Valuation>>();
+      V = new HashMap<Integer, Valuation>();
 
       List<String> lines = Files.readAllLines(new File(filePath).toPath(), Charset.defaultCharset());
-
-      // LinkedList<String> ATOMS = new LinkedList<String>(); // set of atoms
-      // LinkedList<Clause> S = new LinkedList<Clause>(); // unique set of clauses
-
-      // Map<String, Valuation> V = new HashMap<String, Valuation>(); // truth
-      // assignments per atoms
-
       List<String> extraLines = new LinkedList<String>();
       boolean sawZero = false;
 
@@ -131,6 +239,35 @@ public class DavisPutnam {
         }
 
         S.add(clause);
+      }
+
+      DP_HELPER(S, ATOMS);
+
+      if (satIsSolved) {
+        for (Map.Entry<Integer, Valuation> entry : V.entrySet()) {
+          String truthAssignment = "???";
+          int atom = entry.getKey();
+
+          switch (entry.getValue()) {
+          // UNBOUNDS are assumed to be TRUE (can really be TRUE OR FALSE)
+          case UNBOUND:
+          case TRUE:
+            truthAssignment = "T";
+            break;
+          case FALSE:
+            truthAssignment = "F";
+            break;
+          default:
+            break;
+          }
+
+          System.out.printf("%d %s\n", atom, truthAssignment);
+        }
+      }
+
+      System.out.println("0");
+      for (String line : extraLines) {
+        System.out.println(line);
       }
 
     } catch (IOException e) {
