@@ -1,6 +1,5 @@
 from math import pow
 
-
 def addVector(a, b):
     return list(map(sum, zip(a, b)))
 
@@ -25,7 +24,11 @@ def examplarDistance(z, vector):
     return round(dist, 3)
 
 
-a = [[1, 1, 2], [2, 1, 1], [2, 0, 1]]
+a = [
+    [1, 1, 2],
+    [2, 1, 1],
+    [2, 0, 1]
+]
 
 b = [
     [0, 1, 2],
@@ -53,4 +56,4 @@ print(distGA)
 print(distGB)
 print(distGC)
 
-print(distGA + distGB + distGC)
+print("objective function result:", round(distGA + distGB + distGC, 3))
