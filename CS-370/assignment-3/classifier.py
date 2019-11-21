@@ -6,12 +6,18 @@ Gradient-Based Classifier
 
 from typing import List, Dict, Tuple
 from sys import argv
+import argparse
 from os import path
 from math import inf, isinf
 
 
+parser = argparse.ArgumentParser(description="Gradient-Based Classifier Program")
+parser.add_argument("-v", "--verbose", help="verbose output flag", default=False)
+
+args = parser.parse_args()
+
 if len(argv) < 2:
-    print("Missing input file arg")
+    print("Missing args")
     exit(1)
 
 verboseMode = True if "-v" or "--verbose" in argv else False
@@ -40,7 +46,8 @@ for line in inputFile:
 
 
 def initializeVectors(trainingSet: Dict[str, List[int]]):
-    print("initializeVectors")
+    for category, attributeList in trainingSet.items():
+        print(category)
 
     return {}
 
