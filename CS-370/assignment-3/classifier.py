@@ -6,10 +6,9 @@ Gradient-Based Classifier
 
 from typing import List, Dict, Tuple
 from operator import itemgetter
-from sys import argv
-import argparse
-from os import path
 from math import inf, isinf
+from os import path
+import argparse
 
 
 parser = argparse.ArgumentParser(description="Gradient-Based Classifier Program")
@@ -50,9 +49,15 @@ for line in inputFile:
         trainingSet[category] = [predictiveAttributes]
 
 
+# print helper function
+def printVerbose(obj):
+    if verbose:
+        print(obj)
+
+
 def initializeVectors(trainingSet: Dict[str, List[int]]):
     for category, attributeList in trainingSet.items():
-        print(category)
+        print(category, attributeList)
 
     return {}
 
