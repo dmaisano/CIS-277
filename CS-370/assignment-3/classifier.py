@@ -89,8 +89,16 @@ def initializeVectors(
     history: List[Tuple[int, int]],
     categoryCount: Dict[str, List[int]],
 ):
-    G = {}
-    exemplarVector = []
+    def appendExemplar(copyTrainingSet, category, exemplarVector):
+        # try / catch is more performant than manually checking if the key in dict exists
+        try:
+            copyTrainingSet[category].append(exemplarVector)
+        except:
+            copyTrainingSet[category] = [exemplarVector]
+
+    G: Dict[str, List[int]] = {}
+    copyTrainingSet: Dict[str, List[List[int]]] = {}
+    exemplarVector: List[int] = []
 
     if isRandom:
         for category, count in categoryCount.items():
@@ -98,8 +106,20 @@ def initializeVectors(
                 exemplarVector = [
                     randint(minAttr, maxAttr) for (minAttr, maxAttr) in history
                 ]
+                appendExemplar(copyTrainingSet, category, exemplarVector)
+    else:
+        copyTrainingSet = trainingSet
 
-    return {}
+    # calculate the exemplar vectors
+    for category, vectors in copyTrainingSet.items():
+        sumation = [sum(x) for x in zip(*vectors)]
+        G[category] = list(map(lambda num: round(num / len(vectors), 3), sumation))
+
+    return G
+
+
+def computeAccuracy(G: Dict[str, List[int]], trainingSet: Dict[str, List[List[int]]]):
+    print("owo")
 
 
 def gradDescent(
@@ -111,10 +131,16 @@ def gradDescent(
     history: List[Tuple[int, int]],
     categoryCount: Dict[str, List[int]],
 ):
-    G = initializeVectors(trainingSet, isRandom, history, categoryCount)
+    G: Dict[str, List[int]] = initializeVectors(
+        trainingSet, isRandom, history, categoryCount
+    )
+
+    prevCost = inf
+
+    print(G)
 
 
 # print("training set", trainingSet)
-print("\nhistory", history)
+# print("\nhistory", history)
 # print("\ncategoryCount", categoryCount)
-gradDescent(trainingSet, step, epsilon, M, True, history, categoryCount)
+gradDescent(trainingSet, step, epsilon, M, False, history, categoryCount)
