@@ -6,7 +6,7 @@ Gradient-Based Classifier
 
 from typing import List, Dict, Tuple
 from operator import itemgetter
-from math import inf, isinf
+from math import inf, isinf, sqrt
 from random import randint
 from os import path
 import argparse
@@ -118,8 +118,32 @@ def initializeVectors(
     return G
 
 
+# assuming both vectors are of same length
+def getDistance(vect1: List[int], vect2: List[int]):
+    dist = 0
+
+    for i in range(len(vect2)):
+        dist += pow((vect2[i] - vect1[i]), 2)
+
+    return round(sqrt(dist), 3)
+
+
 def computeAccuracy(G: Dict[str, List[int]], trainingSet: Dict[str, List[List[int]]]):
-    print("owo")
+    numCorrect = 0
+
+    trainingSetLength = len(trainingSet.items())
+
+    # contains the exemplar vector and the classification attribute
+    closestExemplar: Tuple(List[int], str) = None
+
+    for exemplarCategory, exemplarVector in G.items():
+        for i in range(0, trainingSetLength):
+            category, vectors = trainingSet.items()[i]
+
+            if i == trainingSetLength - 1:
+                print(exemplarCategory)
+
+    return numCorrect / trainingSetLength
 
 
 def gradDescent(
@@ -135,7 +159,8 @@ def gradDescent(
         trainingSet, isRandom, history, categoryCount
     )
 
-    prevCost = inf
+    previousCost = inf
+    previousAccuracy = computeAccuracy(G, trainingSet)
 
     print(G)
 
