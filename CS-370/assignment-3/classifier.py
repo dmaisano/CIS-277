@@ -39,7 +39,9 @@ if M < 0:
 
 inputFile: List[str] = open(file, "r").readlines()
 
-trainingSet: Dict[str, List[int]] = {}
+# trainingSet: Dict[str, List[int]] = {}
+
+trainingSet: List[Tuple[List[int], str]] = []
 
 # contains the min and max value of each predictive attribute in u(X)
 history: List[Tuple[int, int]] = []
@@ -58,14 +60,14 @@ for line in inputFile:
     # u(Y), vector of predictive attributes
     predictiveAttributes: List[int] = list(map(int, line))
 
-    if category in trainingSet.keys():
-        trainingSet[category].append(predictiveAttributes)
+    trainingSet.append((predictiveAttributes, category))
+    allPredictiveAttributes.append(predictiveAttributes)
+
+    try:
         categoryCount[category] += 1
-    else:
-        trainingSet[category] = [predictiveAttributes]
+    except:
         categoryCount[category] = 1
 
-    allPredictiveAttributes.append(predictiveAttributes)
 
 # transpose the matrix of predictive attributes
 # reference: https://www.geeksforgeeks.org/transpose-matrix-single-line-python/
@@ -84,20 +86,23 @@ def printVerbose(obj):
 
 
 def initializeVectors(
-    trainingSet: Dict[str, List[List[int]]],
+    # trainingSet: Dict[str, List[List[int]]],
+    trainingSet: List[Tuple[List[int], str]],
     isRandom: bool,
     history: List[Tuple[int, int]],
     categoryCount: Dict[str, List[int]],
-):
-    def appendExemplar(copyTrainingSet, category, exemplarVector):
-        # try / catch is more performant than manually checking if the key in dict exists
-        try:
-            copyTrainingSet[category].append(exemplarVector)
-        except:
-            copyTrainingSet[category] = [exemplarVector]
+) -> List[Tuple[List[int], str]]:
+    # def appendExemplar(copyTrainingSet, category, exemplarVector):
+    #     # try / catch is more performant than manually checking if the key in dict exists
+    #     try:
+    #         copyTrainingSet[category].append(exemplarVector)
+    #     except:
+    #         copyTrainingSet[category] = [exemplarVector]
 
-    G: Dict[str, List[int]] = {}
-    copyTrainingSet: Dict[str, List[List[int]]] = {}
+    # G: Dict[str, List[int]] = {}
+    G: List[Tuple[List[int], str]] = []
+    copyTrainingSet: List[Tuple[List[int], str]] = []
+    # copyTrainingSet: Dict[str, List[List[int]]] = {}
     exemplarVector: List[int] = []
 
     if isRandom:
@@ -106,20 +111,41 @@ def initializeVectors(
                 exemplarVector = [
                     randint(minAttr, maxAttr) for (minAttr, maxAttr) in history
                 ]
-                appendExemplar(copyTrainingSet, category, exemplarVector)
+
+                copyTrainingSet.append((exemplarVector, category))
+                # G.append((exemplarVector, category))
+                # appendExemplar(copyTrainingSet, category, exemplarVector)
     else:
         copyTrainingSet = trainingSet
 
     # calculate the exemplar vectors
-    for category, vectors in copyTrainingSet.items():
-        sumation = [sum(x) for x in zip(*vectors)]
-        G[category] = list(map(lambda num: round(num / len(vectors), 3), sumation))
+    for category, categoryCount in categoryCount.items():
+        sumation = []
+
+        for trainingVector, trainingCategory in copyTrainingSet:
+            if trainingCategory != category:
+                continue
+
+            sumation.append(trainingVector)
+
+        sumation = [sum(x) for x in zip(*sumation)]
+
+        G.append(
+            (list(map(lambda num: round(num / categoryCount, 3), sumation)), category)
+        )
+
+    # for category, vectors in copyTrainingSet.items():
+    #     sumation = [sum(x) for x in zip(*vectors)]
+    #     G.append(
+    #         (list(map(lambda num: round(num / len(vectors), 3), sumation))), category
+    #     )
+    # G[category] = list(map(lambda num: round(num / len(vectors), 3), sumation))
 
     return G
 
 
 # assuming both vectors are of same length
-def getDistance(vect1: List[int], vect2: List[int]):
+def getDistance(vect1: List[int], vect2: List[int]) -> float:
     dist = 0
 
     for i in range(len(vect2)):
@@ -128,26 +154,41 @@ def getDistance(vect1: List[int], vect2: List[int]):
     return round(sqrt(dist), 3)
 
 
-def computeAccuracy(G: Dict[str, List[int]], trainingSet: Dict[str, List[List[int]]]):
+def computeAccuracy(
+    G: Dict[str, List[int]], trainingSet: List[Tuple[List[int], str]]
+) -> float:
     numCorrect = 0
 
-    trainingSetLength = len(trainingSet.items())
+    trainingCategoriesLen = len(trainingSet)
 
-    # contains the exemplar vector and the classification attribute
-    closestExemplar: Tuple(List[int], str) = None
+    # contains the exemplar vector, previous distance, and exemplar category
+    closestExemplar: Tuple[List[int], float, str] = ([], 0.0, "")
 
-    for exemplarCategory, exemplarVector in G.items():
-        for i in range(0, trainingSetLength):
-            category, vectors = trainingSet.items()[i]
+    # for exemplarCategory, exemplarVector in G.items():
+    #     for i in range(0, trainingSetLength):
+    #         category, vectors = trainingSet.items()[i]
+    #         vectorsLen = len(vectors)
 
-            if i == trainingSetLength - 1:
-                print(exemplarCategory)
+    #         for j in range(0, vectorsLen):
+    #             vector = vectors[j]
 
-    return numCorrect / trainingSetLength
+    #             newDistance = getDistance(exemplarVector, vector)
+
+    #             print(newDistance)
+
+    #             if i == vectorsLen - 1:
+    #                 return 0
+
+    # if i == trainingSetLength - 1:
+    #     print(exemplarCategory)
+
+    # return numCorrect / trainingSetLength
+    return float(0)
 
 
 def gradDescent(
-    trainingSet: Dict[str, List[List[int]]],
+    # trainingSet: Dict[str, List[List[int]]],
+    trainingSet: List[Tuple[List[int], str]],
     stepSize: float,
     epsilon: float,
     M: float,
@@ -155,14 +196,19 @@ def gradDescent(
     history: List[Tuple[int, int]],
     categoryCount: Dict[str, List[int]],
 ):
-    G: Dict[str, List[int]] = initializeVectors(
+    # G: Dict[str, List[int]] = initializeVectors(
+    #     trainingSet, isRandom, history, categoryCount
+    # )
+
+    G: List[Tuple[List[int], str]] = initializeVectors(
         trainingSet, isRandom, history, categoryCount
     )
 
-    previousCost = inf
-    previousAccuracy = computeAccuracy(G, trainingSet)
-
     print(G)
+
+    previousCost = inf
+    # computeAccuracy(G, trainingSet)
+    # previousAccuracy = computeAccuracy(G, trainingSet)
 
 
 # print("training set", trainingSet)
