@@ -92,12 +92,6 @@ def initializeVectors(
     history: List[Tuple[int, int]],
     categoryCount: Dict[str, List[int]],
 ) -> List[Tuple[List[int], str]]:
-    # def appendExemplar(copyTrainingSet, category, exemplarVector):
-    #     # try / catch is more performant than manually checking if the key in dict exists
-    #     try:
-    #         copyTrainingSet[category].append(exemplarVector)
-    #     except:
-    #         copyTrainingSet[category] = [exemplarVector]
 
     # G: Dict[str, List[int]] = {}
     G: List[Tuple[List[int], str]] = []
@@ -113,8 +107,6 @@ def initializeVectors(
                 ]
 
                 copyTrainingSet.append((exemplarVector, category))
-                # G.append((exemplarVector, category))
-                # appendExemplar(copyTrainingSet, category, exemplarVector)
     else:
         copyTrainingSet = trainingSet
 
@@ -134,13 +126,6 @@ def initializeVectors(
             (list(map(lambda num: round(num / categoryCount, 3), sumation)), category)
         )
 
-    # for category, vectors in copyTrainingSet.items():
-    #     sumation = [sum(x) for x in zip(*vectors)]
-    #     G.append(
-    #         (list(map(lambda num: round(num / len(vectors), 3), sumation))), category
-    #     )
-    # G[category] = list(map(lambda num: round(num / len(vectors), 3), sumation))
-
     return G
 
 
@@ -158,11 +143,15 @@ def computeAccuracy(
     G: Dict[str, List[int]], trainingSet: List[Tuple[List[int], str]]
 ) -> float:
     numCorrect = 0
+    
+    trainingSetLen = len(trainingSet)
 
-    trainingCategoriesLen = len(trainingSet)
+    # contains an training set vector u(Y), it's category, and the distance calculated
+    closestExemplar: Tuple[Tuple[List[int], str], float] = ([], 0.0, "")
 
-    # contains the exemplar vector, previous distance, and exemplar category
-    closestExemplar: Tuple[List[int], float, str] = ([], 0.0, "")
+    for exemplarVector, exemplarCategory in G:
+        for vector, category in trainingSet:
+
 
     # for exemplarCategory, exemplarVector in G.items():
     #     for i in range(0, trainingSetLength):
@@ -182,7 +171,7 @@ def computeAccuracy(
     # if i == trainingSetLength - 1:
     #     print(exemplarCategory)
 
-    # return numCorrect / trainingSetLength
+    return numCorrect / trainingSetLen
     return float(0)
 
 
