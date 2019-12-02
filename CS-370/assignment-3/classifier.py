@@ -8,6 +8,7 @@ from typing import List, Dict, Tuple
 from operator import itemgetter
 from math import inf, isinf, sqrt
 from random import randint
+from json import dumps
 from os import path
 import argparse
 
@@ -38,8 +39,6 @@ if M < 0:
     M = 0
 
 inputFile: List[str] = open(file, "r").readlines()
-
-# trainingSet: Dict[str, List[int]] = {}
 
 trainingSet: List[Tuple[List[int], str]] = []
 
@@ -80,9 +79,12 @@ for row in transposedMatrix:
 
 
 # print helper function
-def printVerbose(obj):
+def printVerbose(obj, isList=False):
     if verbose:
-        print(obj)
+        if isList:
+            print(",".join("%.2f" % obj))
+        else:
+            print(obj)
 
 
 def initializeVectors(
@@ -93,10 +95,8 @@ def initializeVectors(
     categoryCount: Dict[str, List[int]],
 ) -> List[Tuple[List[int], str]]:
 
-    # G: Dict[str, List[int]] = {}
     G: List[Tuple[List[int], str]] = []
     copyTrainingSet: List[Tuple[List[int], str]] = []
-    # copyTrainingSet: Dict[str, List[List[int]]] = {}
     exemplarVector: List[int] = []
 
     if isRandom:
@@ -134,49 +134,43 @@ def getDistance(vect1: List[int], vect2: List[int]) -> float:
     dist = 0
 
     for i in range(len(vect2)):
-        dist += pow((vect2[i] - vect1[i]), 2)
-
-    return round(sqrt(dist), 3)
+        dist += pow((vect1[i] - vect2[i]), 2)
+    return dist
 
 
 def computeAccuracy(
-    G: Dict[str, List[int]], trainingSet: List[Tuple[List[int], str]]
+    G: List[Tuple[List[int], str]], trainingSet: List[Tuple[List[int], str]]
 ) -> float:
     numCorrect = 0
-    
+
     trainingSetLen = len(trainingSet)
 
-    # contains an training set vector u(Y), it's category, and the distance calculated
-    closestExemplar: Tuple[Tuple[List[int], str], float] = ([], 0.0, "")
+    for vector, category in trainingSet:
+        # contains an training set vector u(Y), it's category, and the distance calculated
+        closestExemplar = {"exemplar": [], "distance": inf, "category": ""}
 
-    for exemplarVector, exemplarCategory in G:
-        for vector, category in trainingSet:
+        for exemplarVector, exemplarCategory in G:
+            dist = getDistance(exemplarVector, vector)
 
+            # assuming no ties
+            if dist < closestExemplar["distance"]:
+                closestExemplar = {
+                    "exemplar": exemplarVector,
+                    "distance": dist,
+                    "category": exemplarCategory,
+                }
 
-    # for exemplarCategory, exemplarVector in G.items():
-    #     for i in range(0, trainingSetLength):
-    #         category, vectors = trainingSet.items()[i]
-    #         vectorsLen = len(vectors)
+        print("closest exemplar: %s\n" % closestExemplar)
 
-    #         for j in range(0, vectorsLen):
-    #             vector = vectors[j]
+        print("actual vector: %s\tcategory: %s\n" % (vector, category))
 
-    #             newDistance = getDistance(exemplarVector, vector)
-
-    #             print(newDistance)
-
-    #             if i == vectorsLen - 1:
-    #                 return 0
-
-    # if i == trainingSetLength - 1:
-    #     print(exemplarCategory)
+        if closestExemplar["category"] == category:
+            numCorrect += 1
 
     return numCorrect / trainingSetLen
-    return float(0)
 
 
 def gradDescent(
-    # trainingSet: Dict[str, List[List[int]]],
     trainingSet: List[Tuple[List[int], str]],
     stepSize: float,
     epsilon: float,
@@ -185,19 +179,17 @@ def gradDescent(
     history: List[Tuple[int, int]],
     categoryCount: Dict[str, List[int]],
 ):
-    # G: Dict[str, List[int]] = initializeVectors(
-    #     trainingSet, isRandom, history, categoryCount
-    # )
-
     G: List[Tuple[List[int], str]] = initializeVectors(
         trainingSet, isRandom, history, categoryCount
     )
 
-    print(G)
+    print("training set:", trainingSet)
+    print("G:", G)
 
     previousCost = inf
-    # computeAccuracy(G, trainingSet)
-    # previousAccuracy = computeAccuracy(G, trainingSet)
+    previousAccuracy = computeAccuracy(G, trainingSet)
+
+    print("Accuracy:", previousAccuracy)
 
 
 # print("training set", trainingSet)
