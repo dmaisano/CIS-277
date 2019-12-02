@@ -34,9 +34,9 @@ file, step, epsilon, M, verbose = itemgetter("file", "step", "epsilon", "M", "ve
     vars(args)
 )
 
-if M < 0:
-    print("setting M (random restarts) to zero")
-    M = 0
+# if M < 0:
+#     print("setting M (random restarts) to zero")
+#     M = 0
 
 inputFile: List[str] = open(file, "r").readlines()
 
@@ -126,7 +126,6 @@ def initializeVectors(
 
         # tuple containing exemplar vector and it's respective category
         gv = (list(map(lambda num: round(num / categoryCount, 3), sumation)), category)
-
         G.append(gv)
 
     return G
