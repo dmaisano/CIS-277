@@ -79,20 +79,22 @@ for row in transposedMatrix:
 
 
 # print helper function
-def printVerbose(obj, isList=False):
-    if verbose:
-        if isList:
-            print(",".join("%.2f" % obj))
-        else:
+def printVerbose(obj, sep=None):
+    if verbose and sep == None:
+        print(obj)
+    else:
+        try:
+            print(obj, sep=sep)
+        except:
             print(obj)
 
 
 def initializeVectors(
-    # trainingSet: Dict[str, List[List[int]]],
     trainingSet: List[Tuple[List[int], str]],
     isRandom: bool,
     history: List[Tuple[int, int]],
     categoryCount: Dict[str, List[int]],
+    iteration: int = 0,
 ) -> List[Tuple[List[int], str]]:
 
     G: List[Tuple[List[int], str]] = []
@@ -122,9 +124,10 @@ def initializeVectors(
 
         sumation = [sum(x) for x in zip(*sumation)]
 
-        G.append(
-            (list(map(lambda num: round(num / categoryCount, 3), sumation)), category)
-        )
+        # tuple containing exemplar vector and it's respective category
+        gv = (list(map(lambda num: round(num / categoryCount, 3), sumation)), category)
+
+        G.append(gv)
 
     return G
 
@@ -160,9 +163,9 @@ def computeAccuracy(
                     "category": exemplarCategory,
                 }
 
-        print("closest exemplar: %s\n" % closestExemplar)
+        # print("closest exemplar: %s\n" % closestExemplar)
 
-        print("actual vector: %s\tcategory: %s\n" % (vector, category))
+        # print("actual vector: %s\tcategory: %s\n" % (vector, category))
 
         if closestExemplar["category"] == category:
             numCorrect += 1
@@ -179,17 +182,23 @@ def gradDescent(
     history: List[Tuple[int, int]],
     categoryCount: Dict[str, List[int]],
 ):
+    numIterations = 0
+
     G: List[Tuple[List[int], str]] = initializeVectors(
-        trainingSet, isRandom, history, categoryCount
+        trainingSet, isRandom, history, categoryCount, numIterations
     )
 
-    print("training set:", trainingSet)
-    print("G:", G)
+    printVerbose("Iteration: %d" % numIterations)
+    for vector, _ in G:
+        printVerbose(", ".join(("%.4f" % num) for num in vector))
+
+    # print("training set:", trainingSet)
+    # print("G:", G)
 
     previousCost = inf
     previousAccuracy = computeAccuracy(G, trainingSet)
 
-    print("Accuracy:", previousAccuracy)
+    printVerbose("Accuracy: %.4f" % previousAccuracy)
 
 
 # print("training set", trainingSet)
