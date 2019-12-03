@@ -22,7 +22,9 @@ parser.add_argument(
 parser.add_argument("step", action="store", type=float, help="step size")
 parser.add_argument("epsilon", action="store", type=float, help="epsilon")
 parser.add_argument("M", action="store", type=float, help="M")
-parser.add_argument("numRestarts", action="store", type=float, help="number of random restarts")
+parser.add_argument(
+    "numRestarts", action="store", type=int, help="number of random restarts"
+)
 
 # optional verbose arg
 parser.add_argument(
@@ -31,9 +33,9 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-file, step, epsilon, M, verbose, numRestarts = itemgetter("file", "step", "epsilon", "M", "verbose")(
-    vars(args)
-)
+file, step, epsilon, M, numRestarts, verbose = itemgetter(
+    "file", "step", "epsilon", "M", "numRestarts", "verbose"
+)(vars(args))
 
 if numRestarts < 0:
     print("setting M (random restarts) to zero")
@@ -134,12 +136,44 @@ def initializeVectors(
 
 
 # assuming both vectors are of same length
-def getDistance(vect1: List[float], vect2: List[float]) -> float:
+def distSquared(vect1: List[float], vect2: List[float]) -> float:
     dist = 0
 
     for i in range(len(vect2)):
         dist += pow((vect1[i] - vect2[i]), 2)
     return dist
+
+
+def argmin(vect: List[any]):
+    if len(vect) <= 1:
+        return 0
+
+    minIndex = 0
+
+    for i in range(1, len(vect)):
+        if vect[i] < vect[minIndex]:
+            minIndex = i
+
+    return minIndex
+
+
+# returns an exemplar vector from G that is closest to uY
+def calcClosestExemplar(uY, G):
+    # contains an training set vector u(Y), it's category, and the distance calculated
+    closestExemplar = {"exemplar": [], "distance": inf, "category": ""}
+
+    for exemplarVector, exemplarCategory in G:
+        dist = distSquared(exemplarVector, uY)
+
+        # assuming no ties
+        if dist < closestExemplar["distance"]:
+            closestExemplar = {
+                "exemplar": exemplarVector,
+                "distance": dist,
+                "category": exemplarCategory,
+            }
+
+    return closestExemplar
 
 
 def computeAccuracy(
@@ -150,19 +184,7 @@ def computeAccuracy(
     trainingSetLen = len(trainingSet)
 
     for vector, category in trainingSet:
-        # contains an training set vector u(Y), it's category, and the distance calculated
-        closestExemplar = {"exemplar": [], "distance": inf, "category": ""}
-
-        for exemplarVector, exemplarCategory in G:
-            dist = getDistance(exemplarVector, vector)
-
-            # assuming no ties
-            if dist < closestExemplar["distance"]:
-                closestExemplar = {
-                    "exemplar": exemplarVector,
-                    "distance": dist,
-                    "category": exemplarCategory,
-                }
+        closestExemplar = calcClosestExemplar(vector, G)
 
         # print("closest exemplar: %s\n" % closestExemplar)
 
@@ -200,15 +222,24 @@ def gradDescent(
     previousAccuracy = computeAccuracy(G, trainingSet)
     printVerbose("Accuracy: %.4f" % previousAccuracy)
 
-    for i in range(0, numRestarts):
-        n = []
+    # for i in range(0, numRestarts):
+    #     n = []
 
-        for v in range(0, len(G)):
-            n[v] = 0
+    # for v in range(0, len(G)):
+    #     n[v] = 0
 
-        for vector, category in trainingSet:
-            
+    # for each datapoint "Y" in T
+    # ? u(Y) == vector of predictive attribues
+    # ?    v == category
+    for uY, v in trainingSet:
+        # find g_w closest to u(Y)
+        g_w, w = [calcClosestExemplar(uY, G)[key] for key in ("exemplar", "category")]
 
+        print(g_w, w)
+        
+        # failed to classify u(Y) correctly
+        if (w != v):
+            cost = 
 
 
 # print("training set", trainingSet)
