@@ -92,15 +92,56 @@ def printVerbose(obj, sep=None):
             print(obj)
 
 
+# def initializeVectors(
+#     trainingSet: List[Tuple[List[float], str]],
+#     isRandom: bool,
+#     history: List[Tuple[float, float]],
+#     categoryCount: Dict[str, List[float]],
+#     iteration: int = 0,
+# ) -> List[Tuple[List[float], str]]:
+
+#     G: List[Tuple[List[float], str]] = []
+#     copyTrainingSet: List[Tuple[List[float], str]] = []
+#     exemplarVector: List[float] = []
+
+#     if isRandom:
+#         for category, count in categoryCount.items():
+#             for _ in range(0, count):
+#                 exemplarVector = [
+#                     randint(minAttr, maxAttr) for (minAttr, maxAttr) in history
+#                 ]
+
+#                 copyTrainingSet.append((exemplarVector, category))
+#     else:
+#         copyTrainingSet = trainingSet
+
+#     # calculate the exemplar vectors
+#     for category, categoryCount in categoryCount.items():
+#         sumation = []
+
+#         for trainingVector, trainingCategory in copyTrainingSet:
+#             if trainingCategory != category:
+#                 continue
+
+#             sumation.append(trainingVector)
+
+#         sumation = [sum(x) for x in zip(*sumation)]
+
+#         # tuple containing exemplar vector and it's respective category
+#         # gv = (list(map(lambda num: round(num / categoryCount, 3), sumation)), category)
+#         gv = (list(map(lambda num: num / categoryCount, sumation)), category)
+#         G.append(gv)
+
+#     return G
 def initializeVectors(
     trainingSet: List[Tuple[List[float], str]],
     isRandom: bool,
     history: List[Tuple[float, float]],
     categoryCount: Dict[str, List[float]],
     iteration: int = 0,
-) -> List[Tuple[List[float], str]]:
+) -> Dict[str, List[float]]:
 
-    G: List[Tuple[List[float], str]] = []
+    G: Dict[str, List[float]] = {}
     copyTrainingSet: List[Tuple[List[float], str]] = []
     exemplarVector: List[float] = []
 
@@ -129,8 +170,9 @@ def initializeVectors(
 
         # tuple containing exemplar vector and it's respective category
         # gv = (list(map(lambda num: round(num / categoryCount, 3), sumation)), category)
-        gv = (list(map(lambda num: num / categoryCount, sumation)), category)
-        G.append(gv)
+        # gv = (list(map(lambda num: num / categoryCount, sumation)), category)
+        G[category] = list(map(lambda num: num / categoryCount, sumation))
+        # G.append(gv)
 
     return G
 
@@ -158,11 +200,11 @@ def argmin(vect: List[any]):
 
 
 # returns an exemplar vector from G that is closest to uY
-def calcClosestExemplar(uY, G):
+def calcClosestExemplar(uY: List[float], G: Dict[str, List[float]]):
     # contains an training set vector u(Y), it's category, and the distance calculated
     closestExemplar = {"exemplar": [], "distance": inf, "category": ""}
 
-    for exemplarVector, exemplarCategory in G:
+    for exemplarCategory, exemplarVector in G.items():
         dist = distSquared(exemplarVector, uY)
 
         # assuming no ties
@@ -177,7 +219,7 @@ def calcClosestExemplar(uY, G):
 
 
 def computeAccuracy(
-    G: List[Tuple[List[float], str]], trainingSet: List[Tuple[List[float], str]]
+    G: Dict[str, List[float]], trainingSet: List[Tuple[List[float], str]]
 ) -> float:
     numCorrect = 0
 
@@ -207,13 +249,18 @@ def gradDescent(
 ):
     numIterations = 0
 
-    G: List[Tuple[List[float], str]] = initializeVectors(
+    # G: List[Tuple[List[float], str]] = initializeVectors(
+    #     trainingSet, isRandom, history, categoryCount, numIterations
+    # )
+    G: Dict[str, List[float]] = initializeVectors(
         trainingSet, isRandom, history, categoryCount, numIterations
     )
 
     printVerbose("Iteration: %d" % numIterations)
-    for vector, _ in G:
-        printVerbose(", ".join(("%.3f" % num) for num in vector))
+    for _, g_v in G.items():
+        print(g_v)
+
+        # printVerbose(", ".join(("%.3f" % num) for num in vector))
 
     # print("training set:", trainingSet)
     # print("G:", G)
@@ -223,23 +270,28 @@ def gradDescent(
     printVerbose("Accuracy: %.4f" % previousAccuracy)
 
     # for i in range(0, numRestarts):
-    #     n = []
+    #     totalCost = 0
 
-    # for v in range(0, len(G)):
-    #     n[v] = 0
+    #     n: List[Tuple[List[float], str]] = []
 
-    # for each datapoint "Y" in T
-    # ? u(Y) == vector of predictive attribues
-    # ?    v == category
-    for uY, v in trainingSet:
-        # find g_w closest to u(Y)
-        g_w, w = [calcClosestExemplar(uY, G)[key] for key in ("exemplar", "category")]
+    #     for
 
-        print(g_w, w)
-        
-        # failed to classify u(Y) correctly
-        if (w != v):
-            cost = 
+    # # for each datapoint "Y" in T
+    # # ? u(Y) == vector of predictive attribues
+    # # ?    v == category
+    # for uY, v in trainingSet:
+    #     # find g_w closest to u(Y)
+    #     g_w, w = [calcClosestExemplar(uY, G)[key] for key in ("exemplar", "category")]
+
+    #     print(g_w, w)
+
+    #     # failed to classify u(Y) correctly
+    #     if w != v:
+    #         g_v = []
+
+    #         cost = distSquared(g_v, uY) - distSquared(uY, g_w)
+
+    #         if (cost < M):
 
 
 # print("training set", trainingSet)
