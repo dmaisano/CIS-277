@@ -1,4 +1,4 @@
-# Assignment A1 Programming
+# Assignment A2 Program
 
 ## How to run the program
 
