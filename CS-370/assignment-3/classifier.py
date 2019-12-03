@@ -38,7 +38,7 @@ file, step, epsilon, M, numRestarts, verbose = itemgetter(
 )(vars(args))
 
 if numRestarts < 0:
-    print("setting M (random restarts) to zero")
+    print("setting random restarts to zero")
     numRestarts = 0
 
 inputFile: List[str] = open(file, "r").readlines()
@@ -60,10 +60,10 @@ for line in inputFile:
     category = line.pop().strip()
 
     # u(Y), vector of predictive attributes
-    predictiveAttributes: List[float] = list(map(float, line))
+    uY: List[float] = list(map(float, line))
 
-    trainingSet.append((predictiveAttributes, category))
-    allPredictiveAttributes.append(predictiveAttributes)
+    trainingSet.append((uY, category))
+    allPredictiveAttributes.append(uY)
 
     try:
         categoryCount[category] += 1
@@ -92,53 +92,11 @@ def printVerbose(obj, sep=None):
             print(obj)
 
 
-# def initializeVectors(
-#     trainingSet: List[Tuple[List[float], str]],
-#     isRandom: bool,
-#     history: List[Tuple[float, float]],
-#     categoryCount: Dict[str, List[float]],
-#     iteration: int = 0,
-# ) -> List[Tuple[List[float], str]]:
-
-#     G: List[Tuple[List[float], str]] = []
-#     copyTrainingSet: List[Tuple[List[float], str]] = []
-#     exemplarVector: List[float] = []
-
-#     if isRandom:
-#         for category, count in categoryCount.items():
-#             for _ in range(0, count):
-#                 exemplarVector = [
-#                     randint(minAttr, maxAttr) for (minAttr, maxAttr) in history
-#                 ]
-
-#                 copyTrainingSet.append((exemplarVector, category))
-#     else:
-#         copyTrainingSet = trainingSet
-
-#     # calculate the exemplar vectors
-#     for category, categoryCount in categoryCount.items():
-#         sumation = []
-
-#         for trainingVector, trainingCategory in copyTrainingSet:
-#             if trainingCategory != category:
-#                 continue
-
-#             sumation.append(trainingVector)
-
-#         sumation = [sum(x) for x in zip(*sumation)]
-
-#         # tuple containing exemplar vector and it's respective category
-#         # gv = (list(map(lambda num: round(num / categoryCount, 3), sumation)), category)
-#         gv = (list(map(lambda num: num / categoryCount, sumation)), category)
-#         G.append(gv)
-
-#     return G
 def initializeVectors(
     trainingSet: List[Tuple[List[float], str]],
     isRandom: bool,
     history: List[Tuple[float, float]],
     categoryCount: Dict[str, List[float]],
-    iteration: int = 0,
 ) -> Dict[str, List[float]]:
 
     G: Dict[str, List[float]] = {}
@@ -168,11 +126,7 @@ def initializeVectors(
 
         sumation = [sum(x) for x in zip(*sumation)]
 
-        # tuple containing exemplar vector and it's respective category
-        # gv = (list(map(lambda num: round(num / categoryCount, 3), sumation)), category)
-        # gv = (list(map(lambda num: num / categoryCount, sumation)), category)
         G[category] = list(map(lambda num: num / categoryCount, sumation))
-        # G.append(gv)
 
     return G
 
@@ -186,21 +140,8 @@ def distSquared(vect1: List[float], vect2: List[float]) -> float:
     return dist
 
 
-def argmin(vect: List[any]):
-    if len(vect) <= 1:
-        return 0
-
-    minIndex = 0
-
-    for i in range(1, len(vect)):
-        if vect[i] < vect[minIndex]:
-            minIndex = i
-
-    return minIndex
-
-
 # returns an exemplar vector from G that is closest to uY
-def calcClosestExemplar(uY: List[float], G: Dict[str, List[float]]):
+def calcClosestExemplar(uY: List[float], G: Dict[str, List[float]]) -> object:
     # contains an training set vector u(Y), it's category, and the distance calculated
     closestExemplar = {"exemplar": [], "distance": inf, "category": ""}
 
@@ -228,14 +169,17 @@ def computeAccuracy(
     for vector, category in trainingSet:
         closestExemplar = calcClosestExemplar(vector, G)
 
-        # print("closest exemplar: %s\n" % closestExemplar)
-
-        # print("actual vector: %s\tcategory: %s\n" % (vector, category))
-
         if closestExemplar["category"] == category:
             numCorrect += 1
 
     return numCorrect / trainingSetLen
+
+
+def exitGradDescent(accuracies: List[float], converged=False, lastAccuracy=0.0):
+    if converged == True:
+        printVerbose("Converged. Accuracy: %.4f" % lastAccuracy)
+
+    printVerbose("\nBest Accuracy: %.4f" % (max(accuracies)))
 
 
 def gradDescent(
@@ -246,55 +190,85 @@ def gradDescent(
     isRandom: bool,
     history: List[Tuple[float, float]],
     categoryCount: Dict[str, List[int]],
-):
-    numIterations = 0
-
-    # G: List[Tuple[List[float], str]] = initializeVectors(
-    #     trainingSet, isRandom, history, categoryCount, numIterations
-    # )
+    previousCost=inf,
+    currentIteration=0,
+    previousAccuracy=0.0,
+    accuracies: List[float] = [],
+) -> Dict[str, List[float]]:
     G: Dict[str, List[float]] = initializeVectors(
-        trainingSet, isRandom, history, categoryCount, numIterations
+        trainingSet, isRandom, history, categoryCount
     )
 
-    printVerbose("Iteration: %d" % numIterations)
+    if currentIteration == numRestarts:
+        exitGradDescent(accuracies, True)
+        return G
+
+    printVerbose("Iteration: %d" % currentIteration)
     for _, g_v in G.items():
-        print(g_v)
+        printVerbose(", ".join(("%.3f" % num) for num in g_v))
 
-        # printVerbose(", ".join(("%.3f" % num) for num in vector))
+    accuracy = computeAccuracy(G, trainingSet)
+    accuracies.append(accuracy)
+    printVerbose("Accuracy: %.4f\n" % accuracy)
 
-    # print("training set:", trainingSet)
-    # print("G:", G)
+    totalCost = 0
 
-    previousCost = inf
-    previousAccuracy = computeAccuracy(G, trainingSet)
-    printVerbose("Accuracy: %.4f" % previousAccuracy)
+    n = {}
+    for v, _ in G.items():
+        n[v] = []
 
-    # for i in range(0, numRestarts):
-    #     totalCost = 0
+    # for each datapoint "Y" in T
+    # ? u(Y) == vector of predictive attribues
+    # ?    v == category
+    for uY, v in trainingSet:
+        # find g_w closest to u(Y)
+        g_w, w = [calcClosestExemplar(uY, G)[key] for key in ("exemplar", "category")]
 
-    #     n: List[Tuple[List[float], str]] = []
+        # failed to classify u(Y) correctly
+        if w != v:
+            g_v = G[v]
 
-    #     for
+            cost = distSquared(g_v, uY) - distSquared(uY, g_w)
 
-    # # for each datapoint "Y" in T
-    # # ? u(Y) == vector of predictive attribues
-    # # ?    v == category
-    # for uY, v in trainingSet:
-    #     # find g_w closest to u(Y)
-    #     g_w, w = [calcClosestExemplar(uY, G)[key] for key in ("exemplar", "category")]
+            if cost < M:
+                n[v] = [x - y for x, y in zip(uY, g_v)]
+                n[w] = [x - y for x, y in zip(g_w, uY)]
+                totalCost += cost
+            else:
+                totalCost += M
 
-    #     print(g_w, w)
+    if totalCost < epsilon:
+        exitGradDescent(accuracies)
+        return G  # training complete
 
-    #     # failed to classify u(Y) correctly
-    #     if w != v:
-    #         g_v = []
+    if not isinf(previousCost) and totalCost > ((1 - epsilon) * previousCost):
+        exitGradDescent(accuracies)
+        return G  # improvement too small
 
-    #         cost = distSquared(g_v, uY) - distSquared(uY, g_w)
+    h = {}
+    for v, g_v in G.items():
+        h[v] = [x - y for x, y in zip(uY, g_v)]
 
-    #         if (cost < M):
+    newAccuracy = computeAccuracy(h, trainingSet)
+
+    if newAccuracy < accuracy:
+        exitGradDescent(accuracies)
+        return G
+
+    currentIteration += 1
+    return gradDescent(
+        trainingSet,
+        step,
+        epsilon,
+        M,
+        True,
+        history,
+        categoryCount,
+        totalCost,
+        currentIteration,
+        newAccuracy,
+        accuracies,
+    )
 
 
-# print("training set", trainingSet)
-# print("\nhistory", history)
-# print("\ncategoryCount", categoryCount)
 gradDescent(trainingSet, step, epsilon, M, False, history, categoryCount)
