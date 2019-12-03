@@ -21,7 +21,8 @@ parser.add_argument(
 )
 parser.add_argument("step", action="store", type=float, help="step size")
 parser.add_argument("epsilon", action="store", type=float, help="epsilon")
-parser.add_argument("M", action="store", type=int, help="number of random restarts")
+parser.add_argument("M", action="store", type=float, help="M")
+parser.add_argument("numRestarts", action="store", type=float, help="number of random restarts")
 
 # optional verbose arg
 parser.add_argument(
@@ -30,26 +31,26 @@ parser.add_argument(
 
 args = parser.parse_args()
 
-file, step, epsilon, M, verbose = itemgetter("file", "step", "epsilon", "M", "verbose")(
+file, step, epsilon, M, verbose, numRestarts = itemgetter("file", "step", "epsilon", "M", "verbose")(
     vars(args)
 )
 
-# if M < 0:
-#     print("setting M (random restarts) to zero")
-#     M = 0
+if numRestarts < 0:
+    print("setting M (random restarts) to zero")
+    numRestarts = 0
 
 inputFile: List[str] = open(file, "r").readlines()
 
-trainingSet: List[Tuple[List[int], str]] = []
+trainingSet: List[Tuple[List[float], str]] = []
 
 # contains the min and max value of each predictive attribute in u(X)
-history: List[Tuple[int, int]] = []
+history: List[Tuple[float, float]] = []
 
 # number of particular categories in the given training set
-categoryCount: Dict[str, List[int]] = {}
+categoryCount: Dict[str, List[float]] = {}
 
 # used to keep trakc of all u(Y) vectors
-allPredictiveAttributes: List[List[int]] = []
+allPredictiveAttributes: List[List[float]] = []
 
 line: str
 for line in inputFile:
@@ -57,7 +58,7 @@ for line in inputFile:
     category = line.pop().strip()
 
     # u(Y), vector of predictive attributes
-    predictiveAttributes: List[int] = list(map(int, line))
+    predictiveAttributes: List[float] = list(map(float, line))
 
     trainingSet.append((predictiveAttributes, category))
     allPredictiveAttributes.append(predictiveAttributes)
@@ -80,9 +81,9 @@ for row in transposedMatrix:
 
 # print helper function
 def printVerbose(obj, sep=None):
-    if verbose and sep == None:
+    if verbose == True and sep == None:
         print(obj)
-    else:
+    elif verbose == True:
         try:
             print(obj, sep=sep)
         except:
@@ -90,16 +91,16 @@ def printVerbose(obj, sep=None):
 
 
 def initializeVectors(
-    trainingSet: List[Tuple[List[int], str]],
+    trainingSet: List[Tuple[List[float], str]],
     isRandom: bool,
-    history: List[Tuple[int, int]],
-    categoryCount: Dict[str, List[int]],
+    history: List[Tuple[float, float]],
+    categoryCount: Dict[str, List[float]],
     iteration: int = 0,
-) -> List[Tuple[List[int], str]]:
+) -> List[Tuple[List[float], str]]:
 
-    G: List[Tuple[List[int], str]] = []
-    copyTrainingSet: List[Tuple[List[int], str]] = []
-    exemplarVector: List[int] = []
+    G: List[Tuple[List[float], str]] = []
+    copyTrainingSet: List[Tuple[List[float], str]] = []
+    exemplarVector: List[float] = []
 
     if isRandom:
         for category, count in categoryCount.items():
@@ -125,14 +126,15 @@ def initializeVectors(
         sumation = [sum(x) for x in zip(*sumation)]
 
         # tuple containing exemplar vector and it's respective category
-        gv = (list(map(lambda num: round(num / categoryCount, 3), sumation)), category)
+        # gv = (list(map(lambda num: round(num / categoryCount, 3), sumation)), category)
+        gv = (list(map(lambda num: num / categoryCount, sumation)), category)
         G.append(gv)
 
     return G
 
 
 # assuming both vectors are of same length
-def getDistance(vect1: List[int], vect2: List[int]) -> float:
+def getDistance(vect1: List[float], vect2: List[float]) -> float:
     dist = 0
 
     for i in range(len(vect2)):
@@ -141,7 +143,7 @@ def getDistance(vect1: List[int], vect2: List[int]) -> float:
 
 
 def computeAccuracy(
-    G: List[Tuple[List[int], str]], trainingSet: List[Tuple[List[int], str]]
+    G: List[Tuple[List[float], str]], trainingSet: List[Tuple[List[float], str]]
 ) -> float:
     numCorrect = 0
 
@@ -173,31 +175,40 @@ def computeAccuracy(
 
 
 def gradDescent(
-    trainingSet: List[Tuple[List[int], str]],
+    trainingSet: List[Tuple[List[float], str]],
     stepSize: float,
     epsilon: float,
     M: float,
     isRandom: bool,
-    history: List[Tuple[int, int]],
+    history: List[Tuple[float, float]],
     categoryCount: Dict[str, List[int]],
 ):
     numIterations = 0
 
-    G: List[Tuple[List[int], str]] = initializeVectors(
+    G: List[Tuple[List[float], str]] = initializeVectors(
         trainingSet, isRandom, history, categoryCount, numIterations
     )
 
     printVerbose("Iteration: %d" % numIterations)
     for vector, _ in G:
-        printVerbose(", ".join(("%.4f" % num) for num in vector))
+        printVerbose(", ".join(("%.3f" % num) for num in vector))
 
     # print("training set:", trainingSet)
     # print("G:", G)
 
     previousCost = inf
     previousAccuracy = computeAccuracy(G, trainingSet)
-
     printVerbose("Accuracy: %.4f" % previousAccuracy)
+
+    for i in range(0, numRestarts):
+        n = []
+
+        for v in range(0, len(G)):
+            n[v] = 0
+
+        for vector, category in trainingSet:
+            
+
 
 
 # print("training set", trainingSet)
