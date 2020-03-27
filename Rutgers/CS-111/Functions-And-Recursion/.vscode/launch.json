@@ -6,17 +6,9 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Debug (Launch) - Current File",
+      "name": "Sierpinski",
       "request": "launch",
-      "mainClass": "${file}"
-    },
-    {
-      "type": "java",
-      "name": "Debug (Launch)-DavisPutnam<njit_1239be75>",
-      "request": "launch",
-      "mainClass": "DavisPutnam",
-      "projectName": "njit_1239be75",
-      "args": "input1.txt"
+      "mainClass": "Sierpinski"
     }
   ]
 }
