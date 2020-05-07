@@ -1,8 +1,8 @@
-DROP DATABASE IF EXISTS demo;
+DROP DATABASE IF EXISTS cs_288_covid;
 
-CREATE DATABASE demo;
+CREATE DATABASE cs_288_covid;
 
-USE demo
+USE cs_288_covid
 
 CREATE TABLE covid_cases(
   us_state VARCHAR(64) NOT NULL,
